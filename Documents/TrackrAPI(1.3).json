@@ -651,7 +651,7 @@
                     "Admin"
                 ],
                 "summary": "Admin view users and search for users.",
-                "description": "Admin can search users by their name, email, phone number and role.",
+                "description": "Admin can search users by their name, email, phone number and role.If an admin wants to search user by name, role and phone, he can use the filter on that page, but no need to generate a GET request to the back-end. But when an admin wants to see the full information of a user, including both his profile and receipts, a GET request with userID as the query parameter would be generated.",
                 "parameters": [
                     {
                         "name": "uid",
