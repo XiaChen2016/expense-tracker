@@ -1,0 +1,58 @@
+<div class="navbar navbar-default">
+	<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+
+      <ul class="nav navbar-nav navbar-right"  style="font-size:18px;">
+      	<li><a href=""><img ng-src="{{img}}" class="img-rounded" style="margin-top:-5px; ;max-width:24px; max-height:24px;" ></a></li>
+        <li>{{user.uname}}</li>
+		<li>
+			<a href="" ng-click="logout()"> Logout</a>
+		</li>
+	  </ul>
+    </div>
+</div>
+
+<div  class="modal-dialog" role="dialog">
+    <div class="modal-content">
+    	<div class="modal-header">
+	        <h4 class="modal-title">Personal Information</h4>
+    	</div>
+
+    	<div class="modal-body">
+	      	<table class="profileTable">
+
+		      	<tr>
+		      		<td>User Name</td>
+		      		<td><input type="text" class="form-control" ng-model="newUserName"  ></td>
+		      	</tr>
+		      	<tr>
+		      		<td>Name</td>
+		      		<td><input type="text" class="form-control" ng-model="newName" ></td>
+		      	</tr>
+		      	<tr>
+		      		<td>Phone Numbers</td>
+		      		<td><input type="text" class="form-control" ng-model="newPhoneNumber" ></td>
+		      	</tr>
+		      	<tr>
+		      		<td>Email address</td>
+		      		<td><input type="text" class="form-control" ng-model="newEmailAddress" ></td>
+		      	</tr>
+						<tr>
+		      		<td>Password</td>
+		      		<td><input type="text" class="form-control" ng-model="newPasword" ></td>
+		      	</tr>
+						<tr>
+						<div class="checkbox">
+					        <label>
+					          <input type="checkbox" ng-model="newUserType">  Admin
+					        </label>
+					      </div>
+						</tr>
+	      	</table>
+
+
+    	</div>
+	<div class="modal-footer">
+        <button type="button" class="btn btn-primary" ng-click="createUser()">Create</button>
+    </div>
+  </div>
+</div>
