@@ -1,0 +1,39 @@
+
+<nav class="navbar navbar-default" role="navigation">
+   <div class="navbar-header">
+      <a class="navbar-brand" href="#">{{user.userName}}</a>
+   </div>
+   <div class = "pull right">
+      <ul class="nav navbar-nav">
+         <!-- <li><img ng-src="/photos/{{user.avatarIamage}}" class="img-circle" style = "max-width: 50px"></li> -->
+         <li><a href="/#/editProfile">Edit my profile</a></li>
+         <li><a href="/#/createUser">Create users</a></li>
+         <li><a href="/#/browseAll">View all receipt</a></li>
+      </ul>
+   </div>
+
+   <div class="navbar-header">
+      <a class="navbar-brand" href="/logout">logout</a>
+   </div>
+</nav>
+
+   	<table class="table">
+      <caption> User List</caption>
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone Number</th>
+          <th>Admin</th>
+        </tr>
+      </thead>
+      <tbody>
+   	  <tr ng-repeat=" user in userList">
+   	      <td><h4><b>{{user.userName}}</b> </h4></td>
+   	      <td>{{user.name}}</td>
+   	      <td>{{user.emailAddress}}</td>
+   	      <td><p ng-repeat="tel in user.phoneNumbers">{{tel}} </p></td>
+   	      <td><h6> <span ><input type="checkbox" ng-model="user.userType" ng-click="updateRole(user.userName, user.userType)"></span> </h6></td>
+    </tbody>
+    </table>
