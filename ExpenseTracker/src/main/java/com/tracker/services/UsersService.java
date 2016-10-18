@@ -25,17 +25,11 @@ public class UsersService implements UserDetailsService {
 		
 	public User loadUserByUsername(String username) throws UsernameNotFoundException {	
 		System.out.println("Hello from loadUserByUsername.");	
-		User user = userRepository.findByUsername(username);		
+		User user = userRepository.findByUsername(username);
 		if(user == null) throw new UsernameNotFoundException("username");
 		return user;
 	}
 	
-//	public User loadUserByEmail(String email) throws UsernameNotFoundException {	
-//		System.out.println("Hello from loadUserByEmail.");	
-//		User user = userRepository.findByEmail(email);		
-//		if(user == null) throw new UsernameNotFoundException("email");
-//		return user;
-//	}
 	public List<User> getUsers() {
 		return userRepository.findAll();
 	}
@@ -48,7 +42,7 @@ public class UsersService implements UserDetailsService {
 		// Encrypt password
 		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 		user.setPassword( passwordEncoder.encode( user.getPassword() ) );
-		
+		System.out.println("Saving a user with password: "+ user.getPassword());
 		// If there exist user with the same user name or email, then return false
 		if( userRepository.findByUsername(user.getUsername()) != null 
 				|| userRepository.findByEmail(user.getEmail()) != null )
@@ -69,6 +63,8 @@ public class UsersService implements UserDetailsService {
 	
 	@PostConstruct
 	private void initDatabase() {
+		userRepository.deleteAll();
+		
 	//if(true) return;
 	List<Role> roles = Arrays.asList( new Role[] { new Role("ROLE_ADMIN") ,new Role("ROLE_USER") } );
 	System.out.println("Creating user called \"bilbo\"~");
@@ -76,12 +72,26 @@ public class UsersService implements UserDetailsService {
 	String hashedPassword = passwordEncoder.encode("123");
 	User user = new User.Builder()
 				.username("bilbo")
-				.password( hashedPassword )
-				.email("admin")
+				.password( "123" )
+				.email("bilbo@uwlax.edu")
 				.id("0")
+				.status("enabled")
 				.isAdmin(true)
 				.roles( roles)
 				.build();
+	save(user);
+
+	roles =  Arrays.asList( new Role[] { new Role("ROLE_USER") });
+	 user = new User.Builder()
+				.username("user1")
+				.password( "123" )
+				.email("user@uwlax.edu")
+				.id("1")
+				.status("enabled")
+				.isAdmin(false)
+				.roles( roles)
+				.build();
+		save(user);
 //	System.out.println( "findOne" + loadUserByUsername("bilbo") );
 //	if( loadUserByUsername("bilbo") != null )
 //		delete( loadUserByUsername("bilbo").getId());

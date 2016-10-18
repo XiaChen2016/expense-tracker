@@ -1,15 +1,12 @@
-<div class="navbar navbar-default">
-	<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+<nav class="navbar navbar-default" role="navigation">
+   <div class="navbar-header">
+      <a class="navbar-brand">{{user.username}}</a>
+   </div>
 
-      <ul class="nav navbar-nav navbar-right"  style="font-size:18px;">
-      	<li><a href=""><img ng-src="{{img}}" class="img-rounded" style="margin-top:-5px; ;max-width:24px; max-height:24px;" ></a></li>
-        <li>{{user.uname}}</li>
-		<li>
-			<a href="" ng-click="logout()"> Logout</a>
-		</li>
-	  </ul>
-    </div>
-</div>
+   <div class="navbar-header">
+      <a class="navbar-brand" href="/logout">logout</a>
+   </div>
+</nav>
 
 <div  class="modal-dialog" role="dialog">
     <div class="modal-content">
@@ -18,7 +15,7 @@
     	</div>
 
     	<div class="modal-body">
-	      	<table class="profileTable">
+	      	<table class="profileTable" style="border-collapse:separate; border-spacing:0px 10px;">
 
 		      	<tr>
 		      		<td>User Name</td>

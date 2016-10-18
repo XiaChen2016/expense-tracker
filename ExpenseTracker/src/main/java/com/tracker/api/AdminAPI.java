@@ -7,9 +7,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,35 +22,50 @@ import com.tracker.services.UsersService;
 import com.tracker.domain.users.Role;
 
 @Controller
+@RequestMapping("/admin")
+@Secured("ROLE_ADMIN")
 public class AdminAPI {
 	@Autowired
 	private UsersService userService;
 		
+	
+	@RequestMapping( value="", method=RequestMethod.GET )
+	public String getAdminHome(@AuthenticationPrincipal User user, Model model) {
+		System.out.println("Returning the admin home page");
+		return "redirect:#/admin";
+	}
+	
 	// Administrator browse all user
-	@RequestMapping( value="/admin/{uid}/users", method=RequestMethod.GET )
-	@Secured({"ROLE_ADMIN"})
+	@RequestMapping( value="/{uid}/users", method=RequestMethod.GET )
+//	@Secured({"ROLE_ADMIN"})
 	@ResponseBody
 	public List<User> getAllUser( @AuthenticationPrincipal User user ) {
 		System.out.println("Browse all user...");
-		
+
 		List<User> result = new ArrayList<User>();
 		result = userService.getUsers();
+		for( User u : result ) {
+			u.setPassword( null);
+		}
 		return result;
 	}
 	
 	
 	// Administrator create user
-	@RequestMapping( value="/admin/{uid}/users", method=RequestMethod.POST )
+	@RequestMapping( value="/{uid}/users", method=RequestMethod.POST )
 	@Secured({"ROLE_ADMIN"})
 	@ResponseBody
-	public User createUser( @AuthenticationPrincipal User user , Model model,
+	public User createUser( @AuthenticationPrincipal User user ,
+						@PathVariable String uid, Model model,
 						@RequestBody MultiValueMap<String, String> userData) {
-		System.out.println("Creating user...");
+		System.out.println("Creating user..."+"isAdmin: "+userData.get("isAdmin").get(0)
+				+" username: " +userData.get("username").get(0)
+				);
 		
 		List<Role> roles;
 		User newUser = new User();
 		// Define new user's role
-		if( userData.containsKey("admininput") && userData.get("admininput").get(0).equals("on") ) {
+		if( userData.containsKey("isAdmin") && userData.get("isAdmin").get(0).equals("true") ) {
 			roles = Arrays.asList( new Role[] { new Role("ROLE_ADMIN"),new Role("ROLE_USER") } );
 			newUser.setAdmin(true);
 		}
@@ -59,11 +76,14 @@ public class AdminAPI {
 		
 		newUser.setEmail(userData.get("email").get(0));
 		newUser.setName(userData.get("name").get(0));
-		newUser.setStatus(userData.get("state").get(0));
 		newUser.setUsername(userData.get("username").get(0));
-		newUser.setPhone(userData.get("phone"));
+		newUser.setStatus("enabled");
+		newUser.setPassword(userData.get("password").get(0));
+		
 		userService.save(newUser);
 		
+		// User's password is not visible for, so set it null before returning it.
+		newUser.setPassword( null );
 		return newUser;
 	}
 }
