@@ -1,6 +1,8 @@
 package com.tracker.repositories.users;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -19,7 +21,7 @@ public class MongoUserRepositoryImpl implements UpdateableUserRepository {
 		update.set("email", y.getEmail());
 		update.set("password", y.getPassword());
 		update.set("name", y.getName());
-		update.set("status", y.getStatus());
+		update.set("enabled", y.isEnabled());
 		update.set("phone", y.getPhone());
 		update.set("roles", y.getRoles());
 		

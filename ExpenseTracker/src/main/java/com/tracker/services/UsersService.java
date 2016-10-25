@@ -8,6 +8,8 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -30,8 +32,8 @@ public class UsersService implements UserDetailsService {
 		return user;
 	}
 	
-	public List<User> getUsers() {
-		return userRepository.findAll();
+	public Page<User> getUsers( Pageable pageable ) {
+		return  userRepository.findAll(pageable);
 	}
 	
 	public User findOne( String uid){
@@ -63,7 +65,7 @@ public class UsersService implements UserDetailsService {
 	
 	@PostConstruct
 	private void initDatabase() {
-		userRepository.deleteAll();
+//		userRepository.deleteAll();
 		
 	//if(true) return;
 	List<Role> roles = Arrays.asList( new Role[] { new Role("ROLE_ADMIN") ,new Role("ROLE_USER") } );
@@ -79,7 +81,7 @@ public class UsersService implements UserDetailsService {
 				.isAdmin(true)
 				.roles( roles)
 				.build();
-	save(user);
+//	save(user);
 
 	roles =  Arrays.asList( new Role[] { new Role("ROLE_USER") });
 	 user = new User.Builder()
@@ -91,13 +93,13 @@ public class UsersService implements UserDetailsService {
 				.isAdmin(false)
 				.roles( roles)
 				.build();
-		save(user);
+//		save(user);
 //	System.out.println( "findOne" + loadUserByUsername("bilbo") );
 //	if( loadUserByUsername("bilbo") != null )
 //		delete( loadUserByUsername("bilbo").getId());
 	User temp;
 	System.out.println( "Load all users: ");
-	List<User> tempList = userRepository.findAll();
+	List<User> tempList = (List<User>) userRepository.findAll();
 	System.out.println("Number of users in DB: "+tempList.size());
 	Iterator<User> iter = tempList.iterator();
 	while( iter.hasNext() ){

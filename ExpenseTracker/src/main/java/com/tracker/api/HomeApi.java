@@ -1,5 +1,7 @@
 package com.tracker.api;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -34,8 +36,13 @@ public class HomeApi {
 		
 			return result;
 	}
+	@RequestMapping( value="/logoutSuccess", method=RequestMethod.GET )
+	public String logout( HttpSession session ) {
+		session.invalidate();
+		System.out.println("Clearing session...");
+		return "redirect:/";
+	}
 	
-
 	@RequestMapping( value="/", method=RequestMethod.GET )
 	public String welcome(@RequestParam(required=false, defaultValue="false") Boolean error, Model model) {
 		model.addAttribute("error", error);

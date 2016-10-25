@@ -5,6 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.tracker.domain.users.User;
@@ -37,16 +41,14 @@ public class AdminAPI {
 	
 	// Administrator browse all user
 	@RequestMapping( value="/{uid}/users", method=RequestMethod.GET )
-//	@Secured({"ROLE_ADMIN"})
+	@Secured({"ROLE_ADMIN"})
 	@ResponseBody
-	public List<User> getAllUser( @AuthenticationPrincipal User user ) {
+	public Page<User> getAllUser( @AuthenticationPrincipal User user,
+			@RequestParam(required=false, defaultValue="0" ) String page,
+			@RequestParam(required=false, defaultValue="10" ) String size ) {
 		System.out.println("Browse all user...");
-
-		List<User> result = new ArrayList<User>();
-		result = userService.getUsers();
-		for( User u : result ) {
-			u.setPassword( null);
-		}
+		Pageable pageable = new PageRequest(  Integer.valueOf( page ), Integer.valueOf( size ));
+		Page<User> result = userService.getUsers(pageable);
 		return result;
 	}
 	
