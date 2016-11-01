@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -44,10 +46,45 @@ public class AdminAPI {
 	@Secured({"ROLE_ADMIN"})
 	@ResponseBody
 	public Page<User> getAllUser( @AuthenticationPrincipal User user,
+			@RequestParam(required=false, defaultValue="" ) String name,
+			@RequestParam(required=false, defaultValue="" ) String email,
+			@RequestParam(required=false, defaultValue="" ) String phone,
+			@RequestParam(required=false, defaultValue="" ) String isAdmin,
 			@RequestParam(required=false, defaultValue="0" ) String page,
 			@RequestParam(required=false, defaultValue="10" ) String size ) {
-		System.out.println("Browse all user...");
-		Pageable pageable = new PageRequest(  Integer.valueOf( page ), Integer.valueOf( size ));
+		System.out.println("Browse users...");
+		Pageable pageable = new PageRequest(  Integer.valueOf( page ), Integer.valueOf( size ) );
+
+		if( name.length() > 0 ) {
+			System.out.println("Browse users by NAME..." +name);
+//			Page<User> result = userService.getUsersByName( name, pageable );
+//			return result;
+
+			Query query = new Query();
+			query.addCriteria(Criteria.where("name").is(name) );
+			Page<User> result = userService.getUsersByName( name, pageable );
+			return result;
+		}
+		if( email.length() > 0 ) {
+			System.out.println("Browse users EMAIL..."+email);
+			Page<User> result = userService.getUsersByEmail( email, pageable );
+			return result;	
+		}
+		if( phone.length() > 0 ) {
+			System.out.println("Browse users PHONE..." + phone );
+			Page<User> result = userService.getUsersByPhone( phone, pageable );
+			return result;
+		}
+		if( isAdmin.length() > 0 ) {
+			System.out.println("Browse users isAdmin..." + isAdmin );
+			if( isAdmin.equals("true")){
+				Page<User> result = userService.getUsersByRoles( true, pageable );
+				return result;
+			} else{
+				Page<User> result = userService.getUsersByRoles( false, pageable );	
+				return result;
+			}
+		}
 		Page<User> result = userService.getUsers(pageable);
 		return result;
 	}
@@ -75,7 +112,9 @@ public class AdminAPI {
 			roles = Arrays.asList( new Role[] { new Role("ROLE_USER") } );
 			newUser.setAdmin(false);
 		}
-		
+		ArrayList<String> phone = new ArrayList<String>();
+		phone.add(userData.get("newPhoneNumber").get(0));
+		newUser.setPhone( phone );
 		newUser.setEmail(userData.get("email").get(0));
 		newUser.setName(userData.get("name").get(0));
 		newUser.setUsername(userData.get("username").get(0));

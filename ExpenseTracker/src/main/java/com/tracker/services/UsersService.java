@@ -12,7 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,25 +25,48 @@ public class UsersService implements UserDetailsService {
 	private MongoUserRepository userRepository;
 		
 	public User loadUserByUsername(String username) throws UsernameNotFoundException {	
-		System.out.println("Hello from loadUserByUsername.");	
+		System.out.println("Hello from loadUserByUsername"+username);	
 		User user = userRepository.findByUsername(username);
 		if(user == null) throw new UsernameNotFoundException("username");
+		else
+			System.out.println("User exists");
 		return user;
 	}
 	
 	public Page<User> getUsers( Pageable pageable ) {
-		return  userRepository.findAll(pageable);
+		return  userRepository.findAll( pageable );
+	}
+	
+	public Page<User> getUsersByName( String name, Pageable pageable ) {
+		
+//		TextCriteria criteria = new TextCriteria().matching( name ) ;
+//		Query query = TextQuery.queryText( TextCriteria.forDefaultLanguage().matching( name ));
+//		return  userRepository.findByName( query, pageable );
+		return  userRepository.findByNameLike( name, pageable );
+	}
+	
+	public Page<User> getUsersByEmail( String email, Pageable pageable ) {
+		return  userRepository.findByEmailLike( email, pageable );
+	}
+	
+	public Page<User> getUsersByPhone( String phone, Pageable pageable ) {
+		return  userRepository.findByPhoneLike( phone, pageable );
+	}
+	public Page<User> getUsersByRoles( boolean isAdmin, Pageable pageable ) {
+		return  userRepository.findByIsAdmin( isAdmin, pageable );
 	}
 	
 	public User findOne( String uid){
 		System.out.println("Hello from findOne.");
 		return userRepository.findOne( uid );
 	}
+	
 	public boolean save( User user ) {
 		// Encrypt password
 		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 		user.setPassword( passwordEncoder.encode( user.getPassword() ) );
 		System.out.println("Saving a user with password: "+ user.getPassword());
+		
 		// If there exist user with the same user name or email, then return false
 		if( userRepository.findByUsername(user.getUsername()) != null 
 				|| userRepository.findByEmail(user.getEmail()) != null )
@@ -104,7 +126,7 @@ public class UsersService implements UserDetailsService {
 	Iterator<User> iter = tempList.iterator();
 	while( iter.hasNext() ){
 		temp = (User)iter.next();
-		System.out.println("Name: "+temp.getEmail()+"\tUsername: "+temp.getUsername()+"\tPassword: "+temp.getPassword());
+		System.out.println("Name: "+temp.getName()+"\tUsername: "+temp.getUsername()+"\tPassword: "+temp.getPassword());
 	}
 	}
 }

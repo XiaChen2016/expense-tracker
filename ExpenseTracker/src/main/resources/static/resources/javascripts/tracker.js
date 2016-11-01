@@ -1,15 +1,15 @@
 var tracker = angular.module('Tracker', [ 'ngRoute', 'ngResource' ])
 
 tracker.factory('userService',function(){
-	
+
 	var user = {};
-	
+
 	return{
 		getUser: function(){return user;},
 		setUser: function(currentUser){user = currentUser;}
 	};
 }
-		
+
 )
 
 
@@ -54,28 +54,47 @@ tracker.controller('Login.Controller', ['$scope', 'userService', function( $scop
 
 
 tracker.controller('adminHome.Controller', ['$scope', '$resource','userService','$filter', function( $scope, $resource, userService,$filter ) {
-	
 	$scope.currentPage = 0;
-	$scope.userPerPage = 2;
-	
-	
+	$scope.userPerPage = 10;
+
+
   $scope.logout = function(){
     $.ajax('/logout',{type : 'POST'});
+    window.location.href = '/#/';
   }
 
   var updateListOfUser = function ( result ) {
+	
     console.log("updateListOfUser");
-      // console.log("typeof result is:"+ typeof result+"  result:"+ result);
-
     $scope.userList = result.content;
+	$scope.totalPage = result.totalPages;
+	$scope.responseContent = result;
+	$scope.currentPage = result.number;
+	$scope.userPerPage = result.size;
     $scope.$digest();
   }
 
   var getCurrentUser = function(){
 	  console.log("name = " +userService.getUser().username )
+	  if(userService.getUser().username)
+	  {
 	    $scope.user = userService.getUser();
 	    getUserList();
-	    } 
+	  }
+	  else
+	  {
+		$.ajax(  '/home',{ type : 'GET', success: function( loggedUser, responseHeaders ){
+	    	 
+
+	             $scope.user = loggedUser;
+	             userService.setUser(loggedUser);
+	             console.log("Username: " + userService.getUser().username);
+	             getUserList();
+	    	 
+		}});
+
+	  }
+	    }
 
   var getUserList = function(){
     console.log("hello from getUserList!");
@@ -83,9 +102,102 @@ tracker.controller('adminHome.Controller', ['$scope', '$resource','userService',
 }
 
   getCurrentUser();
-  
+
+
+
+//-----------------------------search--------------------------------
+$scope.searchBy = function(searchKey){
+	if(searchKey == "name")
+		$scope.searchType = "name";
+	if(searchKey == "email")
+		$scope.searchType = "email";
+	
+	getUserListWithSearch();
+	
+}
+$scope.searchByAdmin = function(){
+
+		$scope.searchType = "isAdmin";
+		$scope.searchKeyWord = "true";
+		  $.ajax(  '/admin/'+ $scope.user.id+'/users?size='+$scope.userPerPage+ 
+		    		'&page='+$scope.currentPage+
+		    		'&'+$scope.searchType+'=true',{ type : 'GET', success: updateListOfUser });
+
+} 
+$scope.searchByUser = function(){
+
+	$scope.searchType = "isAdmin";
+	$scope.searchKeyWord = "false";
+	  $.ajax(  '/admin/'+ $scope.user.id+'/users?size='+$scope.userPerPage+ 
+	    		'&page='+$scope.currentPage+
+	    		'&'+$scope.searchType+'=false',{ type : 'GET', success: updateListOfUser });
+
+} 
+var getUserListWithSearch = function(){
+    console.log("hello from getUserListWithSearch");
+    $.ajax(  '/admin/'+ $scope.user.id+'/users?size='+$scope.userPerPage+ 
+    		'&page='+$scope.currentPage+
+    		'&'+$scope.searchType+'='+$scope.searchKeyWord,{ type : 'GET', success: updateListOfUser });
+}
+
 
 //----------------------------paging------------------------
+
+$scope.prevPage = function(){
+	if($scope.searchType)
+	$.ajax(  '/admin/'+ $scope.user.id+'/users?size='+$scope.userPerPage+ 
+			'&page='+ ($scope.currentPage - 1)+
+			'&'+$scope.searchType+'='+$scope.searchKeyWord,{ type : 'GET', success: updateListOfUser  });
+	else 
+		$.ajax(  '/admin/'+ $scope.user.id+'/users?size='+$scope.userPerPage+ 
+			'&page='+ ($scope.currentPage - 1),{ type : 'GET', success: updateListOfUser  });
+
+}
+
+$scope.nextPage = function(){
+	if($scope.searchType)
+		$.ajax(  '/admin/'+ $scope.user.id+'/users?size='+$scope.userPerPage+ 
+				'&page='+ ($scope.currentPage + 1)+
+				'&'+$scope.searchType+'='+$scope.searchKeyWord,{ type : 'GET', success: updateListOfUser  });
+		else 
+			$.ajax(  '/admin/'+ $scope.user.id+'/users?size='+$scope.userPerPage+ 
+				'&page='+ ($scope.currentPage + 1),{ type : 'GET', success: updateListOfUser  });
+}
+
+$scope.setPage = function()
+{
+	var page = document.getElementById("targetPage").value - 1;
+	if(Number.isInteger(page)&& page<= $scope.totalPage && page>=0)
+		{	
+			if($scope.searchType)
+			{
+				$scope.currentPage = page;
+				$.ajax(  '/admin/'+ $scope.user.id+'/users?size='+$scope.userPerPage+ 
+						'&page='+ $scope.currentPage+
+						'&'+$scope.searchType+'='+$scope.searchKeyWord,{ type : 'GET', success: updateListOfUser  });
+			
+			}
+			else{
+			$scope.currentPage = page;
+			$.ajax(  '/admin/'+ $scope.user.id+'/users?size='+$scope.userPerPage+ '&page='+$scope.currentPage,{ type : 'GET', success: updateListOfUser  });
+		
+			}
+		}
+	else
+	alert('Please type in right number', 'ERROR');
+
+}
+
+$scope.setSize = function(){
+	if($scope.searchType)
+	getUserListWithSearch();
+	else
+	getUserList();
+}
+
+
+
+
 
 
 } ] );
@@ -99,9 +211,10 @@ tracker.controller('createUser.Controller', ['$scope', '$resource','userService'
 		    $scope.user = userService.getUser;
 		    }
 
-    $scope.logout = function(){
-          $.ajax('/logout',{type : 'POST'});
-        }
+	  $scope.logout = function(){
+		    $.ajax('/logout',{type : 'POST'});
+		    window.location.href = '/#/';
+		  }
 
     $scope.createUser = function(){
     	if($scope.newUserType)
@@ -115,6 +228,7 @@ tracker.controller('createUser.Controller', ['$scope', '$resource','userService'
            data : { username: $scope.newUserName,
                     name: $scope.newName,
                     password: $scope.newPasword,
+                    newPhoneNumber : $scope.newPhoneNumber,
                     email: $scope.newEmailAddress,
                     isAdmin : isAdmin
            },

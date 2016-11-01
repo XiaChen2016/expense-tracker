@@ -1,14 +1,20 @@
-
 <nav class="navbar navbar-default" role="navigation">
-   <div class="navbar-header">
-      <a class="navbar-brand" href="#">{{user.userName}}</a>
+   <div class=" pull right">
+      <button class="navbar-brand"class="btn btn-link navbar-brand" >{{user.username}}</button>
+
+      <a  class=" navbar-brand" href="/logout" >logout</a>
+
    </div>
-   <div class = "pull right">
+   <div class = "pull left">
       <ul class="nav navbar-nav">
-         <li><img ng-src="/photos/{{user.avatarIamage}}" class="img-circle" style = "max-width: 50px"></li>
-         <li><a href="/#/editProfile">Edit my profile</a></li>
+         <!-- <li><img ng-src="/photos/{{user.avatarIamage}}" class="img-circle" style = "max-width: 50px"></li> -->
+         <li><a href="/#/editMyProfile">Edit my profile</a></li>
+         <li><a href="/#/addReceipt">Add receipt</a></li>
+         <li><a href="/#/browseMyReceipt">View my receipt</a></li>
+         <li><a href="/#/manageMyCategory">Manage my category</a></li>
       </ul>
    </div>
+
 </nav>
 
 <table class="table" >
