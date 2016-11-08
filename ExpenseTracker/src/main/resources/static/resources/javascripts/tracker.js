@@ -3,10 +3,13 @@ var tracker = angular.module('Tracker', [ 'ngRoute', 'ngResource' ])
 tracker.factory('userService',function(){
 
 	var user = {};
+	var editUser = {};
 
 	return{
 		getUser: function(){return user;},
-		setUser: function(currentUser){user = currentUser;}
+		setUser: function(currentUser){user = currentUser;},
+		getEditUser: function(){return editUser;},
+		setEditUser: function(currentUser){editUser = currentUser;}
 	};
 }
 
@@ -56,6 +59,8 @@ tracker.controller('Login.Controller', ['$scope', 'userService', function( $scop
 tracker.controller('adminHome.Controller', ['$scope', '$resource','userService','$filter', function( $scope, $resource, userService,$filter ) {
 	$scope.currentPage = 0;
 	$scope.userPerPage = 10;
+	
+	$scope.sizeList = [5,10,20];
 
 
   $scope.logout = function(){
@@ -64,7 +69,7 @@ tracker.controller('adminHome.Controller', ['$scope', '$resource','userService',
   }
 
   var updateListOfUser = function ( result ) {
-	
+
     console.log("updateListOfUser");
     $scope.userList = result.content;
 	$scope.totalPage = result.totalPages;
@@ -84,13 +89,13 @@ tracker.controller('adminHome.Controller', ['$scope', '$resource','userService',
 	  else
 	  {
 		$.ajax(  '/home',{ type : 'GET', success: function( loggedUser, responseHeaders ){
-	    	 
+
 
 	             $scope.user = loggedUser;
 	             userService.setUser(loggedUser);
 	             console.log("Username: " + userService.getUser().username);
 	             getUserList();
-	    	 
+
 		}});
 
 	  }
@@ -111,31 +116,31 @@ $scope.searchBy = function(searchKey){
 		$scope.searchType = "name";
 	if(searchKey == "email")
 		$scope.searchType = "email";
-	
+
 	getUserListWithSearch();
-	
+
 }
 $scope.searchByAdmin = function(){
 
 		$scope.searchType = "isAdmin";
 		$scope.searchKeyWord = "true";
-		  $.ajax(  '/admin/'+ $scope.user.id+'/users?size='+$scope.userPerPage+ 
+		  $.ajax(  '/admin/'+ $scope.user.id+'/users?size='+$scope.userPerPage+
 		    		'&page='+$scope.currentPage+
 		    		'&'+$scope.searchType+'=true',{ type : 'GET', success: updateListOfUser });
 
-} 
+}
 $scope.searchByUser = function(){
 
 	$scope.searchType = "isAdmin";
 	$scope.searchKeyWord = "false";
-	  $.ajax(  '/admin/'+ $scope.user.id+'/users?size='+$scope.userPerPage+ 
+	  $.ajax(  '/admin/'+ $scope.user.id+'/users?size='+$scope.userPerPage+
 	    		'&page='+$scope.currentPage+
 	    		'&'+$scope.searchType+'=false',{ type : 'GET', success: updateListOfUser });
 
-} 
+}
 var getUserListWithSearch = function(){
     console.log("hello from getUserListWithSearch");
-    $.ajax(  '/admin/'+ $scope.user.id+'/users?size='+$scope.userPerPage+ 
+    $.ajax(  '/admin/'+ $scope.user.id+'/users?size='+$scope.userPerPage+
     		'&page='+$scope.currentPage+
     		'&'+$scope.searchType+'='+$scope.searchKeyWord,{ type : 'GET', success: updateListOfUser });
 }
@@ -145,22 +150,22 @@ var getUserListWithSearch = function(){
 
 $scope.prevPage = function(){
 	if($scope.searchType)
-	$.ajax(  '/admin/'+ $scope.user.id+'/users?size='+$scope.userPerPage+ 
+	$.ajax(  '/admin/'+ $scope.user.id+'/users?size='+$scope.userPerPage+
 			'&page='+ ($scope.currentPage - 1)+
 			'&'+$scope.searchType+'='+$scope.searchKeyWord,{ type : 'GET', success: updateListOfUser  });
-	else 
-		$.ajax(  '/admin/'+ $scope.user.id+'/users?size='+$scope.userPerPage+ 
+	else
+		$.ajax(  '/admin/'+ $scope.user.id+'/users?size='+$scope.userPerPage+
 			'&page='+ ($scope.currentPage - 1),{ type : 'GET', success: updateListOfUser  });
 
 }
 
 $scope.nextPage = function(){
 	if($scope.searchType)
-		$.ajax(  '/admin/'+ $scope.user.id+'/users?size='+$scope.userPerPage+ 
+		$.ajax(  '/admin/'+ $scope.user.id+'/users?size='+$scope.userPerPage+
 				'&page='+ ($scope.currentPage + 1)+
 				'&'+$scope.searchType+'='+$scope.searchKeyWord,{ type : 'GET', success: updateListOfUser  });
-		else 
-			$.ajax(  '/admin/'+ $scope.user.id+'/users?size='+$scope.userPerPage+ 
+		else
+			$.ajax(  '/admin/'+ $scope.user.id+'/users?size='+$scope.userPerPage+
 				'&page='+ ($scope.currentPage + 1),{ type : 'GET', success: updateListOfUser  });
 }
 
@@ -168,19 +173,19 @@ $scope.setPage = function()
 {
 	var page = document.getElementById("targetPage").value - 1;
 	if(Number.isInteger(page)&& page<= $scope.totalPage && page>=0)
-		{	
+		{
 			if($scope.searchType)
 			{
 				$scope.currentPage = page;
-				$.ajax(  '/admin/'+ $scope.user.id+'/users?size='+$scope.userPerPage+ 
+				$.ajax(  '/admin/'+ $scope.user.id+'/users?size='+$scope.userPerPage+
 						'&page='+ $scope.currentPage+
 						'&'+$scope.searchType+'='+$scope.searchKeyWord,{ type : 'GET', success: updateListOfUser  });
-			
+
 			}
 			else{
 			$scope.currentPage = page;
 			$.ajax(  '/admin/'+ $scope.user.id+'/users?size='+$scope.userPerPage+ '&page='+$scope.currentPage,{ type : 'GET', success: updateListOfUser  });
-		
+
 			}
 		}
 	else
@@ -195,9 +200,47 @@ $scope.setSize = function(){
 	getUserList();
 }
 
+//--------------------------edit user---------------------------
+
+$scope.editUser = function(user){
+	userService.setEditUser(user);
+	window.location.href = '/#/editUser';
+}
+
+//-------------------------update role---------------------------------
+
+$scope.updateRole = function(id,role){
+	if(role)var isAdmin = true;
+	else var isAdmin = false;
+	$.ajax( {
+			 url : '/admin/'+ $scope.user.id +'/users/'+id+'/isAdmin',
+			 type : 'POST',
+
+			 data : { isAdmin : isAdmin}
+		} );
+
+	}
 
 
+//-----------------------active status---------------------------------
 
+$scope.activeUser = function(id,status){
+	if(status == "enabled")
+	{
+		$.ajax( {
+				 url : '/admin/'+ $scope.user.id +'/users/'+id+'/enable',
+				 type : 'PUT',
+			} );
+	}
+	else
+	{
+		$.ajax( {
+				 url : '/admin/'+ $scope.user.id +'/users/'+id+'/disable',
+				 type : 'PUT',
+			} );
+	}
+
+	}
 
 
 } ] );
@@ -242,7 +285,58 @@ tracker.controller('createUser.Controller', ['$scope', '$resource','userService'
 } ] );
 
 
+tracker.controller('editUser.Controller', ['$scope', 'userService', function( $scope, userService ) {
 
+    var editUser = userService.getEditUser();
+    $scope.user = userService.getUser();
+    	$scope.newUserName = editUser.username;
+    	$scope.newEmailAddress = editUser.email;
+		$scope.newName = editUser.name;
+		$scope.newUserType = editUser.admin;
+
+		if(editUser.phone)$scope.newPhoneNumber = editUser.phone;
+		else $scope.newPhoneNumber = ["0"];
+	
+
+		$scope.PN =
+		{
+				add: function(){
+					$scope.newPhoneNumber.push(" ");
+				},
+
+				del: function(key){
+					$scope.newPhoneNumber.splice(key,1);
+				}
+		}
+		
+
+		$scope.confirmEditUser = function(){
+    	if($scope.newUserType)
+    		var isAdmin = true;
+    	else
+    		var isAdmin = false;
+
+
+      $.ajax( {
+           url : '/admin/'+ $scope.user.id +'/users/' + editUser.id,
+           type : 'POST',
+
+           data : {
+					id:editUser.id,
+					username: editUser.username,
+                    name: $scope.newName,
+                    newPhoneNumber : $scope.newPhoneNumber,
+                    email: editUser.email,
+                    isAdmin : isAdmin
+           },
+           success:function(){
+             window.location.href = '/#/admin'
+           }
+        } );
+    }
+
+
+} ] );
 
 
 

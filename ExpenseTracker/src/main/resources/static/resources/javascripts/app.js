@@ -11,8 +11,8 @@ var app = angular.module('App', [
 //} ) );
 
 app.config(['$routeProvider',
-  function($routeProvider) {    
-	
+  function($routeProvider) {
+
 	$routeProvider.
       when('/', {
         templateUrl: 'resources/views/login.html',
@@ -30,6 +30,10 @@ app.config(['$routeProvider',
       when('/createUser', {
         templateUrl: 'resources/views/createUser.html',
         controller: 'createUser.Controller'
+      }).
+      when('/editUser', {
+        templateUrl: 'resources/views/editUser.html',
+        controller: 'editUser.Controller'
       }).
 
       otherwise({

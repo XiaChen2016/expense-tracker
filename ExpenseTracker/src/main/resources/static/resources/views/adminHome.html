@@ -16,13 +16,15 @@
    </div>
 
 </nav>
+		<p>Search : </p>
 		<div class="row">
 		<div class="col-lg-4">
         <div class="pull left">
         	<div class="input-group">
+					<input type="text" class="form-control" ng-model = "searchKeyWord">
 					<div class="input-group-btn">
 						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-							Search By
+							Search as
 							<span class="caret"></span>
 						</button>
 						<ul class="dropdown-menu">
@@ -32,20 +34,16 @@
 							<li><a ng-click="searchByAdmin()">Admin</a></li>
 							<li><a ng-click="searchByUser()">User</a></li>
 						</ul>
-					</div><!-- /btn-group -->
-					<input type="text" class="form-control" ng-model = "searchKeyWord">
+					</div>
 				</div>
         </div>
         </div>
         </div>
-        
+
 
         <div class="pull right">
           <a>User number per page</a>
-          <select id = userPerPage ng-change = "setSize()" ng-model = "userPerPage">
-            <option value=5>5</option>
-            <option value=10>10</option>
-            <option value=20>20</option>
+          <select ng-change = "setSize()" ng-model = "userPerPage" ng-options = "size for size in sizeList">
           </select>
         </div>
 
@@ -59,6 +57,8 @@
           <th>Email</th>
           <th>Phone Number</th>
           <th>Admin</th>
+          <th>Active Status</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -68,19 +68,21 @@
    	      <td>{{user.id}}</td>
    	      <td>{{user.email}}</td>
    	      <td><p ng-repeat="tel in user.phone">{{tel}} </p></td>
-   	      <td><h6> <span ><input type="checkbox" ng-model="user.admin" ng-click="updateRole(user.userName, user.userType)"></span> </h6></td>
+   	      <td><h6> <span ><input type="checkbox" ng-model="user.admin" ng-click="updateRole(user.id, user.admin)"></span> </h6></td>
+          <td><h6> <span ><input type="checkbox" ng-model="user.status"ng-true-value="'enabled'" ng-false-value="'disabled'" ng-click="activeUser(user.id, user.status)"></span> </h6></td>
+          <td><a ng-click = "editUser(user)">Edit</a><td>
     </tbody>
     <tfoot>
       <td colspan = "6">
       <div class="pull-right">
-            
-       
+
+
           <button class = "btn btn-primary btn-sm" ng-disabled = "responseContent.first" ng-class="{disabled: currentPage == 0}" ng-click="prevPage()">« Prev</button>
-              
-              
+
+
           <a>{{currentPage + 1}}/{{totalPage}}</a>
-              
-           
+
+
                     <div class="col-xs-5">
 				              <div class="input-group">
 					                   <span class="input-group-btn">
@@ -93,7 +95,7 @@
 			              </div>
            <button class = "btn btn-primary btn-sm" ng-disabled = "responseContent.last" ng-class="{disabled: currentPage == totalPage-1}"ng-click="nextPage()">Next »</button>
 
-            
+
       </div>
       </td>
     </tfoot>

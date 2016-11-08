@@ -19,37 +19,44 @@
 
 		      	<tr>
 		      		<td>User Name</td>
-		      		<td><input type="text" class="form-control" ng-model="newUserName"  ></td>
+		      		<td><input type="text" class="form-control" ng-model="newUserName"  disabled="disabled"></td>
 		      	</tr>
 		      	<tr>
 		      		<td>Name</td>
 		      		<td><input type="text" class="form-control" ng-model="newName" ></td>
 		      	</tr>
 		      	<tr>
-		      		<td>Phone Numbers</td>
-		      		<td><input type="text" class="form-control" ng-model="newPhoneNumber" ></td>
+		      		<td><p style="margin-top:-10px;">Phone Numbers&nbsp;</p></td>
+		      		<td>
+              	  <div ng-repeat = "phone in newPhoneNumber track by $index">
+              	  	<div class="input-group">
+                      <input type="text" class="form-control" ng-model="newPhoneNumber[$index]">
+                      <div class="input-group-btn">
+                      <button ng-click="PN.del(key)" class="btn btn-default">delete</button>
+                      </div>
+                    </div>
+                  </div>
+                  <a ng-click="PN.add()">Add Phone Number</a>
+              </td>
+
 		      	</tr>
 		      	<tr>
 		      		<td>Email address</td>
-		      		<td><input type="text" class="form-control" ng-model="newEmailAddress" ></td>
-		      	</tr>
-						<tr>
-		      		<td>Password</td>
-		      		<td><input type="text" class="form-control" ng-model="newPasword" ></td>
+		      		<td><input type="text" class="form-control" ng-model="newEmailAddress" disabled="disabled"></td>
 		      	</tr>
 						<tr>
 						<div class="checkbox">
 					        <label>
 					          <input type="checkbox" ng-model="newUserType">  Admin
 					        </label>
-					      </div>
+					  </div>
 						</tr>
 	      	</table>
 
 
     	</div>
 	<div class="modal-footer">
-        <button type="button" class="btn btn-primary" ng-click="createUser()">Create</button>
+        <button type="button" class="btn btn-primary" ng-click="confirmEditUser()">confirmEditUser</button>
     </div>
   </div>
 </div>
