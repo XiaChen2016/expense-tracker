@@ -59,7 +59,7 @@ tracker.controller('Login.Controller', ['$scope', 'userService', function( $scop
 tracker.controller('adminHome.Controller', ['$scope', '$resource','userService','$filter', function( $scope, $resource, userService,$filter ) {
 	$scope.currentPage = 0;
 	$scope.userPerPage = 10;
-	
+
 	$scope.sizeList = [5,10,20];
 
 
@@ -107,6 +107,7 @@ tracker.controller('adminHome.Controller', ['$scope', '$resource','userService',
 }
 
   getCurrentUser();
+	userService.setEditUser($scope.user);
 
 
 
@@ -296,7 +297,7 @@ tracker.controller('editUser.Controller', ['$scope', 'userService', function( $s
 
 		if(editUser.phone)$scope.newPhoneNumber = editUser.phone;
 		else $scope.newPhoneNumber = ["0"];
-	
+
 
 		$scope.PN =
 		{
@@ -308,7 +309,7 @@ tracker.controller('editUser.Controller', ['$scope', 'userService', function( $s
 					$scope.newPhoneNumber.splice(key,1);
 				}
 		}
-		
+
 
 		$scope.confirmEditUser = function(){
     	if($scope.newUserType)
@@ -340,14 +341,36 @@ tracker.controller('editUser.Controller', ['$scope', 'userService', function( $s
 
 
 
-tracker.controller('userHome.Controller', ['$scope', '$resource', function( $scope, $resource ) {
+tracker.controller('userHome.Controller', ['$scope', 'userService', function( $scope, userService ) {
 
-    $.ajax( {
-       url : '/user',
-       type : 'GET',
-       success: function(response) { $scope.user = response; $scope.$digest();}
+	var getCurrentUser = function(){
+		console.log("name = " +userService.getUser().username )
+		if(userService.getUser().username)
+		{
+			$scope.user = userService.getUser();
+			getUserList();
+		}
+		else
+		{
+		$.ajax(  '/home',{ type : 'GET', success: function( loggedUser, responseHeaders ){
 
-  });
+
+							 $scope.user = loggedUser;
+							 userService.setUser(loggedUser);
+							 console.log("Username: " + userService.getUser().username);
+							 getReceiptList();
+
+		}});
+
+		}
+			}
+
+	var getReceiptList = function(){
+
+}
+
+	getCurrentUser();
+	userService.setEditUser($scope.user);
 
 
 } ] );
