@@ -1,4 +1,3 @@
-
 <nav class="navbar navbar-default" role="navigation">
    <div class=" pull right">
       <button class="navbar-brand"class="btn btn-link navbar-brand" >{{user.username}}</button>
@@ -63,17 +62,17 @@
       </thead>
       <tbody>
    	  <tr ng-repeat=" user in userList">
-   	      <td><h4><b>{{user.username}}</b> </h4></td>
-   	      <td>{{user.name}}</td>
-   	      <td>{{user.id}}</td>
-   	      <td>{{user.email}}</td>
+   	      <td><sub><b style = "font-size:17px">{{user.username}}</b></sub></td>
+   	      <td><sub>{{user.name}}</sub></td>
+   	      <td><sub>{{user.id}}</sub></td>
+   	      <td><sub>{{user.email}}</sub></td>
    	      <td><p ng-repeat="tel in user.phone">{{tel}} </p></td>
    	      <td><h6> <span ><input type="checkbox" ng-model="user.admin" ng-click="updateRole(user.id, user.admin)"></span> </h6></td>
           <td><h6> <span ><input type="checkbox" ng-model="user.status"ng-true-value="'enabled'" ng-false-value="'disabled'" ng-click="activeUser(user.id, user.status)"></span> </h6></td>
-          <td><a ng-click = "editUser(user)">Edit</a><td>
+          <td><sub><a ng-click = "editUser(user)">Edit</a></sub><td>
     </tbody>
     <tfoot>
-      <td colspan = "6">
+      <td colspan = "10">
       <div class="pull-right">
 
 
@@ -82,7 +81,7 @@
 
           <a>{{currentPage + 1}}/{{totalPage}}</a>
 
-
+				
                     <div class="col-xs-5">
 				              <div class="input-group">
 					                   <span class="input-group-btn">
@@ -92,7 +91,8 @@
 					                  </span>
 					                  <input type="text" class="form-control" id = "targetPage">
 				              </div><!-- /input-group -->
-			              </div>
+			        </div>
+			    
            <button class = "btn btn-primary btn-sm" ng-disabled = "responseContent.last" ng-class="{disabled: currentPage == totalPage-1}"ng-click="nextPage()">Next »</button>
 
 

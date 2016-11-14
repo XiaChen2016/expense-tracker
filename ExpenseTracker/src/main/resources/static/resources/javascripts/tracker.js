@@ -215,9 +215,9 @@ $scope.updateRole = function(id,role){
 	else var isAdmin = false;
 	$.ajax( {
 			 url : '/admin/'+ $scope.user.id +'/users/'+id+'/isAdmin',
-			 type : 'POST',
-
-			 data : { isAdmin : isAdmin}
+			 type : 'PUT',
+			 contentType: "application/json; charset=utf-8",
+			 data : ""+ isAdmin
 		} );
 
 	}
