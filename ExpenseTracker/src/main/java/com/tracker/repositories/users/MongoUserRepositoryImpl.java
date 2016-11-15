@@ -17,22 +17,20 @@ public class MongoUserRepositoryImpl implements UpdateableUserRepository {
 		
 	private Update getUpdate(User x, User y) {
 		Update update = new Update();
-		update.set("username", y.getUsername());
-		update.set("email", y.getEmail());
-		update.set("password", y.getPassword());
-		update.set("name", y.getName());
-		update.set("enabled", y.isEnabled());
-		update.set("phone", y.getPhone());
-		update.set("roles", y.getRoles());
-		
+		update.set( "password", y.getPassword() );
+		update.set( "name", y.getName() );
+		update.set( "status", y.getStatus() );
+		update.set( "isAdmin", y.isAdmin() );
+		update.set( "phone", y.getPhone() );
+		update.set( "roles", y.getRoles() );
 		return update;
 	}
 	
 	@Override
 	public void update(User user) {
-		System.out.println("Hello from MongoUserRepositoryImpl : update");
+		System.out.println("Hello from MongoUserRepositoryImpl : update, status: "+ user.getStatus());
 		Query query = new Query();
-		query.addCriteria(Criteria.where("email").is(user.getEmail()));
+		query.addCriteria( Criteria.where("id").is(user.getId()) );
 		User old = mongo.findOne(query,  User.class);		
 		mongo.updateFirst(query, getUpdate(old, user), User.class);
 	}

@@ -21,11 +21,11 @@ public class HomeApi {
 	@RequestMapping( value="/home", method=RequestMethod.GET )
 	@Secured({"ROLE_ADMIN", "ROLE_USER"})
 	public User home(@AuthenticationPrincipal User user) {
+//		if( user.getStatus().equals("disabled")){
+//			return null;
+//		}
+			
 		System.out.println("Redirecting to HOME");
-//		for( Role r : user.getRoles() ){
-//			if( r.getName().equals("ROLE_ADMIN"))
-//				return "redirect:/admin";
-//			}
 		User result =  new User.Builder()
 				.username( user.getUsername() )
 				.email( user.getEmail())
@@ -34,13 +34,13 @@ public class HomeApi {
 				.roles( user.getRoles())
 				.build();
 		
-			return result;
+		return result;
 	}
 	@RequestMapping( value="/logoutSuccess", method=RequestMethod.GET )
 	public String logout( HttpSession session ) {
 		session.invalidate();
 		System.out.println("Clearing session...");
-		return "redirect:/";
+		return "redirect:#/";
 	}
 	
 	@RequestMapping( value="/", method=RequestMethod.GET )

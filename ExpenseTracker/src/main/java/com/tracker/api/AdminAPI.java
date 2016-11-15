@@ -8,11 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.MultiValueMap;
@@ -43,41 +40,36 @@ public class AdminAPI {
 	
 	// Administrator browse all user
 	@RequestMapping( value="/{uid}/users", method=RequestMethod.GET )
-	@Secured({"ROLE_ADMIN"})
 	@ResponseBody
 	public Page<User> getAllUser( @AuthenticationPrincipal User user,
-			@RequestParam(required=false, defaultValue="" ) String name,
-			@RequestParam(required=false, defaultValue="" ) String email,
-			@RequestParam(required=false, defaultValue="" ) String phone,
-			@RequestParam(required=false, defaultValue="" ) String isAdmin,
-			@RequestParam(required=false, defaultValue="0" ) String page,
-			@RequestParam(required=false, defaultValue="10" ) String size ) {
+			@RequestParam( required=false, defaultValue="" ) String name,
+			@RequestParam( required=false, defaultValue="" ) String email,
+			@RequestParam( required=false, defaultValue="" ) String phone,
+			@RequestParam( required=false, defaultValue="" ) String isAdmin,
+			@RequestParam( required=false, defaultValue="0" ) String page,
+			@RequestParam( required=false, defaultValue="10" ) String size ) {
 		System.out.println("Browse users...");
 		Pageable pageable = new PageRequest(  Integer.valueOf( page ), Integer.valueOf( size ) );
 
 		if( name.length() > 0 ) {
 			System.out.println("Browse users by NAME..." +name);
-//			Page<User> result = userService.getUsersByName( name, pageable );
-//			return result;
-
-			Query query = new Query();
-			query.addCriteria(Criteria.where("name").is(name) );
 			Page<User> result = userService.getUsersByName( name, pageable );
 			return result;
 		}
 		if( email.length() > 0 ) {
-			System.out.println("Browse users EMAIL..."+email);
+			System.out.println("Browse users EMAIL..."+ email);
 			Page<User> result = userService.getUsersByEmail( email, pageable );
 			return result;	
 		}
-		if( phone.length() > 0 ) {
-			System.out.println("Browse users PHONE..." + phone );
-			Page<User> result = userService.getUsersByPhone( phone, pageable );
-			return result;
-		}
+//		
+//		if( name.length() > 0 || email.length() > 0 ) {
+//			Page<User> result = userService.getUsersByNameAndEmail(name, email, pageable);
+//			return result;
+//		}
+		
 		if( isAdmin.length() > 0 ) {
 			System.out.println("Browse users isAdmin..." + isAdmin );
-			if( isAdmin.equals("true")){
+			if( isAdmin.equals("true") ){
 				Page<User> result = userService.getUsersByRoles( true, pageable );
 				return result;
 			} else{
@@ -85,6 +77,7 @@ public class AdminAPI {
 				return result;
 			}
 		}
+		
 		Page<User> result = userService.getUsers(pageable);
 		return result;
 	}
@@ -92,7 +85,6 @@ public class AdminAPI {
 	
 	// Administrator create user
 	@RequestMapping( value="/{uid}/users", method=RequestMethod.POST )
-	@Secured({"ROLE_ADMIN"})
 	@ResponseBody
 	public User createUser( @AuthenticationPrincipal User user ,
 						@PathVariable String uid, Model model,
@@ -123,8 +115,137 @@ public class AdminAPI {
 		
 		userService.save(newUser);
 		
-		// User's password is not visible for, so set it null before returning it.
+		// User's password is not visible for admin, so set it null before returning it.
 		newUser.setPassword( null );
 		return newUser;
+	}
+	
+	/* Administrator edit user's profile
+	 * Admin can eidt user by their name, role, and list of phone numbers
+	 *  */
+	
+	@RequestMapping( value="/{uid}/users/{userid}", method=RequestMethod.POST )
+	@ResponseBody
+	public User editUser(	@AuthenticationPrincipal User user ,
+							@PathVariable String uid,
+							@PathVariable String userid, 
+							Model model,
+							@RequestBody MultiValueMap<String, String> userData) {
+		
+		try{
+
+			User userToEdit = userService.findOne(userid);
+			
+			/* Change user's phone numbers */
+			List<String> phoneNumbers = new ArrayList<String>();
+			if( userData.containsKey("newPhoneNumber[]") ) {
+				int length = userData.get("newPhoneNumber[]").size();
+				for( int i=0; i< length ; i++ ) {
+					if( userData.get("newPhoneNumber[]").get(i).length() > 1) {
+
+						phoneNumbers.add( userData.get("newPhoneNumber[]").get(i) );
+					}
+				} 
+				
+				userToEdit.setPhone( phoneNumbers );
+			} 
+			
+			/* Change user's name */
+			if( userData.containsKey("name") ) {
+				String name = userData.get("name").get(0); 
+				userToEdit.setName(name);
+			} 
+			
+			/* Change user's role */
+			String isAdmin = userData.get("isAdmin").get(0);
+			if( isAdmin.equals("true")) {
+				List<Role> roles = Arrays.asList( new Role[] { new Role("ROLE_ADMIN") ,new Role("ROLE_USER") } );
+				userToEdit.setAdmin(true);
+				userToEdit.setRoles(roles);
+			} else {
+				List<Role> roles = Arrays.asList( new Role[] { new Role("ROLE_USER") } );
+				userToEdit.setAdmin(false);
+				userToEdit.setRoles(roles);
+			}
+			
+			userService.save(userToEdit);
+			return userToEdit;
+			
+		} catch( Exception e){
+			System.out.println(e);
+		}
+		return null;
+	}
+	
+	@RequestMapping( value="/{uid}/users/{userid}/isAdmin", method=RequestMethod.PUT )
+	@ResponseBody
+	public User editUserRole(	@AuthenticationPrincipal User user ,
+								@PathVariable String uid,
+								@PathVariable String userid, 
+								Model model,
+								@RequestBody boolean isAdmin ){
+//								@RequestBody MultiValueMap<String, String> userData) {
+		
+		try{
+			
+			User userToEdit = userService.findOne(userid);
+			
+//			String isAdmin = userData.get("isAdmin").get(0);
+			if( isAdmin ) {
+				List<Role> roles = Arrays.asList( new Role[] { new Role("ROLE_ADMIN") ,new Role("ROLE_USER") } );
+				userToEdit.setRoles(roles);
+				userToEdit.setAdmin(true);
+			} else {
+				List<Role> roles = Arrays.asList( new Role[] { new Role("ROLE_USER") } );
+				userToEdit.setAdmin(false);
+				userToEdit.setRoles(roles);
+			}
+			
+			userService.update(userToEdit);
+			return userToEdit;
+			
+		} catch( Exception e ) {
+			System.out.println(e);
+		}
+		
+		return null;
+	}
+	
+	@RequestMapping( value="/{uid}/users/{userid}/enable", method=RequestMethod.PUT )
+	@ResponseBody
+	public User enableUser(	@AuthenticationPrincipal User user ,
+								@PathVariable String uid,
+								@PathVariable String userid, 
+								Model model) {
+		try{
+			
+			User userToEdit = userService.findOne( userid );
+			userToEdit.setStatus( "enabled" );
+			userService.update( userToEdit );
+			return userToEdit;
+			
+		} catch( Exception e ) {
+			System.out.println(e);
+		}
+		return null;
+	}
+	
+	@RequestMapping( value="/{uid}/users/{userid}/disable", method=RequestMethod.PUT )
+	@ResponseBody
+	public User disableUser(	@AuthenticationPrincipal User user ,
+								@PathVariable String uid,
+								@PathVariable String userid, 
+								Model model) {
+		try{
+			
+			User userToEdit = userService.findOne( userid );
+			userToEdit.setStatus( "disabled" );
+			userService.update( userToEdit );
+			return userToEdit;
+			
+		} catch( Exception e ) {
+			System.out.println(e);
+		}
+		return null;
 	}
 }

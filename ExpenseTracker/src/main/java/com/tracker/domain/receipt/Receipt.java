@@ -1,18 +1,18 @@
 package com.tracker.domain.receipt;
 
+import java.util.List;
+
 public class Receipt {
 
 	private String id;
 	private String ownerId;
 	private String time;
 	private String place;
-	private String[] nameList;
-	private double[] singlePriceList;
-	private int[] quantityList;
 	private double total;
 	private String catagoryId;
 	private String[] tags;
 	private String note;
+	private List< Item > list_of_items;
 	
 	public String getId() {
 		return id;
@@ -38,23 +38,11 @@ public class Receipt {
 	public void setPlace(String place) {
 		this.place = place;
 	}
-	public String[] getNameList() {
-		return nameList;
+	public List<Item> getList_of_items() {
+		return list_of_items;
 	}
-	public void setNameList(String[] nameList) {
-		this.nameList = nameList;
-	}
-	public double[] getSinglePriceList() {
-		return singlePriceList;
-	}
-	public void setSinglePriceList(double[] singlePriceList) {
-		this.singlePriceList = singlePriceList;
-	}
-	public int[] getQuantityList() {
-		return quantityList;
-	}
-	public void setQuantityList(int[] quantityList) {
-		this.quantityList = quantityList;
+	public void setList_of_items(List<Item> list_of_items) {
+		this.list_of_items = list_of_items;
 	}
 	public double getTotal() {
 		return total;
