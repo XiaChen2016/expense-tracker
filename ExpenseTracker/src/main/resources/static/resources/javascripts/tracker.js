@@ -4,12 +4,15 @@ tracker.factory('userService',function(){
 
 	var user = {};
 	var editUser = {};
+	var receipt = {};
 
 	return{
 		getUser: function(){return user;},
 		setUser: function(currentUser){user = currentUser;},
 		getEditUser: function(){return editUser;},
-		setEditUser: function(currentUser){editUser = currentUser;}
+		setEditUser: function(currentUser){editUser = currentUser;},
+		getEditReceipt: function(){return receipt;},
+		setEditReceipt: function(r){receipt = r;}
 	};
 }
 
@@ -341,36 +344,226 @@ tracker.controller('editUser.Controller', ['$scope', 'userService', function( $s
 
 
 
-tracker.controller('userHome.Controller', ['$scope', 'userService', function( $scope, userService ) {
+tracker.controller('userHome.Controller', ['$scope', '$resource','userService', function( $scope, $resource, userService ) {
+	$scope.currentPage = 0;
+	$scope.userPerPage = 10;
 
-	var getCurrentUser = function(){
-		console.log("name = " +userService.getUser().username )
-		if(userService.getUser().username)
-		{
-			$scope.user = userService.getUser();
-			getUserList();
-		}
-		else
-		{
+	$scope.sizeList = [5,10,20];
+
+
+  $scope.logout = function(){
+    $.ajax('/logout',{type : 'POST'});
+    window.location.href = '/#/';
+  }
+
+  var updateListOfReceipt = function ( result ) {
+
+    console.log("updateListOfUser");
+    $scope.receiptList = result.content;
+	$scope.totalPage = result.totalPages;
+	$scope.responseContent = result;
+	$scope.currentPage = result.number;
+	$scope.userPerPage = result.size;
+    $scope.$digest();
+  }
+
+  var getCurrentUser = function(){
+	  console.log("name = " +userService.getUser().username )
+	  if(userService.getUser().username)
+	  {
+	    $scope.user = userService.getUser();
+	    getReceiptList();
+	  }
+	  else
+	  {
 		$.ajax(  '/home',{ type : 'GET', success: function( loggedUser, responseHeaders ){
 
 
-							 $scope.user = loggedUser;
-							 userService.setUser(loggedUser);
-							 console.log("Username: " + userService.getUser().username);
-							 getReceiptList();
+	             $scope.user = loggedUser;
+	             userService.setUser(loggedUser);
+	             console.log("Username: " + userService.getUser().username);
+	             getReceiptList();
 
 		}});
 
-		}
-			}
+	  }
+	    }
 
-	var getReceiptList = function(){
+  var getReceiptList = function(){
+    console.log("hello from getUserList!");
+    $.ajax(  '/user/'+ $scope.user.id+'/receipt?size='+$scope.userPerPage+ '&page='+$scope.currentPage,{ type : 'GET', success: updateListOfReceipt  });
+}
+
+  getCurrentUser();
+	userService.setEditUser($scope.user);
+
+
+
+//-----------------------------search--------------------------------
+$scope.searchBy = function(searchKey){
+	if(searchKey == "name")
+		$scope.searchType = "name";
+	if(searchKey == "email")
+		$scope.searchType = "email";
+
+	getUserListWithSearch();
+
+}
+$scope.searchByAdmin = function(){
+
+		$scope.searchType = "isAdmin";
+		$scope.searchKeyWord = "true";
+		  $.ajax(  '/admin/'+ $scope.user.id+'/users?size='+$scope.userPerPage+
+		    		'&page='+$scope.currentPage+
+		    		'&'+$scope.searchType+'=true',{ type : 'GET', success: updateListOfUser });
+
+}
+$scope.searchByUser = function(){
+
+	$scope.searchType = "isAdmin";
+	$scope.searchKeyWord = "false";
+	  $.ajax(  '/admin/'+ $scope.user.id+'/users?size='+$scope.userPerPage+
+	    		'&page='+$scope.currentPage+
+	    		'&'+$scope.searchType+'=false',{ type : 'GET', success: updateListOfUser });
+
+}
+var getUserListWithSearch = function(){
+    console.log("hello from getUserListWithSearch");
+    $.ajax(  '/admin/'+ $scope.user.id+'/users?size='+$scope.userPerPage+
+    		'&page='+$scope.currentPage+
+    		'&'+$scope.searchType+'='+$scope.searchKeyWord,{ type : 'GET', success: updateListOfUser });
+}
+
+
+//----------------------------paging------------------------
+
+$scope.prevPage = function(){
+	if(1 == 0 )
+	$.ajax(  '/admin/'+ $scope.user.id+'/receipt?size='+$scope.userPerPage+
+			'&page='+ ($scope.currentPage - 1)+
+			'&'+$scope.searchType+'='+$scope.searchKeyWord,{ type : 'GET', success: updateListOfUser  });
+	else
+		$.ajax(  '/user/'+ $scope.user.id+'/receipt?size='+$scope.userPerPage+
+			'&page='+ ($scope.currentPage - 1),{ type : 'GET', success: updateListOfReceipt  });
 
 }
 
-	getCurrentUser();
-	userService.setEditUser($scope.user);
+$scope.nextPage = function(){
+	if(1 == 0)
+		$.ajax(  '/admin/'+ $scope.user.id+'/receipt?size='+$scope.userPerPage+
+				'&page='+ ($scope.currentPage + 1)+
+				'&'+$scope.searchType+'='+$scope.searchKeyWord,{ type : 'GET', success: updateListOfUser  });
+		else
+			$.ajax(  '/user/'+ $scope.user.id+'/receipt?size='+$scope.userPerPage+
+				'&page='+ ($scope.currentPage + 1),{ type : 'GET', success: updateListOfReceipt  });
+}
+
+$scope.setPage = function()
+{
+	var page = document.getElementById("targetPage").value - 1;
+	if(Number.isInteger(page)&& page<= $scope.totalPage && page>=0)
+		{
+			if(1 == 0)
+			{
+				$scope.currentPage = page;
+				$.ajax(  '/user/'+ $scope.user.id+'/receipt?size='+$scope.userPerPage+
+						'&page='+ $scope.currentPage+
+						'&'+$scope.searchType+'='+$scope.searchKeyWord,{ type : 'GET', success: updateListOfUser  });
+
+			}
+			else{
+			$scope.currentPage = page;
+			$.ajax(  '/user/'+ $scope.user.id+'/receipt?size='+$scope.userPerPage+ '&page='+$scope.currentPage,{ type : 'GET', success: updateListOfReceipt  });
+
+			}
+		}
+	else
+	alert('Please type in right number', 'ERROR');
+
+}
+
+$scope.setSize = function(){
+	if(1 == 0)
+	getUserListWithSearch();
+	else
+	getReceiptList();
+}
+
+//--------------------------edit/view receipt---------------------------
+
+$scope.viewDetail = function(r){
+	userService.setEditReceipt(r);
+	window.location.href = '/#/editReceipt';
+}
+
+} ] );
+
+
+tracker.controller('editReceipt.Controller', ['$scope', 'userService', function( $scope, userService ) {
+
+    var receipt = userService.getEditReceipt();
+    	$scope.user = userService.getUser();
+    	$scope.receiptID = receipt.id;
+    	$scope.receiptTime = receipt.time;
+		$scope.receiptLocation = receipt.place;
+		$scope.receiptCategory = receipt.categoryId;
+
+		if(receipt.list_of_items)$scope.items = receipt.list_of_items;
+		else $scope.items = [" "];
+		
+		if(receipt.tags)$scope.tags = receipt.tags;
+		else $scope.tags = [" "];
+
+
+		$scope.editItem =
+		{
+				add: function(){
+					$scope.items.push(" ");
+				},
+
+				del: function(key){
+					$scope.items.splice(key,1);
+				}
+		}
+		
+		$scope.tag =
+		{
+				add: function(){
+					$scope.tags.push(" ");
+				},
+
+				del: function(key){
+					$scope.tags.splice(key,1);
+				}
+		}
+
+
+		$scope.confirmEditUser = function(){
+    	if($scope.newUserType)
+    		var isAdmin = true;
+    	else
+    		var isAdmin = false;
+
+
+      $.ajax( {
+           url : '/admin/'+ $scope.user.id +'/users/' + editUser.id,
+           type : 'POST',
+
+           data : {
+					id:editUser.id,
+					username: editUser.username,
+                    name: $scope.newName,
+                    newPhoneNumber : $scope.newPhoneNumber,
+                    email: editUser.email,
+                    isAdmin : isAdmin
+           },
+           success:function(){
+             window.location.href = '/#/admin'
+           }
+        } );
+    }
+
+
 
 
 } ] );

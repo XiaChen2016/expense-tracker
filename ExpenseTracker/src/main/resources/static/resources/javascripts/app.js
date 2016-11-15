@@ -35,6 +35,10 @@ app.config(['$routeProvider',
         templateUrl: 'resources/views/editUser.html',
         controller: 'editUser.Controller'
       }).
+      when('/editReceipt', {
+        templateUrl: 'resources/views/editReceipt.html',
+        controller: 'editReceipt.Controller'
+      }).
 
       otherwise({
         redirectTo: '/'

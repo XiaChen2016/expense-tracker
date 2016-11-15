@@ -1,0 +1,80 @@
+<nav class="navbar navbar-default" role="navigation">
+   <div class="navbar-header">
+      <a class="navbar-brand">{{user.username}}</a>
+   </div>
+
+   <div class="navbar-header">
+      <a class="navbar-brand" ng-click = "logout()">logout</a>
+   </div>
+</nav>
+
+<div  class="modal-dialog" role="dialog">
+    <div class="modal-content">
+    	<div class="modal-header">
+	        <h4 class="modal-title">Receipt Detail</h4>
+    	</div>
+
+    	<div class="modal-body">
+	      	<table class="profileTable" style="border-collapse:separate; border-spacing:0px 10px;">
+
+		      	<tr>
+		      		<td>ID </td>
+		      		<td><input type="text" class="form-control" ng-model="receiptID"  disabled="disabled"></td>
+		      	</tr>
+		      	<tr>
+		      		<td>Time</td>
+		      		<td><input type="text" class="form-control" ng-model="receiptTime" ></td>
+		      	</tr>
+
+            <tr>
+		      		<td>Location</td>
+		      		<td><input type="text" class="form-control" ng-model="receiptLocation" ></td>
+		      	</tr>
+            <tr>
+		      		<td>Category</td>
+		      		<td><input type="text" class="form-control" ng-model="receiptCategory" ></td>
+		      	</tr>
+
+            <tr>
+		      		<td><p style="margin-top:-10px;">Shopping List&nbsp;</p></td>
+
+					<td>
+					<h5 style = "word-spacing: 40px;">Name Quantity Price</h5>
+              	  <div ng-repeat = "item in items track by $index">
+              	  	<div class="input-group">
+                      <input type="text"  ng-model="items[$index].name" size = 10 >
+                      <input type="text"  ng-model="items[$index].quantity"size = 10  >
+                      <input type="text"  ng-model="items[$index].price"size = 10 >
+                      
+                      <button ng-click="editItem.del(key)" class="btn btn-default btn-xs">delete</button>
+                    
+                    </div>
+                  </div>
+                  <a ng-click="editItem.add()">Add Item</a>
+              		</td>
+
+		      	</tr>
+            <tr>
+		      		<td><p style="margin-top:-10px;">Tags &nbsp;</p></td>
+		      		<td>
+              	  <div ng-repeat = "tag in tags track by $index">
+              	  	<div class="input-group">
+                      <input type="text" class="form-control" ng-model="tags[$index]">
+                      <div class="input-group-btn">
+                      <button ng-click="tag.del(key)" class="btn btn-default">delete</button>
+                      </div>
+                    </div>
+                  </div>
+                  <a ng-click="tag.add()">Add Tag</a>
+              </td>
+
+		      	</tr>
+	      	</table>
+
+
+    	</div>
+	<div class="modal-footer">
+        <button type="button" class="btn btn-primary" ng-click="confirmEditUser()">confirmEditUser</button>
+    </div>
+  </div>
+</div>
