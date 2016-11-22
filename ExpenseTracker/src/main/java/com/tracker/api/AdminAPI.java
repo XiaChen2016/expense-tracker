@@ -51,21 +51,10 @@ public class AdminAPI {
 		System.out.println("Browse users...");
 		Pageable pageable = new PageRequest(  Integer.valueOf( page ), Integer.valueOf( size ) );
 
-		if( name.length() > 0 ) {
-			System.out.println("Browse users by NAME..." +name);
-			Page<User> result = userService.getUsersByName( name, pageable );
+		if( name.length() > 0 || email.length() > 0 ) {
+			Page<User> result = userService.getUsersByNameAndEmail( name, email, pageable);
 			return result;
 		}
-		if( email.length() > 0 ) {
-			System.out.println("Browse users EMAIL..."+ email);
-			Page<User> result = userService.getUsersByEmail( email, pageable );
-			return result;	
-		}
-//		
-//		if( name.length() > 0 || email.length() > 0 ) {
-//			Page<User> result = userService.getUsersByNameAndEmail(name, email, pageable);
-//			return result;
-//		}
 		
 		if( isAdmin.length() > 0 ) {
 			System.out.println("Browse users isAdmin..." + isAdmin );
@@ -123,7 +112,6 @@ public class AdminAPI {
 	/* Administrator edit user's profile
 	 * Admin can eidt user by their name, role, and list of phone numbers
 	 *  */
-	
 	@RequestMapping( value="/{uid}/users/{userid}", method=RequestMethod.POST )
 	@ResponseBody
 	public User editUser(	@AuthenticationPrincipal User user ,

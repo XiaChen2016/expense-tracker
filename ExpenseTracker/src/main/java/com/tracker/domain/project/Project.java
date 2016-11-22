@@ -1,6 +1,6 @@
-package com.tracker.domain.catagory;
+package com.tracker.domain.project;
 
-public class Catagory {
+public class Project {
 
 	private String id;
 	private String ownerId;
