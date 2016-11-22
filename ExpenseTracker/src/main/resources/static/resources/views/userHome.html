@@ -9,7 +9,7 @@
       <ul class="nav navbar-nav">
          <!-- <li><img ng-src="/photos/{{user.avatarIamage}}" class="img-circle" style = "max-width: 50px"></li> -->
          <li><a href="/#/editUser">Edit my profile</a></li>
-         <li><a href="/#/addReceipt">Add receipt</a></li>
+         <li><a href="/#/createReceipt">Add receipt</a></li>
          <li><a href="/#/browseMyReceipt">View my receipt</a></li>
          <li><a href="/#/manageMyCategory">Manage my category</a></li>
       </ul>
@@ -27,19 +27,21 @@
 <table class="table" >
   <thead>
   <tr>
-<th>ID of receipt</th>
+<!-- <th>ID of receipt</th> -->
 <th>Time</th>
 <th>Location</th>
+<th>Project</th>
 <th>Category</th>
 <th>Total Account</th>
 </tr>
 </thead>
 <tbody>
 <tr ng-repeat=" receipt in receiptList">
-    <td><h4><b>{{receipt.id}}</b> </h4></td>
-    <td>{{receipt.time}}</td>
+    <!-- <td><h4><b>{{receipt.id}}</b> </h4></td> -->
+    <td>{{receipt.time | date:'MM-dd-yyyy HH:mm:ss'}}</td>
     <td>{{receipt.place}}</td>
-    <td>{{receipt.category}}</td>
+    <td>{{receipt.project}}</td>
+    <td><p ng-repeat=" c in receipt.category">{{c}}</p></td>
     <td>{{receipt.total}}</td>
     <td><a ng-click = "viewDetail(receipt)">Detail</a><td>
 </tbody>

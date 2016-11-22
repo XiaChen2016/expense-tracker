@@ -39,6 +39,10 @@ app.config(['$routeProvider',
         templateUrl: 'resources/views/editReceipt.html',
         controller: 'editReceipt.Controller'
       }).
+      when('/createReceipt', {
+        templateUrl: 'resources/views/createReceipt.html',
+        controller: 'createReceipt.Controller'
+      }).
 
       otherwise({
         redirectTo: '/'

@@ -504,13 +504,15 @@ tracker.controller('editReceipt.Controller', ['$scope', 'userService', function(
     var receipt = userService.getEditReceipt();
     	$scope.user = userService.getUser();
     	$scope.receiptID = receipt.id;
-    	$scope.receiptTime = receipt.time;
+			var date = new Date(receipt.time);
+    	$scope.receiptTime = date;
 		$scope.receiptLocation = receipt.place;
-		$scope.receiptCategory = receipt.categoryId;
+		$scope.receiptCategory = receipt.project;
+		$scope.receiptNote = receipt.note;
 
 		if(receipt.list_of_items)$scope.items = receipt.list_of_items;
-		else $scope.items = [" "];
-		
+		else $scope.items = [{name:" ",quantity:" ",price:" "}];
+
 		if(receipt.tags)$scope.tags = receipt.tags;
 		else $scope.tags = [" "];
 
@@ -518,14 +520,14 @@ tracker.controller('editReceipt.Controller', ['$scope', 'userService', function(
 		$scope.editItem =
 		{
 				add: function(){
-					$scope.items.push(" ");
+					$scope.items.push({name:" ",quantity:" ",price:" "});
 				},
 
 				del: function(key){
 					$scope.items.splice(key,1);
 				}
 		}
-		
+
 		$scope.tag =
 		{
 				add: function(){
@@ -538,29 +540,143 @@ tracker.controller('editReceipt.Controller', ['$scope', 'userService', function(
 		}
 
 
+		Number.prototype.padLeft = function(base,chr){
+			   var  len = (String(base || 10).length - String(this).length)+1;
+			   return len > 0? new Array(len).join(chr || '0')+this : this;
+			}
+		
+		
 		$scope.confirmEditUser = function(){
-    	if($scope.newUserType)
-    		var isAdmin = true;
-    	else
-    		var isAdmin = false;
+			var d = $scope.receiptTime;
+			var dformat = [ (d.getMonth()+1).padLeft(),
+		                    d.getDate().padLeft(),
+		                    d.getFullYear()].join('-')+
+		                    ' ' +
+		                  [ d.getHours().padLeft(),
+		                    d.getMinutes().padLeft(),
+		                    d.getSeconds().padLeft()].join(':');
+			var total = 0;
+			var x;
+			for(x in $scope.items){
+				total += $scope.items[x].quantity * $scope.items[x].price;
+			}
+
+
+   $.ajax( {
+        url : '/user/'+ $scope.user.id +'/receipt/'+$scope.receiptID,
+        type : 'POST',
+
+        data : {
+						 				time:dformat,
+						 				place: $scope.receiptLocation,
+                 project: $scope.receiptCategory,
+                 note : $scope.receiptNote,
+                 category: $scope.tags,
+                 list_of_items : $scope.items,
+                 total : total
+        },
+        success:function(){
+          window.location.href = '/#/user'
+        }
+     } );
+ }
+
+
+		$scope.cancel = function(){
+    	window.location.href = '/#/user'
+    }
+
+
+
+
+} ] );
+
+
+
+
+
+tracker.controller('createReceipt.Controller', ['$scope', 'userService', function( $scope, userService ) {
+
+
+    	$scope.user = userService.getUser();
+
+			var date = new Date();
+    $scope.receiptTime = date;
+		$scope.receiptLocation = " ";
+		$scope.receiptCategory = " ";
+		$scope.receiptNote = " ";
+
+ 		$scope.items = [{name:" ",quantity:" ",price:" "}];
+
+		$scope.tags = [" "];
+
+
+		$scope.editItem =
+		{
+				add: function(){
+					$scope.items.push({name:" ",quantity:" ",price:" "});
+				},
+
+				del: function(key){
+					$scope.items.splice(key,1);
+				}
+		}
+
+		$scope.tag =
+		{
+				add: function(){
+					$scope.tags.push(" ");
+				},
+
+				del: function(key){
+					$scope.tags.splice(key,1);
+				}
+		}
+
+Number.prototype.padLeft = function(base,chr){
+			   var  len = (String(base || 10).length - String(this).length)+1;
+			   return len > 0? new Array(len).join(chr || '0')+this : this;
+			}
+		
+		
+		$scope.confirmEditUser = function(){
+			var d = $scope.receiptTime;
+			var dformat = [ (d.getMonth()+1).padLeft(),
+		                    d.getDate().padLeft(),
+		                    d.getFullYear()].join('-')+
+		                    ' ' +
+		                  [ d.getHours().padLeft(),
+		                    d.getMinutes().padLeft(),
+		                    d.getSeconds().padLeft()].join(':');
+			var total = 0;
+			var x;
+			for(x in $scope.items){
+				total += $scope.items[x].quantity * $scope.items[x].price;
+			}
 
 
       $.ajax( {
-           url : '/admin/'+ $scope.user.id +'/users/' + editUser.id,
+           url : '/user/'+ $scope.user.id +'/receipt',
            type : 'POST',
 
            data : {
-					id:editUser.id,
-					username: editUser.username,
-                    name: $scope.newName,
-                    newPhoneNumber : $scope.newPhoneNumber,
-                    email: editUser.email,
-                    isAdmin : isAdmin
+						 				time:dformat,
+						 				place: $scope.receiptLocation,
+                    project: $scope.receiptCategory,
+                    note : $scope.receiptNote,
+                    category: $scope.tags,
+                    list_of_items : $scope.items,
+                    total : total
            },
            success:function(){
-             window.location.href = '/#/admin'
+             window.location.href = '/#/user'
            }
         } );
+    }
+
+
+		$scope.cancel = function(){
+    	window.location.href = '/#/user'
     }
 
 
