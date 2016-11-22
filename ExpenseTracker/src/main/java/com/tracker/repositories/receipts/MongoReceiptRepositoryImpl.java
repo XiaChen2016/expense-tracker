@@ -1,7 +1,5 @@
 package com.tracker.repositories.receipts;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -17,12 +15,12 @@ public class MongoReceiptRepositoryImpl implements UpdateableReceiptRepository {
 	
 	private Update getUpdate( Receipt x, Receipt y){
 		Update update = new Update();
-		update.set( "catagoryId", y.getCatagoryId() );
+		update.set( "projectId", y.getProjectId() );
 		update.set( "note",  y.getNote() );
 		update.set( "total",  y.getTotal() );
 		update.set( "place",  y.getPlace() );
 		update.set( "list_of_items",  y.getList_of_items() );
-		update.set( "tags",  y.getTags() );
+		update.set( "category",  y.getCategory() );
 		update.set( "time",  y.getTime() );
 		return update;
 	}

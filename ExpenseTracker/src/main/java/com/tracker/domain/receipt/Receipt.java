@@ -1,16 +1,17 @@
 package com.tracker.domain.receipt;
 
+import java.util.Date;
 import java.util.List;
 
 public class Receipt {
 
 	private String id;
 	private String ownerId;
-	private String time;
+	private Date time;
 	private String place;
 	private double total;
-	private String catagoryId;
-	private String[] tags;
+	private String projectId;
+	private String[] category;
 	private String note;
 	private List< Item > list_of_items;
 	
@@ -26,10 +27,10 @@ public class Receipt {
 	public void setOwnerId(String ownerId) {
 		this.ownerId = ownerId;
 	}
-	public String getTime() {
+	public Date getTime() {
 		return time;
 	}
-	public void setTime(String time) {
+	public void setTime(Date time) {
 		this.time = time;
 	}
 	public String getPlace() {
@@ -50,17 +51,17 @@ public class Receipt {
 	public void setTotal(double total) {
 		this.total = total;
 	}
-	public String getCatagoryId() {
-		return catagoryId;
+	public String getProjectId() {
+		return projectId;
 	}
-	public void setCatagoryId(String catagoryId) {
-		this.catagoryId = catagoryId;
+	public void setProjectId(String projectId) {
+		this.projectId = projectId;
 	}
-	public String[] getTags() {
-		return tags;
+	public String[] getCategory() {
+		return category;
 	}
-	public void setTags(String[] tags) {
-		this.tags = tags;
+	public void setCategory(String[] category) {
+		this.category = category;
 	}
 	public String getNote() {
 		return note;

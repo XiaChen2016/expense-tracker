@@ -17,8 +17,8 @@ import com.tracker.services.UsersService;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled=true, prePostEnabled=true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter  {
-	 @Autowired
-	 BCryptPasswordEncoder bcryptEncoder;
+	@Autowired
+	BCryptPasswordEncoder bcryptEncoder;
 	 
 	@Autowired
 	private UsersService detailsService;

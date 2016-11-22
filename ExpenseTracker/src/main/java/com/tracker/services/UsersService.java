@@ -52,8 +52,8 @@ public class UsersService implements UserDetailsService {
 	public Page<User> getUsersByNameAndEmail( String name, String email, Pageable pageable ) {
 		System.out.println("Search by name or email.");
 //		return userRepository.findAll( where(getUsersByEmail(email, pageable)).and(getUsersByName(name, pageable)));
-//		return  userRepository.findByEmailOrNameLike(  email, name, pageable );
-		return null;
+		return  userRepository.findByNameContainingAndEmailContaining(  name, email, pageable );
+//		return null;
 	}
 	
 	public Page<User> getUsersByEmail( String email, Pageable pageable ) {
