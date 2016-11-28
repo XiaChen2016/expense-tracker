@@ -7,9 +7,10 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import com.tracker.domain.users.User;
 
 public interface MongoUserRepository extends UpdateableUserRepository,
-												PagingAndSortingRepository< User,String > {
+											PagingAndSortingRepository< User,String > {
 	public User findByUsername(String username);
 	public User findByEmail(String username);
+
 	public Page<User> findAll( Pageable pageable);
 	public Page<User> findByNameLike( String name, Pageable pageable );
 	public Page<User> findByEmailLike( String email, Pageable pageable );

@@ -90,12 +90,19 @@ public class UsersService implements UserDetailsService {
 		return true;
 	}
 	
+//	public void delete( String uid  ){
+//		userRepository.delete(uid);
+//	}
+	
 	@PostConstruct
 	private void initDatabase() {
+//		userRepository.deleteAll();
 		
 		//if(true) return;
 		List<Role> roles = Arrays.asList( new Role[] { new Role("ROLE_ADMIN") ,new Role("ROLE_USER") } );
 		System.out.println("Creating user called \"bilbo\"~");
+		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+		String hashedPassword = passwordEncoder.encode("123");
 		User user = new User.Builder()
 					.username("bilbo")
 					.password( "123" )
@@ -107,6 +114,20 @@ public class UsersService implements UserDetailsService {
 					.build();
 	//	save(user);
 	
+		roles =  Arrays.asList( new Role[] { new Role("ROLE_USER") });
+		 user = new User.Builder()
+					.username("user1")
+					.password( "123" )
+					.email("user@uwlax.edu")
+					.id("1")
+					.status("enabled")
+					.isAdmin(false)
+					.roles( roles)
+					.build();
+	//		save(user);
+	//	System.out.println( "findOne" + loadUserByUsername("bilbo") );
+	//	if( loadUserByUsername("bilbo") != null )
+	//		delete( loadUserByUsername("bilbo").getId());
 		User temp;
 		System.out.println( "Here are all users in the database: ");
 		List<User> tempList = (List<User>) userRepository.findAll();
