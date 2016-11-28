@@ -1,0 +1,55 @@
+<nav class="navbar navbar-default" role="navigation">
+   <div class="navbar-header">
+      <a class="navbar-brand">{{user.username}}</a>
+   </div>
+
+   <div class="navbar-header">
+      <a class="navbar-brand" ng-click = "logout()">logout</a>
+   </div>
+</nav>
+
+<div  class="modal-dialog" role="dialog">
+    <div class="modal-content">
+    	<div class="modal-header">
+	        <h4 class="modal-title">Personal Information</h4>
+    	</div>
+
+    	<div class="modal-body">
+	      	<table class="profileTable" style="border-collapse:separate; border-spacing:0px 10px;">
+
+		      	<tr>
+		      		<td>User Name</td>
+		      		<td><input type="text" class="form-control" ng-model="newUserName"  ></td>
+		      	</tr>
+		      	<tr>
+		      		<td>Name</td>
+		      		<td><input type="text" class="form-control" ng-model="newName" ></td>
+		      	</tr>
+		      	<tr>
+		      		<td>Phone Numbers</td>
+		      		<td><input type="text" class="form-control" ng-model="newPhoneNumber" ></td>
+		      	</tr>
+		      	<tr>
+		      		<td>Email address</td>
+		      		<td><input type="text" class="form-control" ng-model="newEmailAddress" ></td>
+		      	</tr>
+						<tr>
+		      		<td>Password</td>
+		      		<td><input type="text" class="form-control" ng-model="newPasword" ></td>
+		      	</tr>
+						<tr>
+						<div class="checkbox">
+					        <label>
+					          <input type="checkbox" ng-model="newUserType">  Admin
+					        </label>
+					      </div>
+						</tr>
+	      	</table>
+
+
+    	</div>
+	<div class="modal-footer">
+        <button type="button" class="btn btn-primary" ng-click="createUser()">Create</button>
+    </div>
+  </div>
+</div>

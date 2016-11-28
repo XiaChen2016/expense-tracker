@@ -1,0 +1,7 @@
+1479751423454	Rename package 'com.tracker.domain.catagory'
+1479751439116	Rename type 'Catagory'
+1479751650858	Rename package 'com.tracker.domain.tag'
+1479751664563	Rename type 'Tag'
+1479752515293	Rename field 'tags'
+1479752530908	Rename field 'catagoryId'
+1479771325214	Delete element

@@ -1,0 +1,13 @@
+package com.tracker.repositories.Projects;
+
+import java.util.List;
+import com.tracker.domain.project.Project;
+
+
+public interface MongoProjectRepository extends UpdateableProjectRepository {
+
+
+	public List<Project> findByOwnerId( String id );
+	public Project findByOwnerIdAndName( String id, String name );
+	public void save(Project project);
+}

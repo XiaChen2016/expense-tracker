@@ -1,0 +1,14 @@
+package com.tracker.repositories.Projects;
+
+import java.util.List;
+
+import org.springframework.data.repository.PagingAndSortingRepository;
+
+import com.tracker.domain.project.Project;
+
+
+public interface MongoProjectRepository extends UpdateableProjectRepository ,
+												PagingAndSortingRepository< Project,String > {
+
+	public List<Project> findByOwnerId( String id );
+}

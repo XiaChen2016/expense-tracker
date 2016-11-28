@@ -1,0 +1,5 @@
+package com.tracker.domain.category;
+
+public class Tag {
+
+}

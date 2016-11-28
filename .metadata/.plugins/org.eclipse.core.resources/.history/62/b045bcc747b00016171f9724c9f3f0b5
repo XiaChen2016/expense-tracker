@@ -1,0 +1,16 @@
+package com.tracker.services;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.tracker.repositories.Projects.MongoProjectRepository;
+
+@Service
+public class ProjectsService {
+
+	@Autowired
+	private MongoProjectRepository projectRepository;
+	
+	
+	
+}

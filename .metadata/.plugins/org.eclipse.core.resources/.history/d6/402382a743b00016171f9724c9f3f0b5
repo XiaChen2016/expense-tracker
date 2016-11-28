@@ -1,0 +1,5 @@
+package com.tracker.repositories.Projects;
+
+public class UpdateableProjectRepository {
+
+}

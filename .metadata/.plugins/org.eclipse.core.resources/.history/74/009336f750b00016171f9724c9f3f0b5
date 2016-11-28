@@ -1,0 +1,73 @@
+<nav class="navbar navbar-default" role="navigation">
+   <div class=" pull right">
+      <button class="navbar-brand"class="btn btn-link navbar-brand" >{{user.username}}</button>
+
+      <a  class=" navbar-brand" href="/logout" >logout</a>
+
+   </div>
+   <div class = "pull left">
+      <ul class="nav navbar-nav">
+         <!-- <li><img ng-src="/photos/{{user.avatarIamage}}" class="img-circle" style = "max-width: 50px"></li> -->
+         <li><a href="/#/editUser">Edit my profile</a></li>
+         <li><a href="/#/createReceipt">Add receipt</a></li>
+         <li><a href="/#/browseMyReceipt">View my receipt</a></li>
+         <li><a href="/#/manageMyCategory">Manage my category</a></li>
+      </ul>
+   </div>
+
+</nav>
+
+
+<div class="pull right">
+          <a>User number per page</a>
+          <select ng-change = "setSize()" ng-model = "userPerPage" ng-options = "size for size in sizeList">
+          </select>
+        </div>
+
+<table class="table" >
+  <thead>
+  <tr>
+<!-- <th>ID of receipt</th> -->
+<th>Time</th>
+<th>Location</th>
+<th>Project</th>
+<th>Total Account</th>
+</tr>
+</thead>
+<tbody>
+<tr ng-repeat=" receipt in receiptList">
+    <!-- <td><h4><b>{{receipt.id}}</b> </h4></td> -->
+    <td>{{receipt.time | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+    <td>{{receipt.place}}</td>
+    <td>{{receipt.category}}</td>
+    <td>{{receipt.total}}</td>
+    <td><a ng-click = "viewDetail(receipt)">Detail</a><td>
+</tbody>
+<tfoot>
+<td colspan = "6">
+<div class="pull-right">
+
+
+    <button class = "btn btn-primary btn-sm" ng-disabled = "responseContent.first" ng-class="{disabled: currentPage == 0}" ng-click="prevPage()">« Prev</button>
+
+
+    <a>{{currentPage + 1}}/{{totalPage}}</a>
+
+
+              <div class="col-xs-5">
+                <div class="input-group">
+                       <span class="input-group-btn">
+                               <button class="btn btn-default" type="button" ng-click = "setPage()">
+                                        Go to
+                              </button>
+                      </span>
+                      <input type="text" class="form-control" id = "targetPage">
+                </div><!-- /input-group -->
+              </div>
+     <button class = "btn btn-primary btn-sm" ng-disabled = "responseContent.last" ng-class="{disabled: currentPage == totalPage-1}"ng-click="nextPage()">Next »</button>
+
+
+</div>
+</td>
+</tfoot>
+</table>

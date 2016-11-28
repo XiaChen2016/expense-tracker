@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aop-reference-model>
+<aop-project name="Calculator"/>
+<aop-project name="form_login"/>
+<aop-project name="digest_auth"/>
+<aop-project name="Tasker"/>
+<aop-project name="Tweeger"/>
+<aop-project name="task_list"/>
+<aop-project name="ExpenseTracker"/>
+</aop-reference-model>
