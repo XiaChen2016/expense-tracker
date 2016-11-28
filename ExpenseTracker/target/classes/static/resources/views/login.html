@@ -1,0 +1,35 @@
+
+<div class="container">
+      <div class="wrapper">
+			<div class="content">
+				<div id="form_wrapper" class="form_wrapper">
+					<form class="login active">
+						<h3>Login</h3>
+            <span class="error">Incorrect username or password. Please try again.</span>
+						<div>
+							<label>Username:</label>
+							<input type="text" placeholder="username" ng-model="username" >
+						</div>
+						<div>
+							<label>Password: <a href="forgot_password.html" rel="forgot_password" class="forgot linkform">Forgot your password?</a></label>
+							<input type="password" placeholder="password" ng-model="password" >
+						</div>
+						<div class="bottom">
+							<input type="submit" value="Login" ng-click="login()"></input>
+							<a href="register.html" rel="register" class="linkform">You don't have an account yet? Register here</a>
+							<div class="clear"></div>
+						</div>
+					</form>
+				</div>
+				<div class="clear"></div>
+			</div>
+    </div>
+
+</div>
+    <script>
+      $(document).ready( function() {
+         if( window.location.href.indexOf('error=yes') < 0 ) {
+            $('#warning').hide();
+         }
+      } );
+    </script>

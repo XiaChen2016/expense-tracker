@@ -1,0 +1,14 @@
+/Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/main/java/com/tracker/SecurityConfiguration.java
+/Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/main/java/com/tracker/repositories/users/MongoUserRepository.java
+/Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/main/java/com/tracker/domain/catagory/Catagory.java
+/Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/main/java/com/tracker/domain/receipt/Receipt.java
+/Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/main/java/com/tracker/domain/users/Role.java
+/Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/main/java/com/tracker/domain/users/User.java
+/Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/main/java/com/tracker/api/AdminAPI.java
+/Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/main/java/com/tracker/domain/tag/Tag.java
+/Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/main/java/com/tracker/services/UsersService.java
+/Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/main/java/com/tracker/repositories/users/MongoUserRepositoryImpl.java
+/Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/main/java/com/tracker/ExpenseTrackerApplication.java
+/Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/main/java/com/tracker/filters/CsrfTokenFilter.java
+/Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/main/java/com/tracker/repositories/users/UpdateableUserRepository.java
+/Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/main/java/com/tracker/api/HomeApi.java
