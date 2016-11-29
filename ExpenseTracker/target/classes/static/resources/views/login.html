@@ -5,8 +5,8 @@
 				<div id="form_wrapper" class="form_wrapper">
 					<form class="login active">
 						<h3>Login</h3>
-            <span class="error">Incorrect username or password. Please try again.</span>
-						<div>
+<!--             <span class="error">Incorrect username or password. Please try again.</span>
+ -->						<div>
 							<label>Username:</label>
 							<input type="text" placeholder="username" ng-model="username" >
 						</div>
@@ -26,10 +26,4 @@
     </div>
 
 </div>
-    <script>
-      $(document).ready( function() {
-         if( window.location.href.indexOf('error=yes') < 0 ) {
-            $('#warning').hide();
-         }
-      } );
-    </script>
+

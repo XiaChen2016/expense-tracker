@@ -31,7 +31,7 @@
 		      		<td><input type="text" class="form-control" ng-model="receiptLocation" ></td>
 		      	</tr>
             <tr>
-		      		<td>Category</td>
+		      		<td>Project</td>
 		      		<td><input type="text" class="form-control" ng-model="receiptCategory" ></td>
 		      	</tr>
 
@@ -55,8 +55,8 @@
 
 		      	</tr>
             <tr>
-		      		<td><p style="margin-top:-10px;">Tags &nbsp;</p></td>
-		      		<td>
+		      		<td><p style="margin-top:-10px;">Category &nbsp;</p></td>
+		      		<!-- <td>
               	  <div ng-repeat = "tag in tags track by $index">
               	  	<div class="input-group">
                       <input type="text" class="form-control" ng-model="tags[$index]">
@@ -66,7 +66,8 @@
                     </div>
                   </div>
                   <a ng-click="tag.add()">Add Tag</a>
-              </td>
+              </td> -->
+              <tags-input ng-model="tags"></tags-input>
 
 		      	</tr>
             <tr>

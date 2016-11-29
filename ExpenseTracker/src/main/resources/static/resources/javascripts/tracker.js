@@ -5,6 +5,7 @@ tracker.factory('userService',function(){
 	var user = {};
 	var editUser = {};
 	var receipt = {};
+	var searchKeyWord = "blank";
 
 	return{
 		getUser: function(){return user;},
@@ -12,7 +13,9 @@ tracker.factory('userService',function(){
 		getEditUser: function(){return editUser;},
 		setEditUser: function(currentUser){editUser = currentUser;},
 		getEditReceipt: function(){return receipt;},
-		setEditReceipt: function(r){receipt = r;}
+		setEditReceipt: function(r){receipt = r;},
+		getSearchKey: function(){return searchKeyWord;},
+		setSearchKey: function(key){searchKeyWord = key;}
 	};
 }
 
@@ -292,7 +295,7 @@ tracker.controller('createUser.Controller', ['$scope', '$resource','userService'
 tracker.controller('editUser.Controller', ['$scope', 'userService', function( $scope, userService ) {
 
     var editUser = userService.getEditUser();
-    $scope.user = userService.getUser();
+    	$scope.user = userService.getUser();
     	$scope.newUserName = editUser.username;
     	$scope.newEmailAddress = editUser.email;
 		$scope.newName = editUser.name;
@@ -401,47 +404,35 @@ tracker.controller('userHome.Controller', ['$scope', '$resource','userService', 
 
 //-----------------------------search--------------------------------
 $scope.searchBy = function(searchKey){
-	if(searchKey == "name")
-		$scope.searchType = "name";
-	if(searchKey == "email")
-		$scope.searchType = "email";
+	var url = "";
+	if($scope.receiptLocation)
+		url = url + "&location=" + $scope.receiptLocation;
+	if($scope.receiptCategory)
+		url = url + "&project=" = $scope.receiptCategory;
+	if($scope.receiptTag)
+		url = url + "&tag=" = $scope.receiptTag;
+	
+	userService.setSearchKey(url);
 
 	getUserListWithSearch();
 
 }
-$scope.searchByAdmin = function(){
 
-		$scope.searchType = "isAdmin";
-		$scope.searchKeyWord = "true";
-		  $.ajax(  '/admin/'+ $scope.user.id+'/users?size='+$scope.userPerPage+
-		    		'&page='+$scope.currentPage+
-		    		'&'+$scope.searchType+'=true',{ type : 'GET', success: updateListOfUser });
-
-}
-$scope.searchByUser = function(){
-
-	$scope.searchType = "isAdmin";
-	$scope.searchKeyWord = "false";
-	  $.ajax(  '/admin/'+ $scope.user.id+'/users?size='+$scope.userPerPage+
-	    		'&page='+$scope.currentPage+
-	    		'&'+$scope.searchType+'=false',{ type : 'GET', success: updateListOfUser });
-
-}
 var getUserListWithSearch = function(){
     console.log("hello from getUserListWithSearch");
     $.ajax(  '/admin/'+ $scope.user.id+'/users?size='+$scope.userPerPage+
     		'&page='+$scope.currentPage+
-    		'&'+$scope.searchType+'='+$scope.searchKeyWord,{ type : 'GET', success: updateListOfUser });
+    		userService.getSearchKey,{ type : 'GET', success: updateListOfUser });
 }
 
 
 //----------------------------paging------------------------
 
 $scope.prevPage = function(){
-	if(1 == 0 )
+	if(userService.getSearchKey)
 	$.ajax(  '/admin/'+ $scope.user.id+'/receipt?size='+$scope.userPerPage+
 			'&page='+ ($scope.currentPage - 1)+
-			'&'+$scope.searchType+'='+$scope.searchKeyWord,{ type : 'GET', success: updateListOfUser  });
+			userService.getSearchKey,{ type : 'GET', success: updateListOfUser  });
 	else
 		$.ajax(  '/user/'+ $scope.user.id+'/receipt?size='+$scope.userPerPage+
 			'&page='+ ($scope.currentPage - 1),{ type : 'GET', success: updateListOfReceipt  });
@@ -449,10 +440,10 @@ $scope.prevPage = function(){
 }
 
 $scope.nextPage = function(){
-	if(1 == 0)
+	if(userService.getSearchKey)
 		$.ajax(  '/admin/'+ $scope.user.id+'/receipt?size='+$scope.userPerPage+
 				'&page='+ ($scope.currentPage + 1)+
-				'&'+$scope.searchType+'='+$scope.searchKeyWord,{ type : 'GET', success: updateListOfUser  });
+				userService.getSearchKey,{ type : 'GET', success: updateListOfUser  });
 		else
 			$.ajax(  '/user/'+ $scope.user.id+'/receipt?size='+$scope.userPerPage+
 				'&page='+ ($scope.currentPage + 1),{ type : 'GET', success: updateListOfReceipt  });
@@ -463,12 +454,12 @@ $scope.setPage = function()
 	var page = document.getElementById("targetPage").value - 1;
 	if(Number.isInteger(page)&& page<= $scope.totalPage && page>=0)
 		{
-			if(1 == 0)
+			if(userService.getSearchKey)
 			{
 				$scope.currentPage = page;
 				$.ajax(  '/user/'+ $scope.user.id+'/receipt?size='+$scope.userPerPage+
 						'&page='+ $scope.currentPage+
-						'&'+$scope.searchType+'='+$scope.searchKeyWord,{ type : 'GET', success: updateListOfUser  });
+						userService.getSearchKey,{ type : 'GET', success: updateListOfUser  });
 
 			}
 			else{
@@ -483,7 +474,7 @@ $scope.setPage = function()
 }
 
 $scope.setSize = function(){
-	if(1 == 0)
+	if(userService.getSearchKey)
 	getUserListWithSearch();
 	else
 	getReceiptList();
