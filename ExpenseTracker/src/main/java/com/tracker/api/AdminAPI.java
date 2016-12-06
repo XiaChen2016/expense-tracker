@@ -94,7 +94,7 @@ public class AdminAPI {
 			newUser.setAdmin(false);
 		}
 		ArrayList<String> phone = new ArrayList<String>();
-		phone.add(userData.get("newPhoneNumber").get(0));
+		phone.add( userData.get("newPhoneNumber").get(0) );
 		newUser.setPhone( phone );
 		newUser.setEmail(userData.get("email").get(0));
 		newUser.setName(userData.get("name").get(0));

@@ -1,9 +1,0 @@
-package com.tracker.repositories.Projects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoOperations;
-
-public class MongoProjectRepositoryImpl implements UpdateableProjectRepository{
-	@Autowired
-	private MongoOperations mongo;
-}

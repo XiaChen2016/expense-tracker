@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 
 import com.tracker.domain.project.Project;
+import com.tracker.domain.receipt.Receipt;
 
 public class MongoProjectRepositoryImpl implements UpdateableProjectRepository{
 	@Autowired
@@ -18,7 +19,10 @@ public class MongoProjectRepositoryImpl implements UpdateableProjectRepository{
 		update.set( "name", p2.getName() );
 		return update;
 	}
-	
+	public boolean deleteAll() {
+		mongo.remove( new Query() , Project.class );
+		return true;
+	}
 	public void update( Project project ) {
 		Query query = new Query();
 		query.addCriteria( Criteria.where("id").is( project.getId()) );

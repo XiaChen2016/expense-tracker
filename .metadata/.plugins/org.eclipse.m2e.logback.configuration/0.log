@@ -8937,3 +8937,281 @@ Caused by: java.io.IOException: error=2, No such file or directory
 2016-11-28 17:27:35,395 [Worker-62] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 11 resources
 2016-11-28 17:27:35,398 [Worker-62] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
 2016-11-28 17:27:35,399 [Worker-62] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/test/resources
+2016-12-05 21:23:53,575 [Worker-4] ERROR org.eclipse.jgit.util.FS - Caught exception in FS.readPipe()
+java.io.IOException: Cannot run program "git" (in directory "/usr/local/bin"): error=2, No such file or directory
+	at java.lang.ProcessBuilder.start(ProcessBuilder.java:1048) ~[na:1.8.0_60]
+	at org.eclipse.jgit.util.FS.readPipe(FS.java:491) [org.eclipse.jgit_4.4.1.201607150455-r.jar:4.4.1.201607150455-r]
+	at org.eclipse.jgit.util.FS.readPipe(FS.java:459) [org.eclipse.jgit_4.4.1.201607150455-r.jar:4.4.1.201607150455-r]
+	at org.eclipse.jgit.util.FS.discoverGitSystemConfig(FS.java:592) [org.eclipse.jgit_4.4.1.201607150455-r.jar:4.4.1.201607150455-r]
+	at org.eclipse.jgit.util.FS.getGitSystemConfig(FS.java:621) [org.eclipse.jgit_4.4.1.201607150455-r.jar:4.4.1.201607150455-r]
+	at org.eclipse.jgit.util.SystemReader$Default.openSystemConfig(SystemReader.java:97) [org.eclipse.jgit_4.4.1.201607150455-r.jar:4.4.1.201607150455-r]
+	at org.eclipse.jgit.internal.storage.file.FileRepository.<init>(FileRepository.java:176) [org.eclipse.jgit_4.4.1.201607150455-r.jar:4.4.1.201607150455-r]
+	at org.eclipse.jgit.storage.file.FileRepositoryBuilder.build(FileRepositoryBuilder.java:92) [org.eclipse.jgit_4.4.1.201607150455-r.jar:4.4.1.201607150455-r]
+	at org.eclipse.jgit.storage.file.FileRepositoryBuilder.create(FileRepositoryBuilder.java:111) [org.eclipse.jgit_4.4.1.201607150455-r.jar:4.4.1.201607150455-r]
+	at org.eclipse.egit.core.RepositoryCache.lookupRepository(RepositoryCache.java:57) [org.eclipse.egit.core_4.4.1.201607150455-r.jar:na]
+	at org.eclipse.egit.core.project.GitProjectData.map(GitProjectData.java:689) [org.eclipse.egit.core_4.4.1.201607150455-r.jar:na]
+	at org.eclipse.egit.core.project.GitProjectData.remapAll(GitProjectData.java:647) [org.eclipse.egit.core_4.4.1.201607150455-r.jar:na]
+	at org.eclipse.egit.core.project.GitProjectData.load(GitProjectData.java:630) [org.eclipse.egit.core_4.4.1.201607150455-r.jar:na]
+	at org.eclipse.egit.core.project.GitProjectData.get(GitProjectData.java:218) [org.eclipse.egit.core_4.4.1.201607150455-r.jar:na]
+	at org.eclipse.egit.core.project.RepositoryMapping.getProjectData(RepositoryMapping.java:356) [org.eclipse.egit.core_4.4.1.201607150455-r.jar:na]
+	at org.eclipse.egit.core.project.RepositoryMapping.findMapping(RepositoryMapping.java:377) [org.eclipse.egit.core_4.4.1.201607150455-r.jar:na]
+	at org.eclipse.egit.core.project.RepositoryMapping.getMapping(RepositoryMapping.java:317) [org.eclipse.egit.core_4.4.1.201607150455-r.jar:na]
+	at org.eclipse.egit.core.internal.util.ResourceUtil.getRepository(ResourceUtil.java:702) [org.eclipse.egit.core_4.4.1.201607150455-r.jar:na]
+	at org.eclipse.egit.ui.internal.resources.ResourceStateFactory.getIndexDiffDataOrNull(ResourceStateFactory.java:89) [org.eclipse.egit.ui_4.4.1.201607150455-r.jar:na]
+	at org.eclipse.egit.ui.internal.decorators.GitLightweightDecorator.decorateResource(GitLightweightDecorator.java:224) [org.eclipse.egit.ui_4.4.1.201607150455-r.jar:na]
+	at org.eclipse.egit.ui.internal.decorators.GitLightweightDecorator.decorate(GitLightweightDecorator.java:201) [org.eclipse.egit.ui_4.4.1.201607150455-r.jar:na]
+	at org.eclipse.ui.internal.decorators.LightweightDecoratorDefinition.decorate(LightweightDecoratorDefinition.java:254) [org.eclipse.ui.workbench_3.108.0.v20160602-1232.jar:na]
+	at org.eclipse.ui.internal.decorators.LightweightDecoratorManager$LightweightRunnable.run(LightweightDecoratorManager.java:83) [org.eclipse.ui.workbench_3.108.0.v20160602-1232.jar:na]
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42) [org.eclipse.equinox.common_3.8.0.v20160509-1230.jar:na]
+	at org.eclipse.ui.internal.decorators.LightweightDecoratorManager.decorate(LightweightDecoratorManager.java:367) [org.eclipse.ui.workbench_3.108.0.v20160602-1232.jar:na]
+	at org.eclipse.ui.internal.decorators.LightweightDecoratorManager.getDecorations(LightweightDecoratorManager.java:349) [org.eclipse.ui.workbench_3.108.0.v20160602-1232.jar:na]
+	at org.eclipse.ui.internal.decorators.DecorationScheduler$1.ensureResultCached(DecorationScheduler.java:367) [org.eclipse.ui.workbench_3.108.0.v20160602-1232.jar:na]
+	at org.eclipse.ui.internal.decorators.DecorationScheduler$1.run(DecorationScheduler.java:327) [org.eclipse.ui.workbench_3.108.0.v20160602-1232.jar:na]
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55) [org.eclipse.core.jobs_3.8.0.v20160509-0411.jar:na]
+Caused by: java.io.IOException: error=2, No such file or directory
+	at java.lang.UNIXProcess.forkAndExec(Native Method) ~[na:1.8.0_60]
+	at java.lang.UNIXProcess.<init>(UNIXProcess.java:248) ~[na:1.8.0_60]
+	at java.lang.ProcessImpl.start(ProcessImpl.java:134) ~[na:1.8.0_60]
+	at java.lang.ProcessBuilder.start(ProcessBuilder.java:1029) ~[na:1.8.0_60]
+	... 28 common frames omitted
+2016-12-05 21:23:53,602 [Worker-4] ERROR org.eclipse.jgit.util.FS - Caught exception in FS.readPipe()
+java.io.IOException: Cannot run program "git" (in directory "/usr/local/bin"): error=2, No such file or directory
+	at java.lang.ProcessBuilder.start(ProcessBuilder.java:1048) ~[na:1.8.0_60]
+	at org.eclipse.jgit.util.FS.readPipe(FS.java:491) [org.eclipse.jgit_4.4.1.201607150455-r.jar:4.4.1.201607150455-r]
+	at org.eclipse.jgit.util.FS.discoverGitSystemConfig(FS.java:604) [org.eclipse.jgit_4.4.1.201607150455-r.jar:4.4.1.201607150455-r]
+	at org.eclipse.jgit.util.FS.getGitSystemConfig(FS.java:621) [org.eclipse.jgit_4.4.1.201607150455-r.jar:4.4.1.201607150455-r]
+	at org.eclipse.jgit.util.SystemReader$Default.openSystemConfig(SystemReader.java:97) [org.eclipse.jgit_4.4.1.201607150455-r.jar:4.4.1.201607150455-r]
+	at org.eclipse.jgit.internal.storage.file.FileRepository.<init>(FileRepository.java:176) [org.eclipse.jgit_4.4.1.201607150455-r.jar:4.4.1.201607150455-r]
+	at org.eclipse.jgit.storage.file.FileRepositoryBuilder.build(FileRepositoryBuilder.java:92) [org.eclipse.jgit_4.4.1.201607150455-r.jar:4.4.1.201607150455-r]
+	at org.eclipse.jgit.storage.file.FileRepositoryBuilder.create(FileRepositoryBuilder.java:111) [org.eclipse.jgit_4.4.1.201607150455-r.jar:4.4.1.201607150455-r]
+	at org.eclipse.egit.core.RepositoryCache.lookupRepository(RepositoryCache.java:57) [org.eclipse.egit.core_4.4.1.201607150455-r.jar:na]
+	at org.eclipse.egit.core.project.GitProjectData.map(GitProjectData.java:689) [org.eclipse.egit.core_4.4.1.201607150455-r.jar:na]
+	at org.eclipse.egit.core.project.GitProjectData.remapAll(GitProjectData.java:647) [org.eclipse.egit.core_4.4.1.201607150455-r.jar:na]
+	at org.eclipse.egit.core.project.GitProjectData.load(GitProjectData.java:630) [org.eclipse.egit.core_4.4.1.201607150455-r.jar:na]
+	at org.eclipse.egit.core.project.GitProjectData.get(GitProjectData.java:218) [org.eclipse.egit.core_4.4.1.201607150455-r.jar:na]
+	at org.eclipse.egit.core.project.RepositoryMapping.getProjectData(RepositoryMapping.java:356) [org.eclipse.egit.core_4.4.1.201607150455-r.jar:na]
+	at org.eclipse.egit.core.project.RepositoryMapping.findMapping(RepositoryMapping.java:377) [org.eclipse.egit.core_4.4.1.201607150455-r.jar:na]
+	at org.eclipse.egit.core.project.RepositoryMapping.getMapping(RepositoryMapping.java:317) [org.eclipse.egit.core_4.4.1.201607150455-r.jar:na]
+	at org.eclipse.egit.core.internal.util.ResourceUtil.getRepository(ResourceUtil.java:702) [org.eclipse.egit.core_4.4.1.201607150455-r.jar:na]
+	at org.eclipse.egit.ui.internal.resources.ResourceStateFactory.getIndexDiffDataOrNull(ResourceStateFactory.java:89) [org.eclipse.egit.ui_4.4.1.201607150455-r.jar:na]
+	at org.eclipse.egit.ui.internal.decorators.GitLightweightDecorator.decorateResource(GitLightweightDecorator.java:224) [org.eclipse.egit.ui_4.4.1.201607150455-r.jar:na]
+	at org.eclipse.egit.ui.internal.decorators.GitLightweightDecorator.decorate(GitLightweightDecorator.java:201) [org.eclipse.egit.ui_4.4.1.201607150455-r.jar:na]
+	at org.eclipse.ui.internal.decorators.LightweightDecoratorDefinition.decorate(LightweightDecoratorDefinition.java:254) [org.eclipse.ui.workbench_3.108.0.v20160602-1232.jar:na]
+	at org.eclipse.ui.internal.decorators.LightweightDecoratorManager$LightweightRunnable.run(LightweightDecoratorManager.java:83) [org.eclipse.ui.workbench_3.108.0.v20160602-1232.jar:na]
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42) [org.eclipse.equinox.common_3.8.0.v20160509-1230.jar:na]
+	at org.eclipse.ui.internal.decorators.LightweightDecoratorManager.decorate(LightweightDecoratorManager.java:367) [org.eclipse.ui.workbench_3.108.0.v20160602-1232.jar:na]
+	at org.eclipse.ui.internal.decorators.LightweightDecoratorManager.getDecorations(LightweightDecoratorManager.java:349) [org.eclipse.ui.workbench_3.108.0.v20160602-1232.jar:na]
+	at org.eclipse.ui.internal.decorators.DecorationScheduler$1.ensureResultCached(DecorationScheduler.java:367) [org.eclipse.ui.workbench_3.108.0.v20160602-1232.jar:na]
+	at org.eclipse.ui.internal.decorators.DecorationScheduler$1.run(DecorationScheduler.java:327) [org.eclipse.ui.workbench_3.108.0.v20160602-1232.jar:na]
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55) [org.eclipse.core.jobs_3.8.0.v20160509-0411.jar:na]
+Caused by: java.io.IOException: error=2, No such file or directory
+	at java.lang.UNIXProcess.forkAndExec(Native Method) ~[na:1.8.0_60]
+	at java.lang.UNIXProcess.<init>(UNIXProcess.java:248) ~[na:1.8.0_60]
+	at java.lang.ProcessImpl.start(ProcessImpl.java:134) ~[na:1.8.0_60]
+	at java.lang.ProcessBuilder.start(ProcessBuilder.java:1029) ~[na:1.8.0_60]
+	... 27 common frames omitted
+2016-12-05 21:24:29,868 [Worker-1] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-05 21:24:29,879 [Worker-1] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2016-12-05 21:24:29,900 [Worker-1] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 11 resources
+2016-12-05 21:24:29,918 [Worker-1] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-05 21:24:29,919 [Worker-1] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/test/resources
+2016-12-05 21:24:57,959 [Worker-4] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-05 21:24:57,982 [Worker-4] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2016-12-05 21:24:57,990 [Worker-4] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 11 resources
+2016-12-05 21:24:57,996 [Worker-4] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-05 21:24:57,997 [Worker-4] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/test/resources
+2016-12-05 21:25:24,717 [Worker-17] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-05 21:25:24,720 [Worker-17] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2016-12-05 21:25:24,722 [Worker-17] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 11 resources
+2016-12-05 21:25:24,726 [Worker-17] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-05 21:25:24,726 [Worker-17] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/test/resources
+2016-12-05 21:26:02,310 [Worker-17] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-05 21:26:02,312 [Worker-17] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2016-12-05 21:26:02,314 [Worker-17] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 11 resources
+2016-12-05 21:26:02,318 [Worker-17] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-05 21:26:02,318 [Worker-17] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/test/resources
+2016-12-05 21:26:07,398 [Worker-12] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-05 21:26:07,400 [Worker-12] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2016-12-05 21:26:07,402 [Worker-12] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 11 resources
+2016-12-05 21:26:07,405 [Worker-12] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-05 21:26:07,405 [Worker-12] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/test/resources
+2016-12-05 21:26:48,048 [Worker-0] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-05 21:26:48,051 [Worker-0] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2016-12-05 21:26:48,054 [Worker-0] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 11 resources
+2016-12-05 21:26:48,058 [Worker-0] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-05 21:26:48,058 [Worker-0] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/test/resources
+2016-12-05 21:26:50,758 [Worker-13] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-05 21:26:50,760 [Worker-13] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2016-12-05 21:26:50,762 [Worker-13] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 11 resources
+2016-12-05 21:26:50,766 [Worker-13] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-05 21:26:50,766 [Worker-13] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/test/resources
+2016-12-05 21:26:56,637 [Worker-5] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-05 21:26:56,638 [Worker-5] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2016-12-05 21:26:56,639 [Worker-5] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 11 resources
+2016-12-05 21:26:56,646 [Worker-5] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-05 21:26:56,646 [Worker-5] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/test/resources
+2016-12-05 21:27:18,154 [Worker-2] INFO  o.e.m.c.i.p.ProjectConfigurationManager - Update started
+2016-12-05 21:27:19,398 [Worker-2] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.example:demo:0.0.1-SNAPSHOT @ /Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/pom.xml.
+2016-12-05 21:27:20,221 [Worker-2] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /ExpenseTracker/src/main/java
+2016-12-05 21:27:20,223 [Worker-2] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding resource folder /ExpenseTracker/src/main/resources
+2016-12-05 21:27:20,224 [Worker-2] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding resource folder /ExpenseTracker/src/main/resources
+2016-12-05 21:27:20,225 [Worker-2] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /ExpenseTracker/src/test/java
+2016-12-05 21:27:20,612 [Worker-2] INFO  o.e.m.c.i.p.ProjectConfigurationManager - Update completed: 2 sec
+2016-12-05 21:27:23,374 [Worker-0] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-05 21:27:23,376 [Worker-0] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2016-12-05 21:27:23,389 [Worker-0] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 11 resources
+2016-12-05 21:27:23,415 [Worker-0] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-05 21:27:23,415 [Worker-0] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/test/resources
+2016-12-05 21:27:40,238 [Worker-17] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-05 21:27:40,241 [Worker-17] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2016-12-05 21:27:40,243 [Worker-17] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 11 resources
+2016-12-05 21:27:40,248 [Worker-17] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-05 21:27:40,248 [Worker-17] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/test/resources
+2016-12-05 21:33:23,439 [Worker-18] INFO  o.e.m.c.i.p.ProjectConfigurationManager - Update started
+2016-12-05 21:33:24,509 [Worker-18] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.example:demo:0.0.1-SNAPSHOT @ /Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/pom.xml.
+2016-12-05 21:33:25,424 [Worker-18] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /ExpenseTracker/src/main/java
+2016-12-05 21:33:25,424 [Worker-18] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding resource folder /ExpenseTracker/src/main/resources
+2016-12-05 21:33:25,425 [Worker-18] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding resource folder /ExpenseTracker/src/main/resources
+2016-12-05 21:33:25,426 [Worker-18] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /ExpenseTracker/src/test/java
+2016-12-05 21:33:25,703 [Worker-18] INFO  o.e.m.c.i.p.ProjectConfigurationManager - Update completed: 2 sec
+2016-12-05 21:33:27,783 [Worker-2] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-05 21:33:27,784 [Worker-2] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2016-12-05 21:33:27,867 [Worker-2] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 11 resources
+2016-12-05 21:33:27,883 [Worker-2] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-05 21:33:27,883 [Worker-2] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/test/resources
+2016-12-06 11:25:38,079 [Worker-63] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:25:38,092 [Worker-63] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2016-12-06 11:25:38,101 [Worker-63] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 11 resources
+2016-12-06 11:25:38,106 [Worker-63] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:25:38,106 [Worker-63] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/test/resources
+2016-12-06 11:27:33,407 [Worker-65] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:27:33,409 [Worker-65] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2016-12-06 11:27:33,411 [Worker-65] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 11 resources
+2016-12-06 11:27:33,414 [Worker-65] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:27:33,414 [Worker-65] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/test/resources
+2016-12-06 11:28:01,702 [Worker-64] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:28:01,703 [Worker-64] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2016-12-06 11:28:01,705 [Worker-64] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 11 resources
+2016-12-06 11:28:01,708 [Worker-64] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:28:01,709 [Worker-64] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/test/resources
+2016-12-06 11:29:38,526 [Worker-60] INFO  o.e.m.c.i.p.ProjectConfigurationManager - Update started
+2016-12-06 11:29:39,166 [Worker-60] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.example:demo:0.0.1-SNAPSHOT @ /Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/pom.xml.
+2016-12-06 11:29:39,667 [Worker-60] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /ExpenseTracker/src/main/java
+2016-12-06 11:29:39,667 [Worker-60] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding resource folder /ExpenseTracker/src/main/resources
+2016-12-06 11:29:39,668 [Worker-60] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding resource folder /ExpenseTracker/src/main/resources
+2016-12-06 11:29:39,669 [Worker-60] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /ExpenseTracker/src/test/java
+2016-12-06 11:29:39,891 [Worker-60] INFO  o.e.m.c.i.p.ProjectConfigurationManager - Update completed: 1 sec
+2016-12-06 11:29:41,678 [Worker-70] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:29:41,679 [Worker-70] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2016-12-06 11:29:41,715 [Worker-70] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 11 resources
+2016-12-06 11:29:41,742 [Worker-70] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:29:41,742 [Worker-70] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/test/resources
+2016-12-06 11:42:18,395 [Worker-86] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.example:demo:0.0.1-SNAPSHOT @ /Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/pom.xml.
+2016-12-06 11:42:19,412 [Worker-86] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /ExpenseTracker/src/main/java
+2016-12-06 11:42:19,413 [Worker-86] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding resource folder /ExpenseTracker/src/main/resources
+2016-12-06 11:42:19,415 [Worker-86] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding resource folder /ExpenseTracker/src/main/resources
+2016-12-06 11:42:19,421 [Worker-86] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /ExpenseTracker/src/test/java
+2016-12-06 11:42:19,621 [Worker-86] INFO  o.e.m.c.i.p.ProjectConfigurationManager - Update started
+2016-12-06 11:42:20,157 [Worker-86] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.example:demo:0.0.1-SNAPSHOT @ /Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/pom.xml.
+2016-12-06 11:42:20,590 [Worker-86] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /ExpenseTracker/src/main/java
+2016-12-06 11:42:20,592 [Worker-86] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding resource folder /ExpenseTracker/src/main/resources
+2016-12-06 11:42:20,603 [Worker-86] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding resource folder /ExpenseTracker/src/main/resources
+2016-12-06 11:42:20,630 [Worker-86] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /ExpenseTracker/src/test/java
+2016-12-06 11:42:20,795 [Worker-86] INFO  o.e.m.c.i.p.ProjectConfigurationManager - Update completed: 1 sec
+2016-12-06 11:42:24,780 [Worker-86] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:42:24,781 [Worker-86] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2016-12-06 11:42:24,798 [Worker-86] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 11 resources
+2016-12-06 11:42:24,815 [Worker-86] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:42:24,815 [Worker-86] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/test/resources
+2016-12-06 11:42:28,806 [Worker-89] INFO  o.e.m.c.i.p.ProjectConfigurationManager - Update started
+2016-12-06 11:42:29,231 [Worker-89] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.example:demo:0.0.1-SNAPSHOT @ /Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/pom.xml.
+2016-12-06 11:42:29,727 [Worker-89] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /ExpenseTracker/src/main/java
+2016-12-06 11:42:29,728 [Worker-89] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding resource folder /ExpenseTracker/src/main/resources
+2016-12-06 11:42:29,729 [Worker-89] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding resource folder /ExpenseTracker/src/main/resources
+2016-12-06 11:42:29,729 [Worker-89] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /ExpenseTracker/src/test/java
+2016-12-06 11:42:30,008 [Worker-89] INFO  o.e.m.c.i.p.ProjectConfigurationManager - Update completed: 1 sec
+2016-12-06 11:42:31,484 [Worker-94] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:42:31,485 [Worker-94] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2016-12-06 11:42:31,505 [Worker-94] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 11 resources
+2016-12-06 11:42:31,531 [Worker-94] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:42:31,532 [Worker-94] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/test/resources
+2016-12-06 11:49:44,377 [Worker-102] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:49:44,384 [Worker-102] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2016-12-06 11:49:44,386 [Worker-102] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 11 resources
+2016-12-06 11:49:44,389 [Worker-102] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:49:44,390 [Worker-102] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/test/resources
+2016-12-06 11:50:05,494 [Worker-103] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:50:05,503 [Worker-103] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2016-12-06 11:50:05,505 [Worker-103] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 11 resources
+2016-12-06 11:50:05,508 [Worker-103] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:50:05,509 [Worker-103] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/test/resources
+2016-12-06 11:50:41,063 [Worker-109] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:50:41,064 [Worker-109] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2016-12-06 11:50:41,083 [Worker-109] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 3 resources
+2016-12-06 11:50:41,112 [Worker-109] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:50:41,112 [Worker-109] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.7.3 (CS402)/Calculator/src/test/resources
+2016-12-06 11:50:41,635 [Worker-106] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:50:41,638 [Worker-106] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2016-12-06 11:50:41,639 [Worker-106] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 3 resources
+2016-12-06 11:50:41,641 [Worker-106] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:50:41,641 [Worker-106] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.7.3 (CS402)/Calculator/src/test/resources
+2016-12-06 11:50:42,998 [Worker-115] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:50:42,998 [Worker-115] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2016-12-06 11:50:42,999 [Worker-115] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 11 resources
+2016-12-06 11:50:43,016 [Worker-115] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:50:43,017 [Worker-115] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/test/resources
+2016-12-06 11:50:45,080 [Worker-108] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:50:45,081 [Worker-108] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2016-12-06 11:50:45,082 [Worker-108] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 6 resources
+2016-12-06 11:50:45,098 [Worker-108] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:50:45,098 [Worker-108] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.7.3 (CS402)/Tasker/src/test/resources
+2016-12-06 11:50:46,861 [Worker-110] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:50:46,862 [Worker-110] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2016-12-06 11:50:46,864 [Worker-110] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 6 resources
+2016-12-06 11:50:46,867 [Worker-110] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:50:46,867 [Worker-110] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.7.3 (CS402)/Tasker/src/test/resources
+2016-12-06 11:50:47,131 [Worker-110] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:50:47,132 [Worker-110] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2016-12-06 11:50:47,133 [Worker-110] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 7 resources
+2016-12-06 11:50:47,146 [Worker-110] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:50:47,147 [Worker-110] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.7.3 (CS402)/Tweeger/src/test/resources
+2016-12-06 11:50:48,566 [Worker-110] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:50:48,576 [Worker-110] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2016-12-06 11:50:48,589 [Worker-110] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2016-12-06 11:50:48,594 [Worker-110] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:50:48,594 [Worker-110] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.7.3 (CS402)/digest_auth/src/test/resources
+2016-12-06 11:50:48,996 [Worker-112] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:50:48,997 [Worker-112] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2016-12-06 11:50:48,999 [Worker-112] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 7 resources
+2016-12-06 11:50:49,001 [Worker-112] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:50:49,001 [Worker-112] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.7.3 (CS402)/Tweeger/src/test/resources
+2016-12-06 11:50:49,975 [Worker-112] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:50:49,976 [Worker-112] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2016-12-06 11:50:49,977 [Worker-112] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 12 resources
+2016-12-06 11:50:50,016 [Worker-112] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:50:50,016 [Worker-112] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.7.3 (CS402)/form_login/src/test/resources
+2016-12-06 11:50:51,690 [Worker-102] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:50:51,690 [Worker-102] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2016-12-06 11:50:51,700 [Worker-102] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 7 resources
+2016-12-06 11:50:51,713 [Worker-102] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:50:51,713 [Worker-102] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.7.3 (CS402)/task_list/src/test/resources
+2016-12-06 11:56:49,971 [Worker-105] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:56:49,976 [Worker-105] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2016-12-06 11:56:49,978 [Worker-105] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 11 resources
+2016-12-06 11:56:49,981 [Worker-105] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:56:49,981 [Worker-105] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/test/resources
+2016-12-06 11:57:35,725 [Worker-117] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:57:35,727 [Worker-117] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2016-12-06 11:57:35,729 [Worker-117] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 11 resources
+2016-12-06 11:57:35,732 [Worker-117] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:57:35,732 [Worker-117] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/test/resources
+2016-12-06 11:57:44,588 [Worker-119] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:57:44,589 [Worker-119] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2016-12-06 11:57:44,591 [Worker-119] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 11 resources
+2016-12-06 11:57:44,594 [Worker-119] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:57:44,594 [Worker-119] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/test/resources
+2016-12-06 11:58:20,679 [Worker-113] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:58:20,681 [Worker-113] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2016-12-06 11:58:20,682 [Worker-113] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 11 resources
+2016-12-06 11:58:20,685 [Worker-113] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2016-12-06 11:58:20,685 [Worker-113] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/test/resources

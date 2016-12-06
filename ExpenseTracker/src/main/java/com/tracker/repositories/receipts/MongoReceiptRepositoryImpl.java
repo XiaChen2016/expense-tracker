@@ -25,6 +25,7 @@ public class MongoReceiptRepositoryImpl implements UpdateableReceiptRepository {
 		return update;
 	}
 	
+
 	public void update( Receipt receipt ) {
 		Query query = new Query();
 		query.addCriteria( Criteria.where("id").is( receipt.getId()) );

@@ -13,9 +13,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import com.tracker.domain.project.Project;
 import com.tracker.domain.receipt.Item;
 import com.tracker.domain.receipt.Receipt;
 import com.tracker.repositories.receipts.MongoReceiptRepository;
@@ -24,22 +26,35 @@ import com.tracker.repositories.receipts.MongoReceiptRepository;
 public class ReceiptsService {
 	@Autowired
 	private MongoReceiptRepository receiptRepository;
+
+	@Autowired
+	private ProjectsService projectService;
 	
 	public Page<Receipt> findByOwnerId( String id, Pageable pageable ) {
-		Direction direction = Direction.DESC;
-		Query query = new Query().with(new Sort( direction,"time"));
-		return receiptRepository.findByOwnerId( id, pageable, query );
+		/* Sorting is not available so far. */
+//		Direction direction = Direction.DESC;
+//		Query query = new Query().with( new Sort( direction,"time") );
+		return receiptRepository.findByOwnerId( id, pageable );
 	}
 	
+	public boolean deleteAll(){
+		receiptRepository.deleteAll();
+		return true;
+	}
 	public Receipt findOne( String id ) {
-		return receiptRepository.findOne(id);
+		return receiptRepository.findOne( id );
 	}
 	public Page<Receipt> searchReceipt( String id, String place, String project, String total, String category, Pageable pageable ) {
+		String projectId ="";
 		
-		return receiptRepository
+		if( projectService.findByOwnerIdAndNameLike(id, project) != null ) {
+			projectId = projectService.findByOwnerIdAndNameLike(id, project).getId();
+		}
+		return receiptRepository.searchReceipts( place, projectId, total, pageable );
+//		return receiptRepository.findByPlaceRegexAndProjectId( place, projectId, pageable );
+//		return receiptRepository
 //					.findByPlaceContainingAndTotalContainingAndCategoryContaining( place, total, category, pageable );
-//				.findByOwnerIdAndPlaceContainingAndCategoryContaining( id, place,category, pageable );
-				.findByOwnerIdAndCategoryContaining( id,category, pageable );
+//				.findByOwnerIdAndCategoryContaining( id,category, pageable );
 	}
 	
 	public boolean save( Receipt receipt ) {
@@ -48,41 +63,82 @@ public class ReceiptsService {
 	}
 	
 	public boolean update( Receipt receipt ) {
-		receiptRepository.update(receipt);
+		receiptRepository.update( receipt );
 		return true;
 	}
 	
 	public void delete( String id ){
-//		receiptRepository.delete(id);
-		receiptRepository.deleteAll();
+		receiptRepository.delete( id );
 	}
 	
-	
-	private static String[] notes = {"Note 1", "Note 2", "Note 3", "Note 4", "Note 4"};
-	private static String[] dates = {"...", "...", "..." };
-	
-	@PostConstruct
-	public void initDatabase() throws ParseException {
-//		System.out.println( "Hello from receipt service. " );
-//		delete("1");
-		Receipt r1 = new Receipt();
-		r1.setNote("This is a receipt of Bilbo 2014-11-20 09:32:11.");
-		r1.setPlace("Kwik Trip");
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-		Date date =  sdf.parse("2015-09-20 09:32:11");
-		r1.setTime( date );
-		r1.setCategory( new String[] {"Grocery","Fruit"} );
-		r1.setOwnerId( "0" );
-		Item i = new Item();
-		i.setName("Apple");
-		i.setPrice( 2f );
-		i.setQuantity( 1 );
-		List< Item > list_of_items = new ArrayList<Item>();
-		list_of_items.add(i);
-		r1.setList_of_items(list_of_items);
-		r1.setTotal( 2 );
-//		save( r1 );
-		
+	public void initDatabase( String uid ) throws ParseException {
+		/* For each user, create 30 receipts for him. */
 
+		String[] notes = { "Note 1", "Note 2", "Note 3", "Note 4", "Note 5"};
+		String[] itemNames = {  "Chips", "Pepsi", "Apple", "Pears","Avocado",
+								"Laptop" ,"Iphone", "Earphone", "Xbox", "Calculator",
+								"Backpack","Dress","Skirt","Glasses", "Boots",
+								"Lamp","Sofa", "Plates", "Salad Spinner","Pillow"};
+		String[] catagoryNames = { "Grocery", "Electronic Devices", "Clothing", "Home" };
+		String[] projectNames = { "Thanksgiving", "Christmas", "Octoberfast", "Halloween" };
+		String[] places = { "Kwik Trip", "Mall of America", "Outlets", "Airport", "Macy's" ,"JCPenny" };
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		
+		for( int i = 0; i < 30; i++ ) {
+			Receipt r = new Receipt();
+			r.setNote( notes[ (int) ( Math.random() * 5 ) ] );
+			r.setPlace( places[ (int) ( Math.random() * 6 ) ] );
+			
+			/* Generate dates with random numbers, and make them to be two digits' numbers. */
+			Date date =  sdf.parse( "201" + (int) ( Math.random() * 6 )
+							/* Month */	
+							+"-" +  String.format("%02d", (int) ( Math.random() * 12 ))
+							/* Day */
+							+"-" +  String.format("%02d", (int) ( Math.random() * 30 )) 
+							/* Hour */
+							+ " " + String.format("%02d",  (int) ( Math.random() * 24 ) )
+							/* Minute */
+							+":"+ String.format("%02d", (int) ( Math.random() * 60 ) )
+							/* Seconds */			
+							+ ":" + String.format("%02d", (int) ( Math.random() * 60 ) ));
+			r.setTime( date );
+			r.setOwnerId( uid );
+			String[] catagory = new String[2];
+			int random =  (int) ( Math.random() * 4);
+			catagory[0] = catagoryNames[ random ] ;
+			catagory[1] = catagoryNames[ (random + 1) % 4 ] ;
+			r.setCategory( catagory );
+			
+			int total = 0;
+			/* Create five items with every receipt. */
+			List< Item > list_of_items = new ArrayList<Item>();
+			for( int j = 0; j<5; j++ ) {
+				int price = (int) ( Math.random() * 600 );
+				total += price;
+				Item item = new Item();
+				item.setName( itemNames[  (int) ( Math.random() * 6 )] );
+				item.setPrice( price);
+				item.setQuantity( 1 );
+				list_of_items.add( item );
+			}
+			r.setList_of_items(list_of_items);
+			r.setTotal(total);
+			
+			/* Assign project to a receipt */
+			String project = projectNames[ (int) ( Math.random() * 4) ];
+			Project p = projectService.findByOwnerIdAndName( uid, project );
+			if( p!= null ) {
+				r.setProjectId( p.getId() );
+			} else {
+				p = new Project();
+				p.setName( project );
+				p.setOwnerId( uid );
+				projectService.save( p );
+				p = projectService.findByOwnerIdAndName( uid, project );
+				r.setProjectId( p.getId() );
+			}
+			
+			save( r );
+		}
 	}
 }

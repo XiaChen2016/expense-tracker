@@ -14,6 +14,10 @@ public class ProjectsService {
 	@Autowired
 	private MongoProjectRepository projectRepository;
 	
+	public boolean deleteAll(){
+		projectRepository.deleteAll();
+		return true;
+	}
 	
 	public boolean save( Project project ) {
 		projectRepository.save( project );
@@ -23,9 +27,13 @@ public class ProjectsService {
 	public List<Project> findByOwnerId( String id ){
 		return projectRepository.findByOwnerId(id);
 	}
+	
+	public Project findByOwnerIdAndNameLike( String id, String name ){
+		return projectRepository.findByOwnerIdAndNameLike( id, name ); 
+	}
+	
 	public Project findByOwnerIdAndName( String id, String name ){
-		Project p = projectRepository.findByOwnerIdAndName( id, name ); 
-		return p;
+		return projectRepository.findByOwnerIdAndName( id, name ); 
 	}
 	
 }
