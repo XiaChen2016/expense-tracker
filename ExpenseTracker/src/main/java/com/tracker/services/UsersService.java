@@ -31,9 +31,7 @@ public class UsersService implements UserDetailsService {
 	private ReceiptsService receiptService;
 	
 	public User loadUserByUsername(String username) throws UsernameNotFoundException {	
-		System.out.println("Hello from loadUserByUsername: "+username);
-		System.out.println(projectService);
-		System.out.println(receiptService);
+//		System.out.println("Hello from loadUserByUsername: "+username);
 		
 		User user = userRepository.findByUsername(username);
 		if( user == null || user.getStatus().equals("") ) {
@@ -89,73 +87,69 @@ public class UsersService implements UserDetailsService {
 		return true;
 	}
 	
-	@PostConstruct
-	private void initDatabase() throws ParseException {
+//	@PostConstruct
+	public void initDatabase() throws ParseException {
 		/* Clear all database when first run this program, recommend for better demonstration. */
-//		userRepository.deleteAll();
-//		receiptService.deleteAll();
-//		projectService.deleteAll();
+		userRepository.deleteAll();
+		receiptService.deleteAll();
+		projectService.deleteAll();
 		
-		User bilbo = findOne("0");
-		if( bilbo == null || !bilbo.getUsername().equals("bilbo") ) {
-			
-			/* If there is no user with username "bilbo" in the database,
-			 * we create one, along with 30 other users/administrators, for demonstrating our project. */
-			
-			/* Create an administrator called bilbo */
-			List<Role> roles = Arrays.asList( new Role[] { new Role("ROLE_ADMIN") ,new Role("ROLE_USER") } );
-			User user = new User.Builder()
-					.roles(roles)
-					.username( "bilbo" )
-					.name("Bilbo")
-					.id("0")
+		/* we create one, along with 30 other users/administrators, for demonstrating our project. */
+		
+		/* Create an administrator called bilbo */
+		List<Role> roles = Arrays.asList( new Role[] { new Role("ROLE_ADMIN") ,new Role("ROLE_USER") } );
+		User user = new User.Builder()
+				.roles(roles)
+				.username( "bilbo" )
+				.name("Bilbo")
+				.id("0")
+				.password( "123" )
+				.email("bilbo@uwlax.edu")
+				.status("enabled")
+				.build();
+		save(user);
+		user  = loadUserByUsername( "bilbo" );
+		
+		/* Create some receipts for Bilbo */
+		receiptService.initDatabase( user.getId() );
+		
+		String[] usernames = { "Anthony","Casey","Arlen","Cadman","Collier", "Curtis", "Grant", "Hartley", "Isaac", "Kody",
+								"Kerwin", "Lombard", "Neal", "Oscar", "Owen", "Winston", "Todd", "Troy","Unwin","Seth" ,
+								"Phineas","Peter", "Quade", "Renfred", "Ridley", "Godfrey", "Gregory","Halsey","Heathcliff", "Hanley"};
+		String[] lastnames = { "Allman", "Arevalo", "Haynes", "Kohl","Karr",
+								"Amato", "Gaines", "Wilson" ,"White", "Irish"};
+		
+		for( int i=0; i < 30; i++ ) {
+			int indexOfLastName = (int)( Math.random() * 10 );
+			ArrayList<String> phone = new ArrayList<String>();
+			phone.add(	"60888" + (int)( Math.random() * 10 ) 
+							+ (int)( Math.random() * 10 ) + (int)( Math.random() * 10 )
+							+ (int)( Math.random() * 10 ) + (int)( Math.random() * 10 ) );
+			user =	 new User.Builder()
+					.username( usernames[i] )
+					.name( usernames[i] +" " + lastnames[indexOfLastName] )
 					.password( "123" )
-					.email("bilbo@uwlax.edu")
+					.email( usernames[i] + "@uwlax.edu")
 					.status("enabled")
+					.phone(phone)
 					.build();
-			save(user);
-			user  = loadUserByUsername( "bilbo" );
 			
-			/* Create some receipts for Bilbo */
+			/* About 40% users would be administrators */
+			if( Math.random() > 0.6d ) {
+				roles = Arrays.asList( new Role[] { new Role("ROLE_ADMIN") ,new Role("ROLE_USER") } );
+				user.setRoles( roles );
+				user.setAdmin( true );
+			} else {
+				roles = Arrays.asList( new Role[] { new Role("ROLE_USER") } );
+				user.setRoles( roles );
+				user.setAdmin( false );
+			}
+			save( user );
+			
+			/* Create some receipts for current user. */
+			user  = loadUserByUsername( usernames[i] );
 			receiptService.initDatabase( user.getId() );
-			
-			String[] usernames = { "Anthony","Casey","Arlen","Cadman","Collier", "Curtis", "Grant", "Hartley", "Isaac", "Kody",
-									"Kerwin", "Lombard", "Neal", "Oscar", "Owen", "Winston", "Todd", "Troy","Unwin","Seth" ,
-									"Phineas","Peter", "Quade", "Renfred", "Ridley", "Godfrey", "Gregory","Halsey","Heathcliff", "Hanley"};
-			String[] lastnames = { "Allman", "Arevalo", "Haynes", "Kohl","Karr",
-									"Amato", "Gaines", "Wilson" ,"White", "Irish"};
-			
-			for( int i=0; i < 30; i++ ) {
-				int indexOfLastName = (int)( Math.random() * 10 );
-				ArrayList<String> phone = new ArrayList<String>();
-				phone.add(	"60888" + (int)( Math.random() * 10 ) 
-								+ (int)( Math.random() * 10 ) + (int)( Math.random() * 10 )
-								+ (int)( Math.random() * 10 ) + (int)( Math.random() * 10 ) );
-				user =	 new User.Builder()
-						.username( usernames[i] )
-						.name( usernames[i] +" " + lastnames[indexOfLastName] )
-						.password( "123" )
-						.email( usernames[i] + "@uwlax.edu")
-						.status("enabled")
-						.phone(phone)
-						.build();
-				
-				/* About 40% users would be administrators */
-				if( Math.random() > 0.6d ) {
-					roles = Arrays.asList( new Role[] { new Role("ROLE_ADMIN") ,new Role("ROLE_USER") } );
-					user.setRoles( roles );
-					user.setAdmin( true );
-				} else {
-					roles = Arrays.asList( new Role[] { new Role("ROLE_USER") } );
-					user.setRoles( roles );
-					user.setAdmin( false );
-				}
-				save( user );
-				
-				/* Create some receipts for current user. */
-				user  = loadUserByUsername( usernames[i] );
-				receiptService.initDatabase( user.getId() );
-				}
-		}
+			}
+		
 	}
 }

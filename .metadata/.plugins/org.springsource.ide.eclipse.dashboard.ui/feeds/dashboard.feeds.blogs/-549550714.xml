@@ -5,7 +5,20 @@
   <link rel="self" href="https://spring.io/blog.atom" />
   <id>http://spring.io/blog.atom</id>
   <icon>https://spring.io/favicon.ico</icon>
-  <updated>2016-12-06T05:00:23Z</updated>
+  <updated>2016-12-07T19:03:00Z</updated>
+  <entry>
+    <title>Spring Tips: Bootiful Dashboards</title>
+    <link rel="alternate" href="https://spring.io/blog/2016/12/07/spring-tips-bootiful-dashboards" />
+    <category term="engineering" label="Engineering" />
+    <author>
+      <name>Josh Long</name>
+    </author>
+    <id>tag:spring.io,2016-11-26:2710</id>
+    <updated>2016-12-07T19:03:00Z</updated>
+    <content type="html">&lt;p&gt;Speaker: &lt;a href="https://www.twitter.com/starbuxman"&gt;Josh Long&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Hi Spring fans! In this tip, we&amp;rsquo;ll look at the Codecentric Spring Boot Admin and the Ordina JWorks Microservices Dashboard&lt;/p&gt;
+&lt;iframe width="560" height="315" src="https://www.youtube.com/embed/u1QnlAbCFys" frameborder="0" allowfullscreen&gt;&lt;/iframe&gt;</content>
+  </entry>
   <entry>
     <title>This Week in Spring - December 6th, 2016</title>
     <link rel="alternate" href="https://spring.io/blog/2016/12/06/this-week-in-spring-december-6th-2016" />
@@ -14,23 +27,67 @@
       <name>Josh Long</name>
     </author>
     <id>tag:spring.io,2016-12-06:2723</id>
-    <updated>2016-12-06T05:00:23Z</updated>
+    <updated>2016-12-06T05:00:00Z</updated>
     <content type="html">&lt;p&gt;Welcome to another installment of &lt;em&gt;This Week in Spring&lt;/em&gt;! This week I&amp;rsquo;m in Brisbane, Australia, on the second leg of the YOW! conference circuit. If you&amp;rsquo;re around, &lt;a href="http://twitter.com/starbuxman"&gt;please say hi&lt;/a&gt; or find me when YOW! moves to Sydney in a few days.&lt;/p&gt;
 &lt;p&gt;We&amp;rsquo;ve got a lot to cover so let&amp;rsquo;s get to it! &lt;/p&gt;
 &lt;ul&gt;
+  &lt;li&gt;If you&amp;rsquo;re not up to date with JUnit 5.0 and Spring Framework, this is a &lt;a href="https://spring.io/blog/2016/12/06/springone-platform-2016-replay-testing-with-spring-framework-4-3-junit-5-and-beyond"&gt;must - see talk from Sam Brannen at Swiftmind&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;good news! the webinar &lt;a href="https://spring.io/blog/2016/12/05/webinar-replay-bootiful-cqrs-with-axon-nov-16"&gt;introducing CQRS with Axon and Spring Boot&lt;/a&gt; that Axon lead and founder Allard Buijze and I delivered is now online&lt;/li&gt;
   &lt;li&gt;Spring Integration lead Gary Russell just &lt;a href="https://spring.io/blog/2016/12/02/spring-integration-5-0-milestone-1-available"&gt;announced Spring Integration 5.0 M1&lt;/a&gt;. This release features a lot of nice new features and simplifies some older ones. One of my favorite features: it packages the Java DSL in the framework itself now, instead of a separate release! Get the bits, kick the tires.&lt;/li&gt;
   &lt;li&gt;Janne Valkealahti has just announced &lt;a href="https://spring.io/blog/2016/12/01/spring-statemachine-1-2-0-rc1-released"&gt;Spring Statemachine 1.2.0.RC1&lt;/a&gt;. This release has lots of small enhancements and bug fixes as well as new APIs for tracing and monitoring and full support for repositories in Redis, MongoDB, and JPA.&lt;/li&gt;
   &lt;li&gt;This upcoming &lt;a href="https://spring.io/blog/2016/12/01/webinar-dec-8th-awesome-tools-to-level-up-your-spring-cloud-architecture"&gt;webinar on tools you should know about to level up your microservices architecture&lt;/a&gt;, above and beyond base-Spring Cloud, is a must-see!&lt;/li&gt;
   &lt;li&gt;Check out this SpringOne Platform talk &lt;a href="https://spring.io/blog/2016/12/01/springone-platform-2016-replay-building-modern-web-applications-with-angular2"&gt;on building modern Spring applications with Angular.js&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Check out Phill Webb&amp;rsquo;s talk on &lt;a href="https://spring.io/blog/2016/12/06/springone-platform-2016-replay-testing-spring-boot-applications"&gt;the new testing capabilities of Spring Boot 1.4&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;Check out Netflix Zuul lead Mikey Cohen&amp;rsquo;s talk &lt;a href="https://spring.io/blog/2016/12/01/springone-platform-2016-replay-netflix-s-edge-gateway-using-zuu"&gt;introducing Zuul from SpringOne Platform 2016&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;last week, continuing the Spring Tips series, I looked at how to take (and when not to take) advantage of &lt;a href="https://spring.io/blog/2016/11/30/spring-tips-jta"&gt;JTA (as represented by the XOpen protocol) in Spring applications&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;check out this replay of &lt;a href="http://twitter.com/danveloper"&gt;Dan Wood&lt;/a&gt;&amp;rsquo;s great &lt;a href="https://www.infoq.com/presentations/microservices-ratpack-boot"&gt;SpringOne Platform talk introducing Ratpack&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;this blog post from Simon Wardley is an oldie-but-a-goodie: &lt;a href="http://blog.gardeviance.org/2016/06/how-cloud-foundry-will-save-world-from.html"&gt;how Cloud Foundry will save the world from Yak Shaving&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;Richard Seroter has a nice post on &lt;a href="https://seroter.wordpress.com/2016/11/28/using-concourse-to-continuously-deliver-a-service-bus-powered-java-app-to-pivotal-cloud-foundry-on-azure/"&gt;using Concourse CI to continuously deliver a Service Bus-powered Java (Spring Boot)-based application to Pivotal Cloud Foundry on Microsoft Azure&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Former SpringSourcer &lt;a href="https://spring.io/blog/2016/12/06/springone-platform-2016-replay-going-reactive-building-better-microservices"&gt;Rob Harrop from SkipJaq&lt;/a&gt; spoke at SpringOne Platform 2016 about Reactive programming and microservices, very popular talk from Spring I/O Barcelona and S1P&lt;/li&gt;
   &lt;li&gt;RedHat&amp;rsquo;s Dr. Mark Little reviews engineer &lt;a href="https://www.infoq.com/news/2016/12/microservices-journey"&gt;Piotr Gankiewicz&amp;rsquo;s journey to microservices in this fascinating InfoQ post&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;the last &lt;a href="http://antirez.com/news/110"&gt;Redis RC is out, packed with lots of features&lt;/a&gt;!&lt;/li&gt;
 &lt;/ul&gt;</content>
+  </entry>
+  <entry>
+    <title>SpringOne Platform 2016 Replay:  Testing with Spring Framework 4.3, JUnit 5, and Beyond</title>
+    <link rel="alternate" href="https://spring.io/blog/2016/12/06/springone-platform-2016-replay-testing-with-spring-framework-4-3-junit-5-and-beyond" />
+    <category term="news" label="News and Events" />
+    <author>
+      <name>Pieter Humphrey</name>
+    </author>
+    <id>tag:spring.io,2016-12-06:2726</id>
+    <updated>2016-12-06T04:57:00Z</updated>
+    <content type="html">&lt;p&gt;Recorded at SpringOne Platform 2016.&lt;br/&gt;Speaker: Sam Brannen, Swiftmind&lt;br/&gt;Slides: &lt;a href="http://www.slideshare.net/SpringCentral/testing-with-spring-43-junit-5-and-beyond"&gt;http://www.slideshare.net/SpringCentral/testing-with-spring-43-junit-5-and-beyond&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Curious about what&amp;rsquo;s new in Spring&amp;rsquo;s testing support in 4.3 or what&amp;rsquo;s on the horizon in Spring 5 and JUnit 5? Then join Sam Brannen, Spring Test component lead and JUnit 5 core committer, to find out! The first part of this session will give attendees an overview of the latest core integration testing improvements in Spring 4.3 such as the new SpringRunner alias for the SpringJUnit4ClassRunner, the omission of @ContextConfiguration when it can be inferred, support for @Sql and @SqlGroup as composed annotations, limiting the context cache size within a test suite, and the new ContextCustomizer API for customizing a test&amp;rsquo;s ApplicationContext. The next part will cover recent improvements in Spring MVC Test such as server-side testing support for expectations on response headers, form data processing, JSON prefixes in response content, custom HTTP verbs, and verifying that a specific controller method was invoked as well as client-side REST testing support for indicating how many times a request is expected and expectations for form data in the request body. The focus will then shift to what kinds of testing features to expect in Spring Framework 5.0. And last, but certainly not least, Sam will dive into live examples using Spring Framework&amp;rsquo;s upcoming support for JUnit 5 for modern testing on Java 8 and beyond.&lt;/p&gt;
+&lt;iframe width="560" height="315" src="https://www.youtube.com/embed/H7S0eXrZWZY" frameborder="0" allowfullscreen&gt;&lt;/iframe&gt;</content>
+  </entry>
+  <entry>
+    <title>SpringOne Platform 2016 Replay:  Going Reactive: Building Better Microservices</title>
+    <link rel="alternate" href="https://spring.io/blog/2016/12/06/springone-platform-2016-replay-going-reactive-building-better-microservices" />
+    <category term="news" label="News and Events" />
+    <author>
+      <name>Pieter Humphrey</name>
+    </author>
+    <id>tag:spring.io,2016-12-06:2725</id>
+    <updated>2016-12-06T04:56:00Z</updated>
+    <content type="html">&lt;p&gt;Recorded at SpringOne Platform 2016.&lt;br/&gt;Speaker: Rob Harrop, Skipjaq&lt;br/&gt;Slides: &lt;a href="http://www.slideshare.net/SpringCentral/going-reactive-building-better-microservices-rob-harrop"&gt;http://www.slideshare.net/SpringCentral/going-reactive-building-better-microservices-rob-harrop&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Reactive provides developers with an elegant model for constructing applications out of communicating components that improves code readability, eases concurrent programming and supports fine-grained unit testing.&lt;/p&gt;
+&lt;p&gt;In this talk, we&amp;rsquo;ll see how this model is a natural fit for building resilient microservices. Specifically, we&amp;rsquo;ll see how to:&lt;/p&gt;
+&lt;p&gt;Abstract the outside world behind Reactive interfaces&lt;br/&gt;Split a microservice into Reactive subsystems&lt;br/&gt;Ease unit testing with Reactive components&lt;br/&gt;Introduce concurrency to improve service performance&lt;br/&gt;Use back-pressure to manage service load and increase resilience&lt;/p&gt;
+&lt;p&gt;Attendees should be familiar with basic Reactive concepts such as publishers and subscriber but need not have any real-world experience building Reactive systems.&lt;/p&gt;
+&lt;iframe width="560" height="315" src="https://www.youtube.com/embed/wJfyyGUkKME" frameborder="0" allowfullscreen&gt;&lt;/iframe&gt;</content>
+  </entry>
+  <entry>
+    <title>SpringOne Platform 2016 Replay: Testing Spring Boot Applications</title>
+    <link rel="alternate" href="https://spring.io/blog/2016/12/06/springone-platform-2016-replay-testing-spring-boot-applications" />
+    <category term="news" label="News and Events" />
+    <author>
+      <name>Pieter Humphrey</name>
+    </author>
+    <id>tag:spring.io,2016-12-06:2724</id>
+    <updated>2016-12-06T04:55:00Z</updated>
+    <content type="html">&lt;p&gt;Recorded at SpringOne Platform 2016.&lt;br/&gt;Speaker: Phil Webb&lt;br/&gt;Slides: none, all live coding&lt;br/&gt;In this talk we&amp;rsquo;ll cover the host of new features that have been added to Spring Boot 1.4 to help with testing. We&amp;rsquo;ll discuss how to unit test your code, how (and when) to involve Spring in your tests, and talk about the various tools and libraries that you should be using. Taking a simple application, we&amp;rsquo;re going to add:&lt;br/&gt;- Unit tests for basic components&lt;br/&gt;- Integration Tests for JPA entities and queries&lt;br/&gt;- Tests for JSON marshalling and unmarshalling&lt;br/&gt;- Tests for Spring MVC controllers&lt;br/&gt;- Tests for remote RestTemplate calls (using mocking)&lt;br/&gt;- End-to-end integration tests (hitting a real HTTP endpoint)&lt;br/&gt;We&amp;rsquo;ll also look a little bit at the internals of Spring&amp;rsquo;s testing support and pick apart how the magic actually works.&lt;/p&gt;
+&lt;iframe width="560" height="315" src="https://www.youtube.com/embed/QjaoAWLlGGs" frameborder="0" allowfullscreen&gt;&lt;/iframe&gt;</content>
   </entry>
   <entry>
     <title>Webinar Replay: Bootiful CQRS with Axon - Nov 16</title>
@@ -765,117 +822,5 @@ You can find executable examples for all of that in our examples repository.&lt;
   &lt;li&gt;Spring Data Couchbase 3.0 M1 - &lt;a href="https://repo.spring.io/libs-milestone/org/springframework/data/spring-data-couchbase/3.0.0.M1"&gt;Artifacts&lt;/a&gt; - &lt;a href="http://docs.spring.io/spring-data/couchbase/docs/3.0.0.M1/api"&gt;JavaDocs&lt;/a&gt; - &lt;a href="http://docs.spring.io/spring-data/couchbase/docs/3.0.0.M1/reference/html"&gt;Documentation&lt;/a&gt; - &lt;a href="http://docs.spring.io/spring-data/couchbase/docs/3.0.0.M1/changelog.txt"&gt;Changelog&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;Find a curated changelog in our &lt;a href="https://github.com/spring-projects/spring-data-commons/wiki/Release-Train-Kay"&gt;release train wiki&lt;/a&gt; or skim through a &lt;a href="https://jira.spring.io/issues/?filter=????"&gt;full list of changes in JIRA&lt;/a&gt;. Your feedback is welcome.&lt;/p&gt;</content>
-  </entry>
-  <entry>
-    <title>Spring Cloud Data Flow for Apache YARN 1.1.0.RC1 released</title>
-    <link rel="alternate" href="https://spring.io/blog/2016/11/23/spring-cloud-data-flow-for-apache-yarn-1-1-0-rc1-released" />
-    <category term="releases" label="Releases" />
-    <author>
-      <name>Janne Valkealahti</name>
-    </author>
-    <id>tag:spring.io,2016-11-23:2707</id>
-    <updated>2016-11-23T12:38:07Z</updated>
-    <content type="html">&lt;p&gt;On behalf of the Spring Cloud Data Flow team, I am pleased to announce the 1.1.0.RC1 release of &lt;a href="http://cloud.spring.io/spring-cloud-dataflow-server-yarn"&gt;Spring Cloud Data Flow for Apache YARN&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;&lt;a href="https://github.com/spring-cloud/spring-cloud-dataflow-server-yarn"&gt;Spring Cloud Data Flow for Apache YARN&lt;/a&gt; allows one to use all the goodness of &lt;a href="https://github.com/spring-cloud/spring-cloud-dataflow"&gt;Spring Cloud Data Flow&lt;/a&gt; (like the Shell and UI) while targeting Apache YARN as a backend. Stream components are deployed as individual apps in Apache YARN, leveraging the power of the platform to handle scaling and health monitoring.&lt;/p&gt;
-&lt;p&gt;This first release candicate&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;Builds upon Spring Cloud Data Flow 1.1.0.RC1 and Spring Cloud Deployer 1.1.0.RC1.&lt;/li&gt;
-  &lt;li&gt;Support for keeping multiple deployer versions in hdfs.&lt;/li&gt;
-  &lt;li&gt;Preparation of supporting upgrades on Ambari when these become available with Ambari future versions.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;To get started using Spring Cloud Data Flow for Apache YARN &lt;a href="http://docs.spring.io/spring-cloud-dataflow-server-yarn/docs/1.1.0.RC1/reference/htmlsingle/#_spring_cloud_data_flow_runtime"&gt;follow these steps&lt;/a&gt; outlined in the reference documentation.&lt;/p&gt;
-&lt;p&gt;For a complete/cumulative list of changes and improvements, please refer to &lt;a href="https://github.com/spring-cloud/spring-cloud-dataflow-server-yarn/issues?q=milestone%3A1.1.0.M1+is%3Aclosed"&gt;Server 1.1.0.M1 release&lt;/a&gt;, &lt;a href="https://github.com/spring-cloud/spring-cloud-dataflow-server-yarn/issues?q=milestone%3A1.1.0.RC1+is%3Aclosed"&gt;Server 1.1.0.RC1 release&lt;/a&gt;, &lt;a href="https://github.com/spring-cloud/spring-cloud-deployer-yarn/issues?q=milestone%3A1.1.0.M1+is%3Aclosed"&gt;Deployer 1.1.0.M1 release&lt;/a&gt;, &lt;a href="https://github.com/spring-cloud/spring-cloud-deployer-yarn/issues?q=milestone%3A1.1.0.RC1+is%3Aclosed"&gt;Deployer 1.1.0.RC1 release&lt;/a&gt;.&lt;/p&gt;</content>
-  </entry>
-  <entry>
-    <title>Spring Session 1.3.0 RC1 Released</title>
-    <link rel="alternate" href="https://spring.io/blog/2016/11/23/spring-session-1-3-0-rc1-released" />
-    <category term="releases" label="Releases" />
-    <author>
-      <name>Rob Winch</name>
-    </author>
-    <id>tag:spring.io,2016-11-23:2706</id>
-    <updated>2016-11-23T04:19:40Z</updated>
-    <content type="html">&lt;div class="paragraph"&gt;
-&lt;p&gt;On behalf of the community, I&amp;#8217;m pleased to announce the release of Spring Session 1.3.0.RC1. This release release closes lots of community submitted Pull Requests. For a complete list of changes see the &lt;a href="https://github.com/spring-projects/spring-session/milestone/16?closed=1"&gt;changelog&lt;/a&gt;.&lt;/p&gt;
-&lt;/div&gt;
-&lt;h1 id="what-s-new-in-spring-session-1-3-0-rc1" class="sect0"&gt;&lt;a class="anchor" href="#what-s-new-in-spring-session-1-3-0-rc1"&gt;&lt;/a&gt;What’s New in Spring Session 1.3.0 RC1&lt;/h1&gt;
-&lt;div class="paragraph"&gt;
-&lt;p&gt;Highlights include:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class="ulist"&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;First class &lt;a href="http://docs.spring.io/spring-session/docs/1.3.0.RC1/reference/html5/#spring-security"&gt;Spring Security’s RememberMe&lt;/a&gt; Support&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Updated guides to &lt;a href="https://github.com/spring-projects/spring-session/pull/652"&gt;use Lettuce&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;a href="http://docs.spring.io/spring-session/docs/1.3.x-SNAPSHOT/reference/html5/#community-extensions"&gt;OrientDB Support&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Configuration Improvements&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Performance Optimizations&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Bug Fixes&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/div&gt;
-&lt;h1 id="contributions" class="sect0"&gt;&lt;a class="anchor" href="#contributions"&gt;&lt;/a&gt;Contributions&lt;/h1&gt;
-&lt;div class="paragraph"&gt;
-&lt;p&gt;Without the community we couldn&amp;#8217;t be the successful project we are today. I&amp;#8217;d like to thank everyone that created issues &amp;amp; provided feedback.&lt;/p&gt;
-&lt;/div&gt;
-&lt;h1 id="feedback-please" class="sect0"&gt;&lt;a class="anchor" href="#feedback-please"&gt;&lt;/a&gt;Feedback Please&lt;/h1&gt;
-&lt;div class="paragraph"&gt;
-&lt;p&gt;If you have feedback on this release, I encourage you to reach out via &lt;a href="http://stackoverflow.com/questions/tagged/spring-session"&gt;StackOverflow&lt;/a&gt;, &lt;a href="https://github.com/spring-projects/spring-session/issues"&gt;GitHub Issues&lt;/a&gt;, or via the comments section. You can also ping me &lt;a href="https://twitter.com/rob_winch"&gt;@rob_winch&lt;/a&gt; or Joe &lt;a href="https://twitter.com/joe_grandja"&gt;@joe_grandja&lt;/a&gt; on Twitter.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class="paragraph"&gt;
-&lt;p&gt;Of course the best feedback comes in the form of &lt;a href="https://github.com/spring-projects/spring-session/blob/1.3.0.RC1/CONTRIBUTING.adoc"&gt;contributions&lt;/a&gt;.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class="paragraph"&gt;
-&lt;p&gt;&lt;a href="http://projects.spring.io/spring-session/"&gt;Project Site&lt;/a&gt; | &lt;a href="http://docs.spring.io/spring-session/docs/1.3.0.RC1/reference/html5/"&gt;Reference&lt;/a&gt; | &lt;a href="http://stackoverflow.com/questions/tagged/spring-session"&gt;Help&lt;/a&gt;&lt;/p&gt;
-&lt;/div&gt;</content>
-  </entry>
-  <entry>
-    <title>Spring Tips: Cloud Foundry</title>
-    <link rel="alternate" href="https://spring.io/blog/2016/11/23/spring-tips-cloud-foundry" />
-    <category term="engineering" label="Engineering" />
-    <author>
-      <name>Josh Long</name>
-    </author>
-    <id>tag:spring.io,2016-11-20:2700</id>
-    <updated>2016-11-23T04:06:00Z</updated>
-    <content type="html">&lt;p&gt;Speaker: Josh Long&lt;br/&gt;&lt;a href="https://www.twitter.com/starbuxman"&gt;https://www.twitter.com/starbuxman&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;Hi Spring fans! In this tip, we&amp;rsquo;ll look at Cloud Foundry, a an open-source cloud platform that&amp;rsquo;s optimized for managing applications. To those of you in the US, happy Thanksgiving tomorrow! &lt;/p&gt;
-&lt;iframe width="560" height="315" src="https://www.youtube.com/embed/T9KcS8s0RPs" frameborder="0" allowfullscreen&gt;&lt;/iframe&gt;</content>
-  </entry>
-  <entry>
-    <title>Spring Cloud Task 1.1.0.RELEASE is now available</title>
-    <link rel="alternate" href="https://spring.io/blog/2016/11/22/spring-cloud-task-1-1-0-release-is-now-available" />
-    <category term="releases" label="Releases" />
-    <author>
-      <name>Michael Minella</name>
-    </author>
-    <id>tag:spring.io,2016-11-22:2705</id>
-    <updated>2016-11-22T19:54:02Z</updated>
-    <content type="html">&lt;p&gt;We are pleased to announce that Spring Cloud Task 1.1.0.RELEASE is now available via Github and the Pivotal download repository. Many thanks to all of those who contributed to this release.&lt;/p&gt;&lt;h2&gt;&lt;a href="#spring-cloud-task-1-1-0-offers-the-following-features" class="anchor" name="spring-cloud-task-1-1-0-offers-the-following-features"&gt;&lt;/a&gt;Spring Cloud Task 1.1.0 offers the following features:&lt;/h2&gt;
-&lt;p&gt;This is the generally available release (GA) for 1.1.0. This release addresses key enhancements to the project to allow for better coverage of operational concerns for tasks in a cloud environment. Features new to the 1.1.0 line include:&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;
-  &lt;p&gt;&lt;em&gt;Updated error handling&lt;/em&gt; - 1.0.x stored stack traces that were the result of task executions within the &lt;code&gt;TaskExecution#exitMessage&lt;/code&gt; field, requiring that this field perform double duty. First it was available for orchestration of tasks (similar to &lt;code&gt;StepExecution#exitStatus&lt;/code&gt; in Spring Batch) as well as the storage of stack traces for debugging. In the 1.1.0 release, error messages have been moved to a new field &lt;code&gt;TaskExecution#errorMessage&lt;/code&gt; so that each field has it&amp;rsquo;s own, dedicated use.&lt;/p&gt;&lt;/li&gt;
-  &lt;li&gt;
-  &lt;p&gt;&lt;em&gt;Updated customization options for partitioned batch jobs&lt;/em&gt; - In the 1.0.x line for Spring Cloud Task, when launching workers as tasks, there was not a way to customize the command line arguments provided to them. This is an issue in environments like CloudFoundry where you can use command line args to customize configuration without the need to re-push your app. In the new 1.1.0 release, we provide the ability to customize command line arguments via the &lt;code&gt;CommandLineArgsProvider&lt;/code&gt; which is similar in functionality to the &lt;code&gt;EnvironmentVariablesProvider&lt;/code&gt; introduced in 1.0.2.&lt;/p&gt;&lt;/li&gt;
-  &lt;li&gt;
-  &lt;p&gt;&lt;em&gt;External execution id persistence&lt;/em&gt; - When running a task in a cloud environment, there is typically a separate id associated with the infrastructure for the task&amp;rsquo;s execution. The id that YARN uses in the history server or the task id used by CloudFoundry are examples of these ids. Spring Cloud Task 1.1.0 now provides the ability to persist this external execution id for the ability to map one to the other.&lt;/p&gt;&lt;/li&gt;
-  &lt;li&gt;
-  &lt;p&gt;&lt;em&gt;Record the request of a task execution&lt;/em&gt; - When launching tasks on some form of infrastructure like Kubernetes or CloudFoundry, there can be a lag between the time the task execution is requested vs when it actually starts. Compounding this issue is the fact that if there is a problem with the platform, the task may not get launched at all. If this does occur, you&amp;rsquo;ll still want a record of the request. Spring Cloud Task 1.1.0 introduces the ability to record that a task is expected to start prior to it&amp;rsquo;s execution actually beginning. Allowing the launcher to record this request and the task itself will update it&amp;rsquo;s status accordingly.&lt;/p&gt;&lt;/li&gt;
-  &lt;li&gt;
-  &lt;p&gt;&lt;em&gt;Additional database support for the task repository&lt;/em&gt; - 1.1.0 introduces a community contributed schema to support DB2 as a datastore for the task repository.&lt;/p&gt;&lt;/li&gt;
-&lt;/ul&gt;&lt;h2&gt;&lt;a href="#what-do-you-think" class="anchor" name="what-do-you-think"&gt;&lt;/a&gt;What do you think?&lt;/h2&gt;
-&lt;p&gt;We look forward to your feedback on these new features in &lt;a href="https://github.com/spring-cloud/spring-cloud-task/issues"&gt;Github&lt;/a&gt;, &lt;a href="http://stackoverflow.com/tags/spring-cloud-task"&gt;StackOverflow&lt;/a&gt;, or to me directly via Twitter &lt;a href="https://twitter.com/michaelminella"&gt;@michaelminella&lt;/a&gt;!&lt;/p&gt;
-&lt;p&gt;&lt;a href="https://cloud.spring.io/spring-cloud-task/"&gt;Spring Cloud Task Home&lt;/a&gt; | &lt;a href="https://github.com/spring-cloud/spring-cloud-task"&gt;Source on GitHub&lt;/a&gt; | &lt;a href="http://docs.spring.io/spring-cloud-task/current/reference/htmlsingle/"&gt;Reference Documentation&lt;/a&gt;&lt;/p&gt;</content>
   </entry>
 </feed>

@@ -13,7 +13,6 @@ import com.tracker.domain.users.User;
 
 public class MongoUserRepositoryImpl implements UpdateableUserRepository {
 	@Autowired
-//	@Qualifier("defaultMongoTemplate")
 	private MongoOperations mongo;
 		
 	private Update getUpdate(User x, User y) {

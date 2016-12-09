@@ -42,6 +42,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter  {
 		.and()
 			.authorizeRequests()	
 				.antMatchers("/resources/**","/").permitAll()
+				.antMatchers("/initDatabase").permitAll()
 				.anyRequest().authenticated()
 		.and()
 			.formLogin()
