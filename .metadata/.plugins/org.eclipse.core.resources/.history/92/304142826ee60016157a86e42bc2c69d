@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.tracker.domain.project.Project;
-import com.tracker.repositories.projects.MongoProjectRepository;
+import com.tracker.repositories.Projects.MongoProjectRepository;
 
 @Service
 public class ProjectsService {

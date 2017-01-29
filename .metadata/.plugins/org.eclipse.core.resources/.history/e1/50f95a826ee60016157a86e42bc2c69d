@@ -1,4 +1,4 @@
-package com.tracker.repositories.projects;
+package com.tracker.repositories.Projects;
 
 import java.util.List;
 

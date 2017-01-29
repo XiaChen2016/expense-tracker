@@ -1380,20 +1380,20 @@
                 }
             }
         },
-        "Merchandise": {
+        "Item": {
             "type": "object",
             "properties": {
                 "name": {
                     "type": "string",
-                    "description": "Name of the merchandise."
+                    "description": "Name of the item."
                 },
                 "price": {
                     "type": "number",
-                    "description": "Price of merchandise."
+                    "description": "Price of item."
                 },
                 "quantity": {
                     "type": "number",
-                    "description": "Quantity of merchandise."
+                    "description": "Quantity of item."
                 }
             }
         },
@@ -1417,10 +1417,10 @@
                     "type": "string",
                     "description": "Name of the merchant."
                 },
-                "list_of_merchandise": {
+                "list_of_items": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/Merchandise"
+                        "$ref": "#/definitions/Item"
                     }
                 },
                 "total": {
