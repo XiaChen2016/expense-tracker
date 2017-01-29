@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename local variable &apos;id&apos; in &apos;com.tracker.services.ReceiptsService.searchReceipt(...)&apos; to &apos;ownerId&apos;&#x0A;- Original project: &apos;ExpenseTracker&apos;&#x0A;- Original element: &apos;com.tracker.services.ReceiptsService.searchReceipt(String, String, String, String, String, Pageable).id&apos;&#x0A;- Renamed element: &apos;id&apos;&#x0A;- Update references to refactored element" description="Rename local variable &apos;id&apos;" id="org.eclipse.jdt.ui.rename.local.variable" input="/src\/main\/java&lt;com.tracker.services{ReceiptsService.java[ReceiptsService~searchReceipt~QString;~QString;~QString;~QString;~QString;~QPageable;@id!1434!1442!1441!1442!QString;!0!true" name="ownerId" references="true" stamp="1481649637087" version="1.0"/>
+</session>

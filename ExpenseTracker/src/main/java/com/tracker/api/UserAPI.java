@@ -71,7 +71,6 @@ public class UserAPI {
 		
 		if( place.length() > 0 || project.length() > 0 || total.length() > 0 || category.length() > 0 ) {
 			System.out.println("Searching receipt");
-			
 			Page<Receipt> result = receiptService.searchReceipt( uid, place, project, total , category, pageable);
 			return result;
 		}
@@ -86,6 +85,7 @@ public class UserAPI {
 	public Receipt createReceipts( 	@AuthenticationPrincipal User user ,
 									@PathVariable String uid, Model model,
 									@RequestBody MultiValueMap<String, String> data,
+//									用这个！！！！！@RequestBody Receipt receipt,
 									HttpServletResponse response ) throws ParseException, IOException {
 		if( !uid.equals( user.getId())) {
 			response.sendError(403,"You are not allowed to browse other user's data!");

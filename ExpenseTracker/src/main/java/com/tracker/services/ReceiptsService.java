@@ -43,17 +43,18 @@ public class ReceiptsService {
 	public Receipt findOne( String id ) {
 		return receiptRepository.findOne( id );
 	}
-	public Page<Receipt> searchReceipt( String id, String place, String project, String total, String category, Pageable pageable ) {
+	public Page<Receipt> searchReceipt( String ownerId, String place, String project, String total, String category, Pageable pageable ) {
 		String projectId ="";
 		
-		if( projectService.findByOwnerIdAndNameLike(id, project) != null ) {
-			projectId = projectService.findByOwnerIdAndNameLike(id, project).getId();
+		if( project.length()>0 && projectService.findByOwnerIdAndNameLike(ownerId, project) != null ) {
+			projectId = projectService.findByOwnerIdAndNameLike(ownerId, project).getId();
 		}
-//		return receiptRepository.searchReceipts( place, projectId, total, pageable );
-		return receiptRepository.findByPlaceRegexAndProjectId( place, projectId, pageable );
+		return receiptRepository.find( ownerId, place, projectId, total , category, pageable);
+//		return receiptRepository.findByPlaceRegexAndProjectId( place, projectId, pageable );
 //		return receiptRepository
 //					.findByPlaceContainingAndTotalContainingAndCategoryContaining( place, total, category, pageable );
 //				.findByOwnerIdAndCategoryContaining( id,category, pageable );
+		// place=JCPenny&project=Thanksgiving&total=1714&category=Clothing
 	}
 	
 	public boolean save( Receipt receipt ) {

@@ -31,14 +31,15 @@ public class UsersService implements UserDetailsService {
 	private ReceiptsService receiptService;
 	
 	public User loadUserByUsername(String username) throws UsernameNotFoundException {	
-//		System.out.println("Hello from loadUserByUsername: "+username);
+//		System.out.println("UsersService.loadUserByUsername: " + username);
 		
 		User user = userRepository.findByUsername(username);
 		if( user == null || user.getStatus().equals("") ) {
 			return null;
-		} else {
-			System.out.println("User exists");
 		}
+//		else {
+//			System.out.println("User exists");
+//		}
 		return user;
 	}
 	
@@ -89,6 +90,7 @@ public class UsersService implements UserDetailsService {
 	
 //	@PostConstruct
 	public void initDatabase() throws ParseException {
+		System.out.println("Ready to init database.");
 		/* Clear all database when first run this program, recommend for better demonstration. */
 		userRepository.deleteAll();
 		receiptService.deleteAll();
@@ -149,7 +151,7 @@ public class UsersService implements UserDetailsService {
 			/* Create some receipts for current user. */
 			user  = loadUserByUsername( usernames[i] );
 			receiptService.initDatabase( user.getId() );
-			}
-		
+		}
+		System.out.println("Finish initing database.");
 	}
 }

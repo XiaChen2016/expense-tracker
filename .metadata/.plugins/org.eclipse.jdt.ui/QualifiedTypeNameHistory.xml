@@ -12,17 +12,14 @@
 <fullyQualifiedTypeName name="com.tracker.domain.users.Role"/>
 <fullyQualifiedTypeName name="org.springframework.data.domain.PageRequest"/>
 <fullyQualifiedTypeName name="javax.servlet.http.HttpSession"/>
-<fullyQualifiedTypeName name="org.springframework.data.mongodb.repository.Query"/>
 <fullyQualifiedTypeName name="org.springframework.data.mongodb.core.query.TextCriteria"/>
 <fullyQualifiedTypeName name="org.springframework.data.mongodb.core.query.TextQuery"/>
 <fullyQualifiedTypeName name="org.springframework.web.filter.HttpPutFormContentFilter"/>
 <fullyQualifiedTypeName name="org.springframework.context.annotation.Bean"/>
 <fullyQualifiedTypeName name="com.tracker.repositories.receipts.MongoReceiptRepository"/>
-<fullyQualifiedTypeName name="org.springframework.data.domain.Pageable"/>
 <fullyQualifiedTypeName name="java.util.ArrayList"/>
 <fullyQualifiedTypeName name="com.tracker.domain.receipt.Receipt"/>
 <fullyQualifiedTypeName name="org.springframework.beans.factory.annotation.Autowired"/>
-<fullyQualifiedTypeName name="org.springframework.data.domain.Page"/>
 <fullyQualifiedTypeName name="org.springframework.data.domain.Sort.Direction"/>
 <fullyQualifiedTypeName name="javax.management.Query"/>
 <fullyQualifiedTypeName name="org.springframework.data.mongodb.core.query.Query"/>
@@ -42,7 +39,6 @@
 <fullyQualifiedTypeName name="java.util.Date"/>
 <fullyQualifiedTypeName name="org.springframework.data.annotation.Id"/>
 <fullyQualifiedTypeName name="org.springframework.data.repository.PagingAndSortingRepository"/>
-<fullyQualifiedTypeName name="java.util.List"/>
 <fullyQualifiedTypeName name="org.springframework.data.mongodb.core.query.Criteria"/>
 <fullyQualifiedTypeName name="org.springframework.data.jpa.repository.JpaRepository"/>
 <fullyQualifiedTypeName name="org.springframework.data.repository.query.Param"/>
@@ -51,4 +47,9 @@
 <fullyQualifiedTypeName name="org.springframework.data.mongodb.repository.config.EnableMongoRepositories"/>
 <fullyQualifiedTypeName name="com.tracker.repositories.users.MongoUserRepository"/>
 <fullyQualifiedTypeName name="com.tracker.repositories.users.MongoUserRepositoryImpl"/>
+<fullyQualifiedTypeName name="org.springframework.data.mongodb.repository.Query"/>
+<fullyQualifiedTypeName name="org.springframework.data.domain.Page"/>
+<fullyQualifiedTypeName name="org.springframework.data.domain.Pageable"/>
+<fullyQualifiedTypeName name="java.util.List"/>
+<fullyQualifiedTypeName name="org.springframework.data.domain.PageImpl"/>
 </qualifiedTypeNameHistroy>
