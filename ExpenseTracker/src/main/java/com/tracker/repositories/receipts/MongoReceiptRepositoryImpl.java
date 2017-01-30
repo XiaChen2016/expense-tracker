@@ -18,7 +18,6 @@ public class MongoReceiptRepositoryImpl implements UpdateableReceiptRepository {
 	@Autowired
 	private MongoOperations mongo;
 	
-	
 	public Page<Receipt> find(	String ownerId,
 								String place,
 								String projectId,
@@ -34,14 +33,15 @@ public class MongoReceiptRepositoryImpl implements UpdateableReceiptRepository {
 			query.addCriteria( Criteria.where("projectId").is(projectId) );
 		}
 		if( category.length() > 0 ) {
-			query.addCriteria( Criteria.where("category").elemMatch( Criteria.where("category").regex( category, "i" ) ));
+			query.addCriteria( Criteria.where("category").regex( category, "i" ) );
 		}
-		System.out.println("Query by place: "+ place +", projectId: " + projectId +", category: " + category);
+		if( total.length() > 0 ) {
+			query.addCriteria( Criteria.where("total").gt( Double.valueOf( total ) ) );
+			System.out.println( "Query by total greater than:" + total );
+		}
 		List<Receipt> result = mongo.find( query, Receipt.class );
-		
 		Page<Receipt> page = new PageImpl<Receipt>( result, pageable, result.size() );
 		return page;
-		
 	}
 	
 	private Update getUpdate( Receipt x, Receipt y){
@@ -55,7 +55,6 @@ public class MongoReceiptRepositoryImpl implements UpdateableReceiptRepository {
 		update.set( "time",  y.getTime() );
 		return update;
 	}
-	
 
 	public void update( Receipt receipt ) {
 		Query query = new Query();

@@ -24,6 +24,16 @@ public class ProjectsService {
 		return true;
 	}
 	
+	public void update( Project project ) {
+		projectRepository.update( project );
+	}
+	public Project delete( String id ) {
+		return projectRepository.delete(id);
+	}
+	public Project findOne( String id ) {
+		return projectRepository.findOne(id);
+	}
+	
 	public List<Project> findByOwnerId( String id ){
 		return projectRepository.findByOwnerId(id);
 	}

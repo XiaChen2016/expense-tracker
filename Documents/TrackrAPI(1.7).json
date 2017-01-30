@@ -239,7 +239,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/Receipt"
+                                "$ref": "#/definitions/PageOfReceipt"
                             }
                         }
                     },
@@ -1363,6 +1363,49 @@
                 }
             }
         },
+        "PageOfReceipt": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Receipt"
+                    }
+                },
+                "first": {
+                    "type": "boolean",
+                    "description": "If current page is the first page, this property is true."
+                },
+                "last": {
+                    "type": "boolean",
+                    "description": "If current page is the last page, this property is true."
+                },
+                "number": {
+                    "type": "number",
+                    "description": "Number of current page."
+                },
+                "numberOfElements": {
+                    "type": "number",
+                    "description": "Number of elements in current page."
+                },
+                "size": {
+                    "type": "number",
+                    "description": "Number of pages."
+                },
+                "sort": {
+                    "type": "string",
+                    "description": "Sort type."
+                },
+                "totalElements": {
+                    "type": "string",
+                    "description": "Number of elements in all pages."
+                },
+                "totalPages": {
+                    "type": "number",
+                    "description": "Number of pages."
+                }
+            }
+        },
         "Project": {
             "type": "object",
             "properties": {
@@ -1428,12 +1471,9 @@
                     "type": "number",
                     "format": "double"
                 },
-                "project": {
-                    "type": "object",
-                    "description": "Project that the receipt is associated with.",
-                    "items": {
-                        "$ref": "#/definitions/Project"
-                    }
+                "project_id": {
+                    "type": "number",
+                    "description": "ID of the project."
                 },
                 "categories": {
                     "description": "Categories of the receipt.",

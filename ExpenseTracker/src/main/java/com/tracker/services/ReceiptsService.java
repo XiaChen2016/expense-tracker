@@ -49,12 +49,7 @@ public class ReceiptsService {
 		if( project.length()>0 && projectService.findByOwnerIdAndNameLike(ownerId, project) != null ) {
 			projectId = projectService.findByOwnerIdAndNameLike(ownerId, project).getId();
 		}
-		return receiptRepository.find( ownerId, place, projectId, total , category, pageable);
-//		return receiptRepository.findByPlaceRegexAndProjectId( place, projectId, pageable );
-//		return receiptRepository
-//					.findByPlaceContainingAndTotalContainingAndCategoryContaining( place, total, category, pageable );
-//				.findByOwnerIdAndCategoryContaining( id,category, pageable );
-		// place=JCPenny&project=Thanksgiving&total=1714&category=Clothing
+		return receiptRepository.find( ownerId, place, projectId, total , category, pageable );
 	}
 	
 	public boolean save( Receipt receipt ) {

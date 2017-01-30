@@ -11,6 +11,8 @@ public interface MongoProjectRepository extends UpdateableProjectRepository ,
 													Repository< Project , String > {
 	public boolean deleteAll();
 	public void save( Project project);
+	public Project findOne( String id );
+	public Project delete( String id );
 	public List<Project> findByOwnerId( String id );
 	public Project findByOwnerIdAndNameLike( String id, String name );
 	public Project findByOwnerIdAndName( String id, String name );
