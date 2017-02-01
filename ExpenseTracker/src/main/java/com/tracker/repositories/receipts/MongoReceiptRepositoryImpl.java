@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
-import org.springframework.data.repository.query.Param;
 
 import com.tracker.domain.receipt.Receipt;
 
@@ -21,7 +20,8 @@ public class MongoReceiptRepositoryImpl implements UpdateableReceiptRepository {
 	public Page<Receipt> find(	String ownerId,
 								String place,
 								String projectId,
-								String total, 
+								String upperLimit, 
+								String lowerLimit,
 								String category,
 								Pageable pageable ){
 		Query query = new Query();
@@ -35,9 +35,21 @@ public class MongoReceiptRepositoryImpl implements UpdateableReceiptRepository {
 		if( category.length() > 0 ) {
 			query.addCriteria( Criteria.where("category").regex( category, "i" ) );
 		}
-		if( total.length() > 0 ) {
-			query.addCriteria( Criteria.where("total").gt( Double.valueOf( total ) ) );
-			System.out.println( "Query by total greater than:" + total );
+		if( lowerLimit.length() > 0 ) {
+			if( upperLimit.length() > 0 ) {
+				/* Query for a range of total */
+				query.addCriteria( Criteria.where("total")
+						.gt( Double.valueOf( lowerLimit ) ).lt(  Double.valueOf(upperLimit ) ) );
+				System.out.println( "Query by the range: " + lowerLimit +"~" + upperLimit );
+			} else {
+				/* Query by total greater than lowerLimit */
+				query.addCriteria( Criteria.where("total").gt( Double.valueOf( lowerLimit ) ) );
+				System.out.println( "Query by total greater than: " + lowerLimit );
+			}
+		} else {
+			/* Query by total less than upperLimit */
+			query.addCriteria( Criteria.where("total").lt( Double.valueOf( upperLimit ) ) );
+			System.out.println( "Query by total less than: " + upperLimit );
 		}
 		List<Receipt> result = mongo.find( query, Receipt.class );
 		Page<Receipt> page = new PageImpl<Receipt>( result, pageable, result.size() );

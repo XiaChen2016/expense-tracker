@@ -108,6 +108,7 @@ public class UsersService implements UserDetailsService {
 				.password( "123" )
 				.email("bilbo@uwlax.edu")
 				.status("enabled")
+				.isAdmin(true)
 				.build();
 		save(user);
 		user  = loadUserByUsername( "bilbo" );

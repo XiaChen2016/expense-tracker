@@ -7,7 +7,8 @@ public class Receipt {
 
 	private String id;
 	private String ownerId;
-	private Date time;
+	private Long time;
+	private String picId;
 	private String place;
 	private double total;
 	private String projectId;
@@ -27,11 +28,17 @@ public class Receipt {
 	public void setOwnerId(String ownerId) {
 		this.ownerId = ownerId;
 	}
-	public Date getTime() {
+	public Long getTime() {
 		return time;
 	}
-	public void setTime(Date time) {
+	public void setTime(Long time) {
 		this.time = time;
+	}
+	public String getPicId() {
+		return picId;
+	}
+	public void setPicId(String picId) {
+		this.picId = picId;
 	}
 	public String getPlace() {
 		return place;

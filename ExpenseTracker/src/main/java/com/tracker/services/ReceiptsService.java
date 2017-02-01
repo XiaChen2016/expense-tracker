@@ -43,13 +43,14 @@ public class ReceiptsService {
 	public Receipt findOne( String id ) {
 		return receiptRepository.findOne( id );
 	}
-	public Page<Receipt> searchReceipt( String ownerId, String place, String project, String total, String category, Pageable pageable ) {
+	public Page<Receipt> searchReceipt( String ownerId, String place, String project, 
+				String upperLimit, String lowerLimit, String category, Pageable pageable ) {
 		String projectId ="";
 		
 		if( project.length()>0 && projectService.findByOwnerIdAndNameLike(ownerId, project) != null ) {
 			projectId = projectService.findByOwnerIdAndNameLike(ownerId, project).getId();
 		}
-		return receiptRepository.find( ownerId, place, projectId, total , category, pageable );
+		return receiptRepository.find( ownerId, place, projectId, upperLimit, lowerLimit , category, pageable );
 	}
 	
 	public boolean save( Receipt receipt ) {
@@ -96,7 +97,7 @@ public class ReceiptsService {
 							+":"+ String.format("%02d", (int) ( Math.random() * 60 ) )
 							/* Seconds */			
 							+ ":" + String.format("%02d", (int) ( Math.random() * 60 ) ));
-			r.setTime( date );
+			r.setTime( date.getTime() );
 			r.setOwnerId( uid );
 			String[] catagory = new String[2];
 			int random =  (int) ( Math.random() * 4);
