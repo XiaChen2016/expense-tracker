@@ -1,4 +1,4 @@
-package com.tracker.repositories.projects;
+package com.tracker.repositories.Projects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
