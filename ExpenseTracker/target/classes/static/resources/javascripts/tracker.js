@@ -138,7 +138,7 @@ tracker.controller('adminHome.Controller', ['$scope', '$resource','userService',
 	}
 	getCurrentUser();
 	userService.setEditUser($scope.user);
-
+	
 //	-----------------------------search--------------------------------
 	$scope.searchUsers = function(){
 		var state = {username: $scope.search.username, email: $scope.search.email, name : $scope.search.name, admin : $scope.search.admin};
