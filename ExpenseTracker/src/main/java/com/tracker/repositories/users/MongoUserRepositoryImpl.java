@@ -1,20 +1,44 @@
 package com.tracker.repositories.users;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
-import org.springframework.stereotype.Repository;
 
 import com.tracker.domain.users.User;
 
 public class MongoUserRepositoryImpl implements UpdateableUserRepository {
 	@Autowired
 	private MongoOperations mongo;
-		
+	
+	public Page<User> find( String name,
+							String email, 
+							String username, 
+							String isAdmin, 
+							Pageable pageable) {
+		Query query = new Query();
+		if( name.length() > 0 ) {
+			query.addCriteria( Criteria.where("name").regex( name ));
+		}
+		if( email.length() > 0 ) {
+			query.addCriteria( Criteria.where("email").regex( email ));
+		}
+		if( username.length() > 0 ) {
+			query.addCriteria( Criteria.where("username").regex( username ));
+		}
+		if( isAdmin.length() > 0 ) {
+			query.addCriteria( Criteria.where("isAdmin").is( Boolean.valueOf(isAdmin) ));
+		}
+		List<User> result = mongo.find( query, User.class );
+		Page<User> page = new PageImpl<User> ( result, pageable, result.size() );
+		return page;
+	}
 	private Update getUpdate(User x, User y) {
 		Update update = new Update();
 		update.set( "password", y.getPassword() );

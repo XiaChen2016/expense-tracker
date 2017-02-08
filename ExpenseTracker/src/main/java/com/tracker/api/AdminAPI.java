@@ -1,8 +1,10 @@
 package com.tracker.api;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,7 +14,6 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,28 +45,29 @@ public class AdminAPI {
 	public Page<User> getAllUser( @AuthenticationPrincipal User user,
 			@RequestParam( required=false, defaultValue="" ) String name,
 			@RequestParam( required=false, defaultValue="" ) String email,
-			@RequestParam( required=false, defaultValue="" ) String phone,
+			@RequestParam( required=false, defaultValue="" ) String username,
 			@RequestParam( required=false, defaultValue="" ) String isAdmin,
 			@RequestParam( required=false, defaultValue="0" ) String page,
 			@RequestParam( required=false, defaultValue="10" ) String size ) {
 		System.out.println("Browse users...");
 		Pageable pageable = new PageRequest(  Integer.valueOf( page ), Integer.valueOf( size ) );
 
-		if( name.length() > 0 || email.length() > 0 ) {
-			Page<User> result = userService.getUsersByNameAndEmail( name, email, pageable);
+		if( name.length() > 0 || email.length() > 0 
+				|| username.length() > 0 || isAdmin.length() > 0 ) {
+			Page<User> result = userService.searchUsers( name, email, username, isAdmin, pageable );
 			return result;
 		}
 		
-		if( isAdmin.length() > 0 ) {
-			System.out.println("Browse users isAdmin..." + isAdmin );
-			if( isAdmin.equals("true") ){
-				Page<User> result = userService.getUsersByRoles( true, pageable );
-				return result;
-			} else{
-				Page<User> result = userService.getUsersByRoles( false, pageable );	
-				return result;
-			}
-		}
+//		if( isAdmin.length() > 0 ) {
+//			System.out.println("Browse users isAdmin..." + isAdmin );
+//			if( isAdmin.equals("true") ){
+//				Page<User> result = userService.getUsersByRoles( true, pageable );
+//				return result;
+//			} else{
+//				Page<User> result = userService.getUsersByRoles( false, pageable );	
+//				return result;
+//			}
+//		}
 		
 		Page<User> result = userService.getUsers(pageable);
 		return result;
@@ -77,39 +79,18 @@ public class AdminAPI {
 	@ResponseBody
 	public User createUser( @AuthenticationPrincipal User user ,
 						@PathVariable String uid, 
-						@RequestBody User newUser
-//						@RequestBody MultiValueMap<String, String> userData
-						) {
-//		System.out.println("Creating user..."+"isAdmin: "+userData.get("isAdmin").get(0)
-//				+" username: " +userData.get("username").get(0)
-//				);
-//		
-//		List<Role> roles;
-//		User newUser = new User();
-//		// Define new user's role
-//		if( userData.containsKey("isAdmin") && userData.get("isAdmin").get(0).equals("true") ) {
-//			roles = Arrays.asList( new Role[] { new Role("ROLE_ADMIN"),new Role("ROLE_USER") } );
-//			newUser.setAdmin(true);
-//		}
-//		else{
-//			roles = Arrays.asList( new Role[] { new Role("ROLE_USER") } );
-//			newUser.setAdmin(false);
-//		}
-//		ArrayList<String> phone = new ArrayList<String>();
-//		phone.add( userData.get("newPhoneNumber").get(0) );
-//		newUser.setPhone( phone );
-//		newUser.setEmail(userData.get("email").get(0));
-//		newUser.setName(userData.get("name").get(0));
-//		newUser.setUsername(userData.get("username").get(0));
-//		newUser.setStatus("enabled");
-//		newUser.setPassword(userData.get("password").get(0));
-		
-		userService.save(newUser);
-		
-		// User's password is not visible for admin, so set it null before returning it.
-		newUser = userService.loadUserByUsername( newUser.getUsername() );
-		newUser.setPassword( null );
-		return newUser;
+						@RequestBody User newUser,
+						HttpServletResponse response
+						) throws IOException {
+		if( userService.save(newUser) ) {
+			newUser = userService.loadUserByUsername( newUser.getUsername() );
+			// User's password is not visible for admin, so set it null before returning it.
+			newUser.setPassword( null );
+			return newUser;
+		} else {
+			response.sendError(400, "Invalid request, make sure you create account with unique username and email address.");
+			return null;
+		}
 	}
 	
 	/* Administrator edit user's profile
@@ -120,53 +101,17 @@ public class AdminAPI {
 	public User editUser(	@AuthenticationPrincipal User user ,
 							@PathVariable String uid,
 							@PathVariable String userid, 
-							@RequestBody User editedUser
-//							@RequestBody MultiValueMap<String, String> userData
-							) {
-		
-		try{
-
-//			User userToEdit = userService.findOne(userid);
-//			
-//			/* Change user's phone numbers */
-//			List<String> phoneNumbers = new ArrayList<String>();
-//			if( userData.containsKey("newPhoneNumber[]") ) {
-//				int length = userData.get("newPhoneNumber[]").size();
-//				for( int i=0; i< length ; i++ ) {
-//					if( userData.get("newPhoneNumber[]").get(i).length() > 1) {
-//
-//						phoneNumbers.add( userData.get("newPhoneNumber[]").get(i) );
-//					}
-//				} 
-//				
-//				userToEdit.setPhone( phoneNumbers );
-//			} 
-//			
-//			/* Change user's name */
-//			if( userData.containsKey("name") ) {
-//				String name = userData.get("name").get(0); 
-//				userToEdit.setName(name);
-//			} 
-//			
-//			/* Change user's role */
-//			String isAdmin = userData.get("isAdmin").get(0);
-//			if( isAdmin.equals("true")) {
-//				List<Role> roles = Arrays.asList( new Role[] { new Role("ROLE_ADMIN") ,new Role("ROLE_USER") } );
-//				userToEdit.setAdmin(true);
-//				userToEdit.setRoles(roles);
-//			} else {
-//				List<Role> roles = Arrays.asList( new Role[] { new Role("ROLE_USER") } );
-//				userToEdit.setAdmin(false);
-//				userToEdit.setRoles(roles);
-//			}
+							@RequestBody User editedUser,
+							HttpServletResponse response
+							) throws IOException {
+		User temp = userService.findOne(userid);
+		if( temp.getId().equals(userid) && temp.getEmail().equals( editedUser.getEmail()) ){
 			userService.update( editedUser );
-//			userService.save(userToEdit);
 			return editedUser;
-			
-		} catch( Exception e){
-			System.out.println(e);
+		} else {
+			response.sendError(400, "Invalid request, make sure you don't change username and email address.");
+			return null;
 		}
-		return null;
 	}
 	
 	@RequestMapping( value="/{uid}/users/{userid}/isAdmin", method=RequestMethod.PUT )
@@ -175,9 +120,7 @@ public class AdminAPI {
 								@PathVariable String uid,
 								@PathVariable String userid, 
 								Model model,
-								@RequestBody boolean isAdmin ){
-//								@RequestBody MultiValueMap<String, String> userData) {
-		
+								@RequestBody boolean isAdmin ){		
 		try{
 			
 			User userToEdit = userService.findOne(userid);

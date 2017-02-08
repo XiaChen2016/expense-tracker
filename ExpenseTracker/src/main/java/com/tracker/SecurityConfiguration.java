@@ -3,7 +3,6 @@ package com.tracker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -27,7 +26,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter  {
 	public void configAuthBuilder(AuthenticationManagerBuilder authBuilder) throws Exception {
 		authBuilder.userDetailsService(detailsService)
         			.passwordEncoder(bcryptEncoder);
-//					.passwordEncoder(passwordEncoder());
 	}
 	@Bean
 	public BCryptPasswordEncoder passwordEncoder(){
@@ -64,6 +62,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter  {
 	
 	@Autowired
 	protected void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {	  
-	    auth.userDetailsService(detailsService); //.passwordEncoder(encoder);
+	    auth.userDetailsService(detailsService);
 	}
 }

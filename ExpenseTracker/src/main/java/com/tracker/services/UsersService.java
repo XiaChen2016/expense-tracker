@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -62,6 +60,10 @@ public class UsersService implements UserDetailsService {
 	
 	public Page<User> getUsersByRoles( boolean isAdmin, Pageable pageable ) {
 		return  userRepository.findByIsAdmin( isAdmin, pageable );
+	}
+	
+	public Page<User> searchUsers( String name, String email, String username, String isAdmin, Pageable pageable ) {
+		return  userRepository.find( name, email, username, isAdmin, pageable );
 	}
 	
 	public User findOne( String uid){

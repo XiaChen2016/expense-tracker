@@ -3,6 +3,7 @@ package com.tracker.repositories.users;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.query.Param;
 
 import com.tracker.domain.users.User;
 
@@ -15,4 +16,10 @@ public interface MongoUserRepository extends UpdateableUserRepository,
 	public Page<User> findByEmailLike( String email, Pageable pageable );
 	public Page<User> findByIsAdmin( Boolean isAdmin, Pageable pageable );
 	public Page<User> findByNameContainingAndEmailContaining( String name, String email, Pageable pageable );
+	public Page<User> find(
+			@Param("name") String name,
+			@Param("email") String email,
+			@Param("username") String username, 
+			@Param("isAdmin") String isAdmin,
+			Pageable pageable );
 	}

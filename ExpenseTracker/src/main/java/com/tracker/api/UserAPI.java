@@ -1,11 +1,13 @@
 package com.tracker.api;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -18,7 +20,6 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,14 +27,23 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.google.api.client.googleapis.extensions.appengine.auth.oauth2.AppIdentityCredential;
+import com.google.cloud.vision.spi.v1.ImageAnnotatorClient;
+import com.google.cloud.vision.v1.AnnotateImageRequest;
+import com.google.cloud.vision.v1.AnnotateImageResponse;
+import com.google.cloud.vision.v1.BatchAnnotateImagesRequest;
+import com.google.cloud.vision.v1.BatchAnnotateImagesResponse;
+import com.google.cloud.vision.v1.EntityAnnotation;
+import com.google.cloud.vision.v1.Feature;
+import com.google.cloud.vision.v1.Image;
+import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableList;
+import com.google.rpc.Status;
 import com.tracker.domain.project.Project;
-import com.tracker.domain.receipt.Item;
 import com.tracker.domain.receipt.Receipt;
-import com.tracker.domain.users.Role;
 import com.tracker.domain.users.User;
 import com.tracker.services.ProjectsService;
 import com.tracker.services.ReceiptsService;
-
 
 @Controller
 @RequestMapping("/user")
@@ -217,4 +227,36 @@ public class UserAPI {
 		Project result = projectService.delete( pid );
 		return result;
 	}
+	
+	@RequestMapping( value="/{uid}/picture", method=RequestMethod.GET )
+	@ResponseBody
+	public void analyseImage() throws IOException {
+		FileOutputStream fs = new FileOutputStream( new File("/Users/chenxia/Downloads/results.txt"));
+		PrintStream ps = new PrintStream( fs );
+		Detect app = new Detect(ImageAnnotatorClient.create());
+		app.detectText("/Users/chenxia/Downloads/kwiktrip.JPG", ps );
+		ps.close();
+	}
+	
+//	@RequestMapping( value="/{uid}/newPicture", method=RequestMethod.GET )
+//	 public void doGet() throws IOException {
+//	   AppIdentityCredential credential =
+//	       new AppIdentityCredential(Arrays.asList(UrlshortenerScopes.URLSHORTENER));
+//	   Urlshortener shortener =
+//	       new Urlshortener.Builder(new UrlFetchTransport(), new JacksonFactory(), credential)
+//	       .build();
+//	   UrlHistory history = shortener.URL().list().execute();
+//	   
+//	 }
+
+	
+	@RequestMapping( value="/{uid}/google", method=RequestMethod.GET )
+	@ResponseBody
+	public List<EntityAnnotation> analyseImage2() throws IOException {
+		FileOutputStream fs = new FileOutputStream( new File("/Users/chenxia/Downloads/Information of picture.txt"));
+		PrintStream ps = new PrintStream( fs );
+		Detect app = new Detect(ImageAnnotatorClient.create());
+		return Detect.detectText("/Users/chenxia/Downloads/kwiktrip.JPG", System.out );
+	}
+	
 }

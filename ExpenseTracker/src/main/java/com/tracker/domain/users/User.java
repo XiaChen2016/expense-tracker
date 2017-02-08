@@ -1,5 +1,6 @@
 package com.tracker.domain.users;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -25,6 +26,11 @@ public class User implements UserDetails {
 	private List<String> phone;
 	private String status;
 	private boolean isAdmin;
+
+	public User() { 
+		roles = new ArrayList<Role>();
+		phone = new ArrayList<String>();
+	}
 	
 	public boolean isAdmin() {
 		return isAdmin;
@@ -97,7 +103,6 @@ public class User implements UserDetails {
 		this.id = id;
 	}
 	
-	public User() { }
 	
 	
 	public String getUsername() {
@@ -188,10 +193,13 @@ public class User implements UserDetails {
 	}
 
 	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
+	public Collection<Role> getAuthorities() {
+//		this.setRoles(roles);
 		return roles;
 	}
 		
+//	public void setAuthorities(){}
+	
 	@Override
 	public boolean isAccountNonExpired() {
 		return true;

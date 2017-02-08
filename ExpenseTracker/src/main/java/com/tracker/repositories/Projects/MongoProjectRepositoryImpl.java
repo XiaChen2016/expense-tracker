@@ -7,7 +7,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 
 import com.tracker.domain.project.Project;
-import com.tracker.domain.receipt.Receipt;
 
 public class MongoProjectRepositoryImpl implements UpdateableProjectRepository{
 	@Autowired

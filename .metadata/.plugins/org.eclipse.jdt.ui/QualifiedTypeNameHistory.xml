@@ -1,12 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="ch.qos.logback.core.net.SyslogOutputStream"/>
-<fullyQualifiedTypeName name="java.util.Iterator"/>
-<fullyQualifiedTypeName name="org.la4j.Matrix"/>
-<fullyQualifiedTypeName name="org.la4j.matrix.dense.Basic2DMatrix"/>
-<fullyQualifiedTypeName name="org.la4j.Matrices"/>
-<fullyQualifiedTypeName name="org.springframework.security.crypto.bcrypt.BCrypt"/>
-<fullyQualifiedTypeName name="org.springframework.web.bind.annotation.ResponseBody"/>
 <fullyQualifiedTypeName name="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
 <fullyQualifiedTypeName name="org.springframework.security.authentication.encoding.PasswordEncoder"/>
 <fullyQualifiedTypeName name="com.tracker.domain.users.Role"/>
@@ -17,7 +10,6 @@
 <fullyQualifiedTypeName name="org.springframework.web.filter.HttpPutFormContentFilter"/>
 <fullyQualifiedTypeName name="org.springframework.context.annotation.Bean"/>
 <fullyQualifiedTypeName name="com.tracker.repositories.receipts.MongoReceiptRepository"/>
-<fullyQualifiedTypeName name="java.util.ArrayList"/>
 <fullyQualifiedTypeName name="com.tracker.domain.receipt.Receipt"/>
 <fullyQualifiedTypeName name="org.springframework.beans.factory.annotation.Autowired"/>
 <fullyQualifiedTypeName name="org.springframework.data.domain.Sort.Direction"/>
@@ -50,6 +42,22 @@
 <fullyQualifiedTypeName name="org.springframework.data.mongodb.repository.Query"/>
 <fullyQualifiedTypeName name="org.springframework.data.domain.Page"/>
 <fullyQualifiedTypeName name="org.springframework.data.domain.Pageable"/>
-<fullyQualifiedTypeName name="java.util.List"/>
 <fullyQualifiedTypeName name="org.springframework.data.domain.PageImpl"/>
+<fullyQualifiedTypeName name="com.google.cloud.vision.v1.AnnotateImageRequest"/>
+<fullyQualifiedTypeName name="com.google.protobuf.ByteString"/>
+<fullyQualifiedTypeName name="java.io.FileInputStream"/>
+<fullyQualifiedTypeName name="com.google.cloud.vision.v1.Feature.Type"/>
+<fullyQualifiedTypeName name="com.google.cloud.vision.v1.Image"/>
+<fullyQualifiedTypeName name="com.google.cloud.vision.v1.Feature"/>
+<fullyQualifiedTypeName name="com.google.cloud.vision.v1.AnnotateImageResponse"/>
+<fullyQualifiedTypeName name="com.google.cloud.vision.v1.EntityAnnotation"/>
+<fullyQualifiedTypeName name="com.google.cloud.vision.v1.BatchAnnotateImagesResponse"/>
+<fullyQualifiedTypeName name="java.io.PrintStream"/>
+<fullyQualifiedTypeName name="java.io.File"/>
+<fullyQualifiedTypeName name="com.google.cloud.vision.v1.SafeSearchAnnotation"/>
+<fullyQualifiedTypeName name="java.io.OutputStream"/>
+<fullyQualifiedTypeName name="java.io.FileOutputStream"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="com.google.cloud.vision.spi.v1.ImageAnnotatorClient"/>
+<fullyQualifiedTypeName name="java.util.List"/>
 </qualifiedTypeNameHistroy>

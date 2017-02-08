@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.tracker.domain.users.Role;
 import com.tracker.domain.users.User;
 import com.tracker.services.UsersService;
 
