@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename package &apos;com.tracker.repositories.projects&apos; to &apos;com.tracker.repositories.Projects&apos;&#x0A;- Original project: &apos;ExpenseTracker&apos;&#x0A;- Original element: &apos;ExpenseTracker/src/main/java/com.tracker.repositories.projects&apos;&#x0A;- Renamed element: &apos;ExpenseTracker/src/main/java/com.tracker.repositories.Projects&apos;&#x0A;- Update references to refactored element&#x0A;- Update textual occurrences in comments and strings" description="Rename package &apos;com.tracker.repositories.projects&apos;" flags="589830" hierarchical="false" id="org.eclipse.jdt.ui.rename.package" input="/src\/main\/java&lt;com.tracker.repositories.projects" name="com.tracker.repositories.Projects" qualified="false" references="true" stamp="1486662952625" textual="false" version="1.0"/>
+</session>

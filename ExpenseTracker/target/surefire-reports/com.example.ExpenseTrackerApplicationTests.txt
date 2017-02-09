@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: com.example.ExpenseTrackerApplicationTests
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.189 sec <<< FAILURE! - in com.example.ExpenseTrackerApplicationTests
-initializationError(com.example.ExpenseTrackerApplicationTests)  Time elapsed: 0.023 sec  <<< ERROR!
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.128 sec <<< FAILURE! - in com.example.ExpenseTrackerApplicationTests
+initializationError(com.example.ExpenseTrackerApplicationTests)  Time elapsed: 0.024 sec  <<< ERROR!
 java.lang.IllegalStateException: Unable to find a @SpringBootConfiguration, you need to use @ContextConfiguration or @SpringBootTest(classes=...) with your test
 	at org.springframework.util.Assert.state(Assert.java:392)
 	at org.springframework.boot.test.context.SpringBootTestContextBootstrapper.getOrFindConfigurationClasses(SpringBootTestContextBootstrapper.java:173)
