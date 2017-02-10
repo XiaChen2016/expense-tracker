@@ -1,10 +1,9 @@
-var tracker = angular.module('Tracker', [ 'ngRoute', 'ngResource' ])
+var tracker = angular.module('Tracker', [ 'ngRoute', 'ngResource', 'ngTagsInput' ])
 
 tracker.factory('userService',function(){
 	var user = {};
 	var editUser = {};
 	var receipt = {};
-	var searchKeyWord = "blank";
 
 	return{
 		getUser: function(){return user;},
@@ -177,11 +176,6 @@ tracker.controller('adminHome.Controller', ['$scope', '$resource','userService',
 		
 	}
 
-//	--------------------------edit user---------------------------
-	$scope.editUser = function(user){
-		userService.setEditUser(user);
-		window.location.href = '/#/editUser';
-	}
 //	-------------------------update role---------------------------------
 	$scope.updateRole = function(id,role){
 		if(role)var isAdmin = true;

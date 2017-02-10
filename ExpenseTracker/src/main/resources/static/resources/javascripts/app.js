@@ -3,12 +3,6 @@ var app = angular.module('App', [
    'Tracker'
 ]);
 
-//app.use( session( {
-//   cookieName : 'session',
-//   secret : 'A#*BAKRAABLGOA@G!ej%d>d3hGOAbkao35DF',
-//   duration : 60 * 1000, // 60 seconds
-//   activeDuration : 60*1000
-//} ) );
 
 app.config(['$routeProvider',
   function($routeProvider) {
