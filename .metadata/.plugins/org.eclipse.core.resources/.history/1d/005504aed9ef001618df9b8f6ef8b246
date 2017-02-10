@@ -53,7 +53,7 @@ public class UserAPI {
 	}
 	
 	/* User browser all his receipts */
-	@RequestMapping( value="/{uid}/receipts", method=RequestMethod.GET )
+	@RequestMapping( value="/{uid}/receipt", method=RequestMethod.GET )
 	@ResponseBody
 	public Page<Receipt> getReceipts(	@AuthenticationPrincipal User user ,
 										@PathVariable String uid,
@@ -82,7 +82,7 @@ public class UserAPI {
 	}
 	
 	/* User create a receipt */
-	@RequestMapping( value="/{uid}/receipts", method=RequestMethod.POST )
+	@RequestMapping( value="/{uid}/receipt", method=RequestMethod.POST )
 	@ResponseBody
 	public Receipt createReceipts( 	@AuthenticationPrincipal User user ,
 									@PathVariable String uid, Model model,
@@ -108,7 +108,7 @@ public class UserAPI {
 	 * */
 	
 	/* User edit a receipt */
-	@RequestMapping( value="/{uid}/receipts/{rid}", method=RequestMethod.PUT )
+	@RequestMapping( value="/{uid}/receipt/{rid}", method=RequestMethod.PUT )
 	@ResponseBody
 	public Receipt updateReceipts( 	@AuthenticationPrincipal User user ,
 									@PathVariable String uid, 
@@ -124,7 +124,7 @@ public class UserAPI {
 		return receipt;
 	}
 
-	@RequestMapping( value="/{uid}/receipts/{rid}", method=RequestMethod.GET )
+	@RequestMapping( value="/{uid}/receipt/{rid}", method=RequestMethod.GET )
 	@ResponseBody
 	public Receipt findReceiptById( @AuthenticationPrincipal User user ,
 									@PathVariable String uid, 
@@ -136,7 +136,7 @@ public class UserAPI {
 		return receiptService.findOne( rid );
 	}
 	
-	@RequestMapping( value="/{uid}/receipts/{rid}", method=RequestMethod.DELETE )
+	@RequestMapping( value="/{uid}/receipt/{rid}", method=RequestMethod.DELETE )
 	@ResponseBody
 	public void deleteReceiptById( @AuthenticationPrincipal User user ,
 									@PathVariable String uid, 
@@ -149,7 +149,7 @@ public class UserAPI {
 	}
 	
 	/* Create a new project */
-	@RequestMapping( value="/{uid}/projects", method=RequestMethod.POST )
+	@RequestMapping( value="/{uid}/project", method=RequestMethod.POST )
 	@ResponseBody
 	public Project saveProject( 	@AuthenticationPrincipal User user ,
 									@PathVariable String uid,
@@ -164,24 +164,20 @@ public class UserAPI {
 	}
 	
 	/* User browse all his projects */
-	@RequestMapping( value="/{uid}/projects", method=RequestMethod.GET )
+	@RequestMapping( value="/{uid}/project", method=RequestMethod.GET )
 	@ResponseBody
-	public Page<Project> getProjects( 	@AuthenticationPrincipal User user ,
+	public List<Project> getProjects( 	@AuthenticationPrincipal User user ,
 										@PathVariable String uid,
-										@RequestParam( required=false, defaultValue="0" ) String page,
-										@RequestParam( required=false, defaultValue="10" ) String size,
 										HttpServletResponse response ) throws ParseException, IOException {
 		if( !uid.equals( user.getId())) {
 			response.sendError(403,"You are not allowed to browse other user's data!");
 		}
-		Pageable pageable = new PageRequest(  Integer.valueOf( page ), Integer.valueOf( size ) );
-
-		Page<Project> result = projectService.findByOwnerId( uid, pageable );
+		List<Project> result = projectService.findByOwnerId( uid );
 		return result;
 	}
 	
 	/* Get one project */
-	@RequestMapping( value="/{uid}/projects/{pid}", method=RequestMethod.GET )
+	@RequestMapping( value="/{uid}/project/{pid}", method=RequestMethod.GET )
 	@ResponseBody
 	public Project getProjectById( 	@AuthenticationPrincipal User user ,
 									@PathVariable String uid, 
@@ -195,7 +191,7 @@ public class UserAPI {
 	}
 	
 	/* Edit a project */
-	@RequestMapping( value="/{uid}/projects/{pid}", method=RequestMethod.PUT )
+	@RequestMapping( value="/{uid}/project/{pid}", method=RequestMethod.PUT )
 	@ResponseBody
 	public Project updateProjectById(	@AuthenticationPrincipal User user ,
 										@PathVariable String uid, 
@@ -209,16 +205,17 @@ public class UserAPI {
 	}
 	
 	/* Delete a project */
-	@RequestMapping( value="/{uid}/projects/{pid}", method=RequestMethod.DELETE )
+	@RequestMapping( value="/{uid}/project/{pid}", method=RequestMethod.DELETE )
 	@ResponseBody
-	public void deleteProjectById( 	@AuthenticationPrincipal User user ,
+	public Project deleteProjectById( 	@AuthenticationPrincipal User user ,
 									@PathVariable String uid, 
 									@PathVariable String pid,
 									HttpServletResponse response ) throws ParseException, IOException {
 		if( !uid.equals( user.getId()) ) {
 			response.sendError(403,"You are not allowed to browse other user's data!");
 		}
-		projectService.delete( pid );
+		Project result = projectService.delete( pid );
+		return result;
 	}
 	
 	@RequestMapping( value="/{uid}/picture", method=RequestMethod.GET )

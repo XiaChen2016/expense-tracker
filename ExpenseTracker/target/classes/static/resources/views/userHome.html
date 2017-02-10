@@ -1,9 +1,10 @@
 <nav class="navbar navbar-default" role="navigation">
-   <div class=" pull right">
-      <button class="navbar-brand"class="btn btn-link navbar-brand" >{{user.username}}</button>
-
-      <a  class=" navbar-brand" href="/logout" >logout</a>
-
+   <div class = "pull right">
+   	<ul class="nav navbar-nav">
+         <!-- <li><img ng-src="/photos/{{user.avatarIamage}}" class="img-circle" style = "max-width: 50px"></li> -->
+		 <li><a>{{user.username}}</a></li>
+         <li><a ng-click = "logout()">logout</a></li>
+      </ul>
    </div>
    <div class = "pull left">
       <ul class="nav navbar-nav">
@@ -17,9 +18,13 @@
 
 </nav>
 
-
-<div class="pull right">
-          <a>User number per page</a>
+        <div class="pull left">
+        <a>Project </a>
+          <select ng-change = "setProject()" ng-model = "project" ng-options = "project for project in projectList">
+          </select>
+        </div>
+        <div class="pull right">
+          <a>Size </a>
           <select ng-change = "setSize()" ng-model = "userPerPage" ng-options = "size for size in sizeList">
           </select>
         </div>

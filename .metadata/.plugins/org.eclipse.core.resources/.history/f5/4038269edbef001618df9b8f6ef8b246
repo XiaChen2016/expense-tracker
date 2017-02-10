@@ -1,8 +1,8 @@
 package com.tracker.services;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.tracker.domain.project.Project;
@@ -27,15 +27,15 @@ public class ProjectsService {
 	public void update( Project project ) {
 		projectRepository.update( project );
 	}
-	public void delete( String id ) {
-		projectRepository.delete(id);
+	public Project delete( String id ) {
+		return projectRepository.delete(id);
 	}
 	public Project findOne( String id ) {
 		return projectRepository.findOne(id);
 	}
 	
-	public Page<Project> findByOwnerId( String id, Pageable pageable ){
-		return projectRepository.findByOwnerId(id, pageable);
+	public List<Project> findByOwnerId( String id ){
+		return projectRepository.findByOwnerId(id);
 	}
 	
 	public Project findByOwnerIdAndNameLike( String id, String name ){

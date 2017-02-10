@@ -1,9 +1,11 @@
 <nav class="navbar navbar-default" role="navigation">
-   <div class=" pull right">
-      <button class="navbar-brand"class="btn btn-link navbar-brand" >{{user.username}}</button>
 
-      <a  class=" navbar-brand" ng-click = "logout()" >logout</a>
-
+   <div class = "pull right">
+   	<ul class="nav navbar-nav">
+         <!-- <li><img ng-src="/photos/{{user.avatarIamage}}" class="img-circle" style = "max-width: 50px"></li> -->
+		 <li><a>{{user.username}}</a></li>
+         <li><a ng-click = "logout()">logout</a></li>
+      </ul>
    </div>
    <div class = "pull left">
       <ul class="nav navbar-nav">
