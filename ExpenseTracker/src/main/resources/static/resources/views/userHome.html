@@ -45,7 +45,7 @@
     <!-- <td><h4><b>{{receipt.id}}</b> </h4></td> -->
     <td>{{receipt.time | date:'MM-dd-yyyy HH:mm:ss'}}</td>
     <td>{{receipt.place}}</td>
-    <td>{{receipt.project}}</td>
+    <td>{{receipt.projectName}}</td>
     <td><p ng-repeat=" c in receipt.category">{{c}}</p></td>
     <td>{{receipt.total}}</td>
     <td><a ng-click = "viewDetail(receipt)">Detail</a><td>

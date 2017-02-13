@@ -88,7 +88,7 @@
    	      <td><sub>{{user.name}}</sub></td>
    	      <!-- <td><sub>{{user.id}}</sub></td> -->
    	      <td><sub>{{user.email}}</sub></td>
-   	      <td><p ng-repeat="tel in user.phone">{{tel}} </p></td>
+   	      <td><sub ng-repeat="tel in user.phone">{{tel}}</sub></td>
    	      <td><h6> <span ><input type="checkbox" ng-model="user.admin" ng-click="updateRole(user.id, user.admin)"></span> </h6></td>
           <td><h6> <span ><input type="checkbox" ng-model="user.status"ng-true-value="'enabled'" ng-false-value="'disabled'" ng-click="activeUser(user.id, user.status)"></span> </h6></td>
           <td><sub><a ng-click = "editUser(user)">Edit</a></sub><td>

@@ -29,10 +29,29 @@ tracker.factory('pagingService',function(){
 
 tracker.factory('projectService',function(){
 	var projectList = {};
+	var currentProject = "";
 
 	return{
 		setProjectList: function(p){projectList = p;},
-		getProjectList: function(){return projectList;}
+		getProjectList: function(){return projectList;},
+		setCurrentProjectWithName: function(p){currentProject = p;},
+		getCurrentProjectInId: function(){
+			for(var i = 0 ; i< projectList.length; i++){
+				if(currentProject == projectList[i].name){
+					return projectList[i].id;
+				}
+			}
+			return null;
+		},
+		getCurrentProjectInName: function(p){
+			for(var i = 0 ; i< projectList.length; i++){
+				if(p == projectList[i].id){
+					return projectList[i].name;
+				}
+			}
+			return null;
+		}
+
 	};
 });
 
@@ -57,11 +76,11 @@ tracker.factory('searchService',function(){
 });
 
 tracker.factory('Receipts', function($resource) {
-	return $resource('/user/:uid/receipt/:rid', { },{ 'update' : { method : 'PUT'}});
+	return $resource('/user/:uid/receipts/:rid', { },{ 'update' : { method : 'PUT'}});
 } );
 
 tracker.factory('Projects', function($resource) {
-	return $resource('/user/:uid/project/:rid', { },{ 'update' : { method : 'PUT'}});
+	return $resource('/user/:uid/projects/:rid', { },{ 'update' : { method : 'PUT'}});
 } );
 
 tracker.factory('home', function($resource) {
@@ -86,7 +105,13 @@ tracker.controller('userHome.Controller', ['$scope', '$resource','userService','
 	var updateListOfReceipt = function ( result ) {
 
 		console.log("updateListOfUser");
-		$scope.receiptList = result.content;
+		var receipts = result.content;
+		for(var i = 0; i < receipts.length; i ++){
+			receipts[i].projectName = projectService.getCurrentProjectInName(receipts[i].projectId);
+			console.log(receipts[i].projectName);
+			
+		}
+		$scope.receiptList = receipts;
 		$scope.totalPage = result.totalPages;
 		$scope.responseContent = result;
 		$scope.currentPage = result.number;
@@ -97,11 +122,11 @@ tracker.controller('userHome.Controller', ['$scope', '$resource','userService','
 
 	var getAllProject = function () {
 		Projects.get({ uid : $scope.user.id },function(result){
-		projectService.setProjectList(result);
+		projectService.setProjectList(result.content);
+		var content = result.content;
 		var rawProjectList = [];
-		for(var i = 0 ; i< result; i++){
-			rawProjectList.push(result[i].name);
-			console.log(result[i].name);
+		for(var i = 0 ; i< result.content.length; i++){
+			rawProjectList.push(content[i].name);
 		}
 		$scope.projectList = rawProjectList;
 		});
@@ -177,6 +202,12 @@ tracker.controller('userHome.Controller', ['$scope', '$resource','userService','
 		
 	}
 
+	$scope.setProject = function(){
+		projectService.setCurrentProjectWithName($scope.project);
+		Receipts.get({uid : $scope.user.id, page : pagingService.getCurrentPage(), size : pagingService.getSize() , project : $scope.project} ,updateListOfReceipt );
+		
+	}
+
 	// $scope.prevPage = function(){
 	// 	if(userService.getSearchKey)
 	// 		$.ajax(  '/admin/'+ $scope.user.id+'/receipt?size='+$scope.userPerPage+
@@ -240,7 +271,7 @@ tracker.controller('userHome.Controller', ['$scope', '$resource','userService','
 } ] );
 
 
-tracker.controller('editReceipt.Controller', ['$scope', 'userService','receiptService', function( $scope, userService ,receiptService) {
+tracker.controller('editReceipt.Controller', ['$scope', 'userService','receiptService','projectService', function( $scope, userService ,receiptService,projectService) {
 	
 	var receipt = receiptService.getEditReceipt();
 	$scope.user = userService.getUser();
@@ -248,7 +279,7 @@ tracker.controller('editReceipt.Controller', ['$scope', 'userService','receiptSe
 	var date = new Date(receipt.time);
 	$scope.receiptTime = date;
 	$scope.receiptLocation = receipt.place;
-	$scope.receiptProject = receipt.projectId;
+	$scope.receiptProject = projectService.getCurrentProjectInName(receipt.projectId);
 	$scope.receiptNote = receipt.note;
 	var rawTags = [];
 	if(receipt.list_of_items)$scope.items = receipt.list_of_items;
