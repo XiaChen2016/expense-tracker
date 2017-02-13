@@ -12,6 +12,6 @@ public interface MongoProjectRepository extends UpdateableProjectRepository ,
 												PagingAndSortingRepository	< Project , String > {
 	public Project findOne( String id );
 	public Page<Project> findByOwnerId( String id, Pageable pageable );
-	public Project findByOwnerIdAndNameLikeIgnoreCase( String id, String name );
+	public Project findByOwnerIdAndNameLike( String id, String name );
 	public Project findByOwnerIdAndName( String id, String name );
 }

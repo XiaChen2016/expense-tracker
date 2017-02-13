@@ -46,7 +46,7 @@ public class MongoReceiptRepositoryImpl implements UpdateableReceiptRepository {
 				query.addCriteria( Criteria.where("total").gt( Double.valueOf( lowerLimit ) ) );
 				System.out.println( "Query by total greater than: " + lowerLimit );
 			}
-		} else if( upperLimit.length() > 0 ) {
+		} else {
 			/* Query by total less than upperLimit */
 			query.addCriteria( Criteria.where("total").lt( Double.valueOf( upperLimit ) ) );
 			System.out.println( "Query by total less than: " + upperLimit );

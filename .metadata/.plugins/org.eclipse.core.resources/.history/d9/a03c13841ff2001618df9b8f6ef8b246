@@ -41,11 +41,10 @@ public class ReceiptsService {
 	public Page<Receipt> searchReceipt( String ownerId, String place, String project, 
 				String upperLimit, String lowerLimit, String category, Pageable pageable ) {
 		String projectId ="";
-		System.out.println("search by project: " + project);
+		
 		if( project.length()>0 && projectService.findByOwnerIdAndNameLike(ownerId, project) != null ) {
 			projectId = projectService.findByOwnerIdAndNameLike(ownerId, project).getId();
 		}
-		System.out.println( "project id: " + projectId);
 		return receiptRepository.find( ownerId, place, projectId, upperLimit, lowerLimit , category, pageable );
 	}
 	

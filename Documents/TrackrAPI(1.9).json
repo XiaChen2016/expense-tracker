@@ -252,13 +252,6 @@
                         "type": "number"
                     },
                     {
-                        "name": "pid",
-                        "in": "query",
-                        "description": "ID of the receipt's project.",
-                        "required": false,
-                        "type": "number"
-                    },
-                    {
                         "name": "page",
                         "in": "query",
                         "description": "Number of page.",
