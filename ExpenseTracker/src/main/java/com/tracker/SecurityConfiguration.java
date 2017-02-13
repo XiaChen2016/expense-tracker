@@ -1,6 +1,9 @@
 package com.tracker;
 
+import javax.servlet.MultipartConfigElement;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.embedded.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -32,7 +35,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter  {
 		BCryptPasswordEncoder encoder =  new BCryptPasswordEncoder();
 		return encoder;
 	}
-		
+	
+	@Bean
+    public MultipartConfigElement multipartConfigElement() {
+        MultipartConfigFactory factory = new MultipartConfigFactory();
+        factory.setMaxFileSize("4MB");
+        factory.setMaxRequestSize("4MB");
+        return factory.createMultipartConfig();
+    }
+	
 	protected void configure(HttpSecurity http) throws Exception {
 		
 		http

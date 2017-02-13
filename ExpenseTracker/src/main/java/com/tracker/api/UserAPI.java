@@ -1,5 +1,6 @@
 package com.tracker.api;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -10,9 +11,14 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.servlet.MultipartConfigElement;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServletResponse;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.embedded.MultipartConfigFactory;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.google.cloud.vision.spi.v1.ImageAnnotatorClient;
 import com.google.cloud.vision.v1.EntityAnnotation;
@@ -45,6 +52,7 @@ public class UserAPI {
 
 	@Autowired
 	private ProjectsService projectService;
+
 	
 	@RequestMapping( value="", method=RequestMethod.GET )
 	public String getAdminHome(	@AuthenticationPrincipal User user, Model model ) {
@@ -219,6 +227,42 @@ public class UserAPI {
 			response.sendError(403,"You are not allowed to browse other user's data!");
 		}
 		projectService.delete( pid );
+	}
+	
+	/* Upload a picture */
+	@RequestMapping( value="/{uid}/picture", method=RequestMethod.POST )
+	@ResponseBody
+	public String uploadPicture(	@PathVariable String uid, 
+									@RequestParam("file") MultipartFile file,
+									HttpServletResponse response ) throws IOException {
+		if ( !file.isEmpty() ) {
+			try {
+				byte[] bytes = file.getBytes();
+
+				// Creating the directory to store file
+				ObjectId pid = new ObjectId();
+				File dir = new File("src/main/resources/static/pictures/" + uid );
+				if ( !dir.exists() )
+					dir.mkdirs();
+
+				// Create the file on server
+				File serverFile = new File( dir.getAbsolutePath() + File.separator +pid );
+				System.out.println( "Init new serverFile, saving to: " + dir.getAbsolutePath() );
+				BufferedOutputStream stream = new BufferedOutputStream(
+						new FileOutputStream(serverFile) );
+
+				System.out.println("Ready to write bytes.");
+				stream.write(bytes);
+				stream.close();
+				return pid.toString();
+			} catch (Exception e) {
+				response.sendError( 500, "Fail to save picture, check if your picture is smaller than 4MB." );
+				return null;
+			}
+		} else {
+			response.sendError( 400, "Error occurs when uploading picture.");
+			return null;
+		}
 	}
 	
 	@RequestMapping( value="/{uid}/picture", method=RequestMethod.GET )
