@@ -32,11 +32,11 @@
               	  	<div class="input-group">
                       <input type="text" class="form-control" ng-model="newPhoneNumber[$index]">
                       <div class="input-group-btn">
-                      <button ng-click="PN.del(key)" class="btn btn-default">delete</button>
+                      <button ng-click="PN.del($index)" class="btn btn-danger">delete</button>
                       </div>
                     </div>
                   </div>
-                  <a ng-click="PN.add()">Add Phone Number</a>
+                  <button type = "button" class="btn btn-info" ng-click="PN.add()">Add Phone Number</button>
               </td>
 
 		      	</tr>
@@ -56,7 +56,8 @@
 
     	</div>
 	<div class="modal-footer">
-        <button type="button" class="btn btn-primary" ng-click="confirmEditUser()">confirmEditUser</button>
+				<button type="button" class="btn btn-warning" ng-click="cancel()">Cancel</button>
+        <button type="button" class="btn btn-primary" ng-click="confirmEditUser()">Update</button>
     </div>
   </div>
 </div>

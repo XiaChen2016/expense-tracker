@@ -1,18 +1,24 @@
 <nav class="navbar navbar-default" role="navigation">
    <div class = "pull right">
    	<ul class="nav navbar-nav">
-         <!-- <li><img ng-src="/photos/{{user.avatarIamage}}" class="img-circle" style = "max-width: 50px"></li> -->
-		 <li><a>{{user.username}}</a></li>
-         <li><a ng-click = "logout()">logout</a></li>
+         <li>
+          <a href="/#/editUser" class="btn btn-default">
+          <span class="glyphicon glyphicon-user"></span>{{user.username}}
+          </a>
+        </li>
+        <li>
+          <a class="btn btn-default" ng-click="logout()">
+          <span class="glyphicon glyphicon-log-out"></span>Log out
+          </a>
+        </li>
       </ul>
    </div>
    <div class = "pull left">
       <ul class="nav navbar-nav">
          <!-- <li><img ng-src="/photos/{{user.avatarIamage}}" class="img-circle" style = "max-width: 50px"></li> -->
-         <li><a href="/#/editUser">Edit my profile</a></li>
          <li><a href="/#/createReceipt">Add receipt</a></li>
-         <li><a href="/#/browseMyReceipt">View my receipt</a></li>
-         <li><a href="/#/manageMyCategory">Manage my category</a></li>
+         <li><a href="/#/browseMyReceipt">Receipts</a></li>
+         <li><a href="/#/manageMyCategory">Projects</a></li>
       </ul>
    </div>
 
@@ -24,7 +30,7 @@
           </select>
         </div>
         <div class="pull right">
-          <a>Size </a>
+          <a>Per page </a>
           <select ng-change = "setSize()" ng-model = "userPerPage" ng-options = "size for size in sizeList">
           </select>
         </div>
@@ -32,7 +38,6 @@
 <table class="table" >
   <thead>
   <tr>
-<!-- <th>ID of receipt</th> -->
 <th>Time</th>
 <th>Location</th>
 <th>Project</th>
@@ -48,7 +53,7 @@
     <td>{{receipt.projectName}}</td>
     <td><p ng-repeat=" c in receipt.category">{{c}}</p></td>
     <td>{{receipt.total}}</td>
-    <td><a ng-click = "viewDetail(receipt)">Detail</a><td>
+    <td><button class = "btn btn-info"ng-click = "viewDetail(receipt)">Detail</button><td>
 </tbody>
 <tfoot>
 <td colspan = "6">
