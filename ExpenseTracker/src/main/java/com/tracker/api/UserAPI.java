@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.google.api.services.vision.v1.model.BatchAnnotateImagesResponse;
 import com.google.cloud.vision.spi.v1.ImageAnnotatorClient;
 import com.google.cloud.vision.v1.EntityAnnotation;
 import com.tracker.domain.project.Project;
@@ -41,6 +42,7 @@ import com.tracker.domain.receipt.Receipt;
 import com.tracker.domain.users.User;
 import com.tracker.services.ProjectsService;
 import com.tracker.services.ReceiptsService;
+import com.tracker.services.VisionService;
 
 @Controller
 @RequestMapping("/user")
@@ -53,6 +55,8 @@ public class UserAPI {
 	@Autowired
 	private ProjectsService projectService;
 
+	@Autowired
+    private VisionService visionService;
 	
 	@RequestMapping( value="", method=RequestMethod.GET )
 	public String getAdminHome(	@AuthenticationPrincipal User user, Model model ) {
@@ -241,7 +245,7 @@ public class UserAPI {
 
 				// Creating the directory to store file
 				ObjectId pid = new ObjectId();
-				File dir = new File("src/main/resources/static/pictures/" + uid );
+				File dir = new File("src/main/pictures/" + uid );
 				if ( !dir.exists() )
 					dir.mkdirs();
 
@@ -265,35 +269,12 @@ public class UserAPI {
 		}
 	}
 	
-	@RequestMapping( value="/{uid}/picture", method=RequestMethod.GET )
+	@RequestMapping( value="/{uid}/receipts/{rid}/pictures/{pid}", method=RequestMethod.GET )
 	@ResponseBody
-	public void analyseImage() throws IOException {
-		FileOutputStream fs = new FileOutputStream( new File("/Users/chenxia/Downloads/results.txt"));
-		PrintStream ps = new PrintStream( fs );
-		Detect app = new Detect(ImageAnnotatorClient.create());
-		app.detectText("/Users/chenxia/Downloads/kwiktrip.JPG", ps );
-		ps.close();
-	}
-	
-//	@RequestMapping( value="/{uid}/newPicture", method=RequestMethod.GET )
-//	 public void doGet() throws IOException {
-//	   AppIdentityCredential credential =
-//	       new AppIdentityCredential(Arrays.asList(UrlshortenerScopes.URLSHORTENER));
-//	   Urlshortener shortener =
-//	       new Urlshortener.Builder(new UrlFetchTransport(), new JacksonFactory(), credential)
-//	       .build();
-//	   UrlHistory history = shortener.URL().list().execute();
-//	   
-//	 }
-
-	
-	@RequestMapping( value="/{uid}/google", method=RequestMethod.GET )
-	@ResponseBody
-	public List<EntityAnnotation> analyseImage2() throws IOException {
-		FileOutputStream fs = new FileOutputStream( new File("/Users/chenxia/Downloads/Information of picture.txt"));
-		PrintStream ps = new PrintStream( fs );
-		Detect app = new Detect(ImageAnnotatorClient.create());
-		return Detect.detectText("/Users/chenxia/Downloads/kwiktrip.JPG", System.out );
-	}
+	public BatchAnnotateImagesResponse analyseImage( 	@PathVariable String pid ,
+														@PathVariable String uid ) throws Exception {
+		String fileName = "../ExpenseTracker/src/main/pictures/" + uid + "/" + pid;
+        return visionService.detect( fileName );
+}
 	
 }

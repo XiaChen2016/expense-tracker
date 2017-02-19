@@ -5194,3 +5194,9 @@ org.eclipse.core.internal.resources.ResourceException: Resource is out of sync w
 	at org.eclipse.equinox.launcher.Main.run(Main.java:1519)
 !SUBENTRY 1 org.eclipse.core.resources 4 274 2017-02-08 16:03:22.189
 !MESSAGE Resource is out of sync with the file system: '/ExpenseTracker/src/main/java/com/tracker/repositories/projects/MongoProjectRepositoryImpl.java'.
+
+!ENTRY org.eclipse.jface.text 2 0 2017-02-16 18:30:31.537
+!MESSAGE Duplicate template id: 'org.eclipse.wst.xslt.templates.xpath.number'
+
+!ENTRY org.eclipse.jface.text 2 0 2017-02-16 18:30:31.538
+!MESSAGE Duplicate template id: 'org.eclipse.wst.xslt.templates.xpath.round'

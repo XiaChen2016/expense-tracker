@@ -1,0 +1,8 @@
+package com.tracker.domain.pictures;
+
+public class Picture {
+	private String id;
+	private String ownerId;
+	private String receiptId;
+	private TextAnnotation[] textAnnotations;
+}
