@@ -3,67 +3,52 @@
    <div class = "pull right">
    	<ul class="nav navbar-nav">
          <!-- <li><img ng-src="/photos/{{user.avatarIamage}}" class="img-circle" style = "max-width: 50px"></li> -->
-		 <li><a>{{user.username}}</a></li>
-         <li><a ng-click = "logout()">logout</a></li>
+        <li>
+          <a href="/#/editUser" class="btn btn-default">
+          <span class="glyphicon glyphicon-user"></span>{{user.username}}
+          </a>
+        </li>
+        <!--<li><a ng-click = "logout()" class = "btn btn-default">logout</a></li>-->
+        <li>
+          <a class="btn btn-default" ng-click="logout()">
+          <span class="glyphicon glyphicon-log-out"></span>Log out
+          </a>
+        </li>
       </ul>
    </div>
    <div class = "pull left">
       <ul class="nav navbar-nav">
          <!-- <li><img ng-src="/photos/{{user.avatarIamage}}" class="img-circle" style = "max-width: 50px"></li> -->
-         <li><a href="/#/editUser">Edit my profile</a></li>
-         <li><a href="/#/createUser">Create users</a></li>
-         <li><a href="/#/browseAll">View all receipt</a></li>
+         <li><a href="/#/createUser">Create user</a></li>
+         <li><a href="/#/browseAll">Receipts</a></li>
       </ul>
    </div>
 
 </nav>
-		<!-- <p>Search : </p>
-		<div class="row">
-		<div class="col-lg-4">
-        <div class="pull left">
-        	<div class="input-group">
-					<input type="text" class="form-control" ng-model = "searchKeyWord">
-					<div class="input-group-btn">
-						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-							Search as
-							<span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu">
-							<li><a ng-click="searchBy('name')">Name</a></li>
-							<li><a ng-click="searchBy('email')">E-mail</a></li>
-							<li class="divider"></li>
-							<li><a ng-click="searchByAdmin()">Admin</a></li>
-							<li><a ng-click="searchByUser()">User</a></li>
-						</ul>
-					</div>
-				</div>
-        </div>
-        </div>
-        </div> -->
-    <form class="form-inline">
+    <form class="form-inline well well-sm">
     	<div class="form-group">
     		<label class="sr-only">Username</label>
     		<input class="form-control" id="exampleInputUsername" placeholder="Username" ng-model="search.username">
   		</div>
   		<div class="form-group">
-    		<label class="sr-only">Email address</label>
-    		<input class="form-control" id="exampleInputEmail" placeholder="Email" ng-model="search.email">
-  		</div>
-  		<div class="form-group">
     		<label class="sr-only">Name</label>
     		<input class="form-control" id="exampleInputName" placeholder="Name" ng-model="search.name">
+  		</div>
+		<div class="form-group">
+    		<label class="sr-only">Email address</label>
+    		<input class="form-control" id="exampleInputEmail" placeholder="Email" ng-model="search.email">
   		</div>
   		<div class="checkbox">
     		<label>
       		<input type="checkbox" ng-model = "search.admin"> Admin
     		</label>
   		</div>
-  		<button type="submit" class="btn btn-default" ng-click="searchUsers()">Search</button>
+  		<button type="submit" class="btn btn-default pull-right" ng-click="searchUsers()">Search</button>
 	</form>
 
 
         <div class="pull right">
-          <a>User number per page</a>
+          <a>Per page</a>
           <select ng-change = "setSize()" ng-model = "userPerPage" ng-options = "size for size in sizeList">
           </select>
         </div>
@@ -74,7 +59,6 @@
         <tr>
           <th>Username</th>
           <th>Name</th>
-          <!-- <th>ID</th> -->
           <th>Email</th>
           <th>Phone Number</th>
           <th>Admin</th>
@@ -84,14 +68,13 @@
       </thead>
       <tbody>
    	  <tr ng-repeat=" user in userList">
-   	      <td><sub><b style = "font-size:17px">{{user.username}}</b></sub></td>
+   	      <td><sub><b>{{user.username}}</b></sub></td>
    	      <td><sub>{{user.name}}</sub></td>
-   	      <!-- <td><sub>{{user.id}}</sub></td> -->
    	      <td><sub>{{user.email}}</sub></td>
    	      <td><sub ng-repeat="tel in user.phone">{{tel}}</sub></td>
    	      <td><h6> <span ><input type="checkbox" ng-model="user.admin" ng-click="updateRole(user.id, user.admin)"></span> </h6></td>
           <td><h6> <span ><input type="checkbox" ng-model="user.status"ng-true-value="'enabled'" ng-false-value="'disabled'" ng-click="activeUser(user.id, user.status)"></span> </h6></td>
-          <td><sub><a ng-click = "editUser(user)">Edit</a></sub><td>
+          <td><button class = "btn btn-info btn-sm"ng-click = "editUser(user)">Edit</button><td>
     </tbody>
     <tfoot>
       <td colspan = "10">
@@ -107,7 +90,7 @@
                     <div class="col-xs-5">
 				              <div class="input-group">
 					                   <span class="input-group-btn">
-						                         <button class="btn btn-default" type="button" ng-click = "setPage()">
+						                         <button class="btn btn-primary" type="button" ng-click = "setPage()">
 							                                Go to
 						                        </button>
 					                  </span>

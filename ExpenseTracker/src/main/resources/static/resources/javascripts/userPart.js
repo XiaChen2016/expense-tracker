@@ -120,8 +120,33 @@ tracker.controller('userHome.Controller', ['$scope', '$resource','userService','
 		pagingService.setSize(result.size);
 	}
 
+	var getCurrentUser = function(){
+		console.log("name = " +userService.getUser().username )
+		if(userService.getUser().username)
+		{
+			$scope.user = userService.getUser();
+			getReceiptList();
+			getAllProject();
+		}
+		else
+		{	
+			home.get(function(loggedUser){
+				$scope.user = loggedUser;
+				userService.setUser(loggedUser);
+				console.log("Username: " + userService.getUser().username);
+				getReceiptList();
+				getAllProject();
+			});	
+		}
+	}
+
+	var getReceiptList = function(){
+		console.log("hello from getUserList!");
+		Receipts.get({ uid : $scope.user.id, page : pagingService.getCurrentPage(), size : pagingService.getSize() },updateListOfReceipt);
+	}
+
 	var getAllProject = function () {
-		Projects.get({ uid : $scope.user.id },function(result){
+		Projects.get({ uid : userService.getUser().id },function(result){
 		projectService.setProjectList(result.content);
 		var content = result.content;
 		var rawProjectList = [];
@@ -133,32 +158,8 @@ tracker.controller('userHome.Controller', ['$scope', '$resource','userService','
 
 	}
 
-	var getCurrentUser = function(){
-		console.log("name = " +userService.getUser().username )
-		if(userService.getUser().username)
-		{
-			$scope.user = userService.getUser();
-			getReceiptList();
-		}
-		else
-		{	
-			home.get(function(loggedUser){
-				$scope.user = loggedUser;
-				userService.setUser(loggedUser);
-				console.log("Username: " + userService.getUser().username);
-				getReceiptList();
-			});	
-		}
-	}
-
-	var getReceiptList = function(){
-		console.log("hello from getUserList!");
-		Receipts.get({ uid : $scope.user.id, page : pagingService.getCurrentPage(), size : pagingService.getSize() },updateListOfReceipt);
-	}
-
 	getCurrentUser();
 	userService.setEditUser($scope.user);
-	getAllProject();
 
 
 
@@ -208,58 +209,6 @@ tracker.controller('userHome.Controller', ['$scope', '$resource','userService','
 		
 	}
 
-	// $scope.prevPage = function(){
-	// 	if(userService.getSearchKey)
-	// 		$.ajax(  '/admin/'+ $scope.user.id+'/receipt?size='+$scope.userPerPage+
-	// 				'&page='+ ($scope.currentPage - 1)+
-	// 				userService.getSearchKey,{ type : 'GET', success: updateListOfUser  });
-	// 	else
-	// 		$.ajax(  '/user/'+ $scope.user.id+'/receipt?size='+$scope.userPerPage+
-	// 				'&page='+ ($scope.currentPage - 1),{ type : 'GET', success: updateListOfReceipt  });
-
-	// }
-
-	// $scope.nextPage = function(){
-	// 	if(userService.getSearchKey)
-	// 		$.ajax(  '/admin/'+ $scope.user.id+'/receipt?size='+$scope.userPerPage+
-	// 				'&page='+ ($scope.currentPage + 1)+
-	// 				userService.getSearchKey,{ type : 'GET', success: updateListOfUser  });
-	// 	else
-	// 		$.ajax(  '/user/'+ $scope.user.id+'/receipt?size='+$scope.userPerPage+
-	// 				'&page='+ ($scope.currentPage + 1),{ type : 'GET', success: updateListOfReceipt  });
-	// }
-
-	// $scope.setPage = function()
-	// {
-	// 	var page = document.getElementById("targetPage").value - 1;
-	// 	if(Number.isInteger(page)&& page<= $scope.totalPage && page>=0)
-	// 	{
-	// 		if(userService.getSearchKey)
-	// 		{
-	// 			$scope.currentPage = page;
-	// 			$.ajax(  '/user/'+ $scope.user.id+'/receipt?size='+$scope.userPerPage+
-	// 					'&page='+ $scope.currentPage+
-	// 					userService.getSearchKey,{ type : 'GET', success: updateListOfUser  });
-
-	// 		}
-	// 		else{
-	// 			$scope.currentPage = page;
-	// 			$.ajax(  '/user/'+ $scope.user.id+'/receipt?size='+$scope.userPerPage+ '&page='+$scope.currentPage,{ type : 'GET', success: updateListOfReceipt  });
-
-	// 		}
-	// 	}
-	// 	else
-	// 		alert('Please type in right number', 'ERROR');
-
-	// }
-
-	// $scope.setSize = function(){
-	// 	if(userService.getSearchKey)
-	// 		getUserListWithSearch();
-	// 	else
-	// 		getReceiptList();
-	// }
-
 //	--------------------------edit/view receipt---------------------------
 	$scope.viewDetail = function(r){
 		console.log("hello from viewDetail");
@@ -303,18 +252,8 @@ tracker.controller('editReceipt.Controller', ['$scope', 'userService','receiptSe
 			},
 
 			del: function(key){
+				console.log(key);
 				$scope.items.splice(key,1);
-			}
-	}
-
-	$scope.tag =
-	{
-			add: function(){
-				$scope.tags.push(" ");
-			},
-
-			del: function(key){
-				$scope.tags.splice(key,1);
 			}
 	}
 
@@ -452,6 +391,26 @@ tracker.controller('createReceipt.Controller', ['$scope', 'userService', functio
 			}
 		} );
 	}
+ 
+   $scope.upload = function() {
+      var formData = new FormData();
+      if( !$('#photoFile').val() ) return;
+      
+      formData.append("photo", $('#photoFile')[0].files[0]);
+
+      $.ajax( {
+         url : '/user/'+ $scope.user.id +'/picture',
+         type : 'POST',
+         data : formData,
+         processData : false,
+         contentType : false,
+         success : function( response ) {
+			 
+         }
+      } );
+
+      $('#photoFile').val('');
+   }
 
 
 	$scope.cancel = function(){

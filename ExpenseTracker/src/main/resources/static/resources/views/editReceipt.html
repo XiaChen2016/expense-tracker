@@ -8,7 +8,7 @@
    </div>
 </nav>
 
-<div  class="modal-dialog" role="dialog">
+<div  class="modal-lg" role="dialog">
     <div class="modal-content">
     	<div class="modal-header">
 	        <h4 class="modal-title">Receipt Detail</h4>
@@ -39,18 +39,22 @@
 		      		<td><p style="margin-top:-10px;">Shopping List&nbsp;</p></td>
 
 					<td>
-					<h5 style = "word-spacing: 40px;">Name Quantity Price</h5>
-              	  <div ng-repeat = "item in items track by $index">
-              	  	<div class="input-group">
-                      <input type="text"  ng-model="items[$index].name" size = 10 >
-                      <input type="text"  ng-model="items[$index].quantity"size = 10  >
-                      <input type="text"  ng-model="items[$index].price"size = 10 >
-
-                      <button ng-click="editItem.del(key)" class="btn btn-default btn-xs">delete</button>
-
-                    </div>
-                  </div>
-                  <a ng-click="editItem.add()">Add Item</a>
+					<h5 style = "word-spacing: 140px;">Name Quantity Price</h5>
+              			<div class="form-inline" ng-repeat = "item in items track by $index" style="margin-top:10px;">
+    	          		<div class="form-group">
+                    		<input class="form-control" ng-model="items[$index].name">
+  		          		</div>
+  		          		<div class="form-group">
+    		            	<input  class="form-control" ng-model="items[$index].quantity">
+                		</div>
+		            	<div class="form-group">
+    		            	<input   class="form-control" ng-model="items[$index].price">
+                		</div>
+                		<div class="form-group">
+  		          		<button type="submit" class="btn btn-danger" ng-click="editItem.del($index)">delete</button>
+                		</div>
+	            		</div>
+              		<button type="button" class="btn btn-info" ng-click="editItem.add()" style="margin-top:10px;">Add Item</button>
               		</td>
 
 		      	</tr>

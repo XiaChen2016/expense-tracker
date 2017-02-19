@@ -180,12 +180,6 @@ tracker.controller('adminHome.Controller', ['$scope', '$resource','userService',
 	$scope.updateRole = function(id,role){
 		if(role)var isAdmin = true;
 		else var isAdmin = false;
-//		$.ajax( {
-//		url : '/admin/'+ $scope.user.id +'/users/'+id+'/isAdmin',
-//		type : 'PUT',
-//		contentType: "application/json; charset=utf-8",
-//		data : ""+ isAdmin
-//		} );
 		Users.update({aid : $scope.user.id, uid : id, isAdmin : (""+isAdmin)},null,null);
 	}
 //	-----------------------active status---------------------------------
@@ -197,6 +191,11 @@ tracker.controller('adminHome.Controller', ['$scope', '$resource','userService',
 		else{
 			Users.update({aid : $scope.user.id, uid : id, active : "disable"},null,null);
 		}
+	}
+
+	$scope.editUser = function(selectedUser){
+		userService.setEditUser(selectedUser);
+		window.location.href = '/#/editUser';
 	}
 } ] );
 
@@ -226,11 +225,14 @@ tracker.controller('createUser.Controller', ['$scope', '$resource','userService'
 				isAdmin : isAdmin
 		}
 		Users.save({aid:$scope.user.id},newUser,function(){window.location.href = '/#/admin';});
-	}
-	
-	
-	getCurrentUser();
+	};
 
+	$scope.cancel = function(){
+		window.location.href = '/#/admin'
+	}
+
+
+	getCurrentUser();
 } ] );
 
 
@@ -263,22 +265,6 @@ tracker.controller('editUser.Controller', ['$scope', 'userService','Users', func
 			var isAdmin = true;
 		else
 			var isAdmin = false;
-//		$.ajax( {
-//			url : '/admin/'+ $scope.user.id +'/users/' + editUser.id,
-//			type : 'POST',
-//
-//			data : {
-//				id:editUser.id,
-//				username: editUser.username,
-//				name: $scope.newName,
-//				newPhoneNumber : $scope.newPhoneNumber,
-//				email: editUser.email,
-//				isAdmin : isAdmin
-//			},
-//			success:function(){
-//				window.location.href = '/#/admin'
-//			}
-//		} );
 		var updatedUser = {
 				id:editUser.id,
 				username: editUser.username,
@@ -288,9 +274,11 @@ tracker.controller('editUser.Controller', ['$scope', 'userService','Users', func
 				isAdmin : isAdmin
 		}
 		Users.save({aid:$scope.user.id},updatedUser,function(){window.location.href = '/#/admin';});
+	};
+
+	$scope.cancel = function(){
+		window.location.href = '/#/admin'
 	}
-
-
 } ] );
 
 
