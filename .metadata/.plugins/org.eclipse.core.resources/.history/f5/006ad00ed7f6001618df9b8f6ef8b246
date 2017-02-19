@@ -1,0 +1,11 @@
+package com.tracker.repositories.pictures;
+
+import org.springframework.data.repository.PagingAndSortingRepository;
+
+import com.tracker.domain.project.Project;
+import com.tracker.repositories.projects.UpdateableProjectRepository;
+
+public interface MongoPictureRepository extends UpdateableProjectRepository ,
+											PagingAndSortingRepository	< Project , String > {
+
+}

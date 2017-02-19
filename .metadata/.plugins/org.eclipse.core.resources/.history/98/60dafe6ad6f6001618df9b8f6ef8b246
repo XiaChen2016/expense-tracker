@@ -1,0 +1,5 @@
+package com.tracker.repositories.pictures;
+
+public class UpdatablePictureRepository {
+
+}

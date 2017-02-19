@@ -15,6 +15,8 @@ public class MongoProjectRepositoryImpl implements UpdateableProjectRepository{
 	private Update getUpdate( Project p1, Project p2 ) {
 		Update update = new Update();
 		update.set( "ownerId",  p2.getOwnerId() );
+		update.set( "startDate",  p2.getStartDate() );
+		update.set( "endDate",  p2.getEndDate() );
 		update.set( "name", p2.getName() );
 		return update;
 	}

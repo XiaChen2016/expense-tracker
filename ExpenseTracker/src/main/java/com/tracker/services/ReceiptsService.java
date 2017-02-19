@@ -31,9 +31,20 @@ public class ReceiptsService {
 		return receiptRepository.findByOwnerId( id, pageable );
 	}
 	
+	public void deleteReceiptsWithOneProject( String projectId ) {
+		receiptRepository.findAndRemove( projectId );
+	}
+	
+	public void delete( String id ){
+		receiptRepository.delete( id );
+	}
+	
 	public boolean deleteAll(){
 		receiptRepository.deleteAll();
 		return true;
+	}
+	public Page<Receipt> findByProject( String pid, Pageable pageable ) {
+		return receiptRepository.findByProjectId( pid, pageable );
 	}
 	public Receipt findOne( String id ) {
 		return receiptRepository.findOne( id );
@@ -41,7 +52,6 @@ public class ReceiptsService {
 	public Page<Receipt> searchReceipt( String ownerId, String place, String project, 
 				String upperLimit, String lowerLimit, String category, Pageable pageable ) {
 		String projectId ="";
-		System.out.println("search by project: " + project);
 		if( project.length()>0 && projectService.findByOwnerIdAndNameLike(ownerId, project) != null ) {
 			projectId = projectService.findByOwnerIdAndNameLike(ownerId, project).getId();
 		}
@@ -49,18 +59,13 @@ public class ReceiptsService {
 		return receiptRepository.find( ownerId, place, projectId, upperLimit, lowerLimit , category, pageable );
 	}
 	
-	public boolean save( Receipt receipt ) {
-		receiptRepository.save( receipt );
-		return true;
+	public Receipt save( Receipt receipt ) {
+		return receiptRepository.save( receipt );
 	}
 	
 	public boolean update( Receipt receipt ) {
 		receiptRepository.update( receipt );
 		return true;
-	}
-	
-	public void delete( String id ){
-		receiptRepository.delete( id );
 	}
 	
 	public void initDatabase( String uid ) throws ParseException {
@@ -74,6 +79,8 @@ public class ReceiptsService {
 		String[] catagoryNames = { "Grocery", "Electronic Devices", "Clothing", "Home" };
 		String[] projectNames = { "Thanksgiving", "Christmas", "Octoberfast", "Halloween" };
 		String[] places = { "Kwik Trip", "Mall of America", "Outlets", "Airport", "Macy's" ,"JCPenny" };
+		Long[] startDates = { 1087840590084L, 1108640590084L, 1128640590084L, 1208640590084L };
+		Long[] endDates = { 1287840590084L, 1308640590084L, 1428640590084L, 1448641590184L };
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 		
 		for( int i = 0; i < 30; i++ ) {
@@ -125,6 +132,8 @@ public class ReceiptsService {
 				p = new Project();
 				p.setName( project );
 				p.setOwnerId( uid );
+				p.setStartDate( startDates[(int) ( Math.random() * 4) ] );
+				p.setEndDate( endDates[(int) ( Math.random() * 4) ] );
 				projectService.save( p );
 				p = projectService.findByOwnerIdAndName( uid, project );
 				r.setProjectId( p.getId() );

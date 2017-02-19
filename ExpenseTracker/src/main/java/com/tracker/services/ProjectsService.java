@@ -19,9 +19,8 @@ public class ProjectsService {
 		return true;
 	}
 	
-	public boolean save( Project project ) {
-		projectRepository.save( project );
-		return true;
+	public Project save( Project project ) {
+		return projectRepository.save( project );
 	}
 	
 	public void update( Project project ) {

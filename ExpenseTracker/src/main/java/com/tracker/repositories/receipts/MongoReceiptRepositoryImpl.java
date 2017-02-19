@@ -25,7 +25,7 @@ public class MongoReceiptRepositoryImpl implements UpdateableReceiptRepository {
 								String category,
 								Pageable pageable ){
 		Query query = new Query();
-		query.addCriteria( Criteria.where("ownerId").is(ownerId) );
+		query.addCriteria( Criteria.where("ownerId").is( ownerId ) );
 		if( place.length() > 0 ) {
 			query.addCriteria( Criteria.where("place").regex( place, "i" ) );
 		}
@@ -56,9 +56,16 @@ public class MongoReceiptRepositoryImpl implements UpdateableReceiptRepository {
 		return page;
 	}
 	
+	public void findAndRemove( String pid ) {
+		System.out.println("Deleting project: " + pid);
+		Query query = new Query();
+		query.addCriteria( Criteria.where("projectId").is( pid ) );
+		mongo.remove( query, Receipt.class );
+	}
 	private Update getUpdate( Receipt x, Receipt y){
 		Update update = new Update();
 		update.set( "projectId", y.getProjectId() );
+		update.set( "picId", y.getPicId() );
 		update.set( "note",  y.getNote() );
 		update.set( "total",  y.getTotal() );
 		update.set( "place",  y.getPlace() );

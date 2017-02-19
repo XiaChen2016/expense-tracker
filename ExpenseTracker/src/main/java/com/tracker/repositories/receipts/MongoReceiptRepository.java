@@ -13,6 +13,7 @@ public interface MongoReceiptRepository  extends UpdateableReceiptRepository,
 	
 	public Page<Receipt> findByOwnerId( String id , Pageable pageable );
 	public Page<Receipt> findByPlaceRegexAndProjectId( String place, String projectId, Pageable pageable );
+	public Page<Receipt> findByProjectId( String pid, Pageable pageable );
 	public Receipt findOne( String id );
 	public Page<Receipt> find(	@Param("ownerId") String ownerId,
 								@Param("place") String place,
@@ -21,6 +22,7 @@ public interface MongoReceiptRepository  extends UpdateableReceiptRepository,
 								@Param("lowerLimit") String lowerLimit,
 								@Param("category") String category,
 								Pageable pageable );
+	public void findAndRemove( String pid );
 	public Page<Receipt> 
 				findByPlaceContainingAndTotalContainingAndCategoryContaining
 					( String place, String total, String category, Pageable pageable);
