@@ -1,6 +1,7 @@
 package com.tracker.api;
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -8,6 +9,7 @@ import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.ParseException;
+import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -27,7 +29,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.google.api.services.vision.v1.model.EntityAnnotation;
 import com.tracker.domain.pictures.Picture;
+import com.tracker.domain.pictures.PictureWithPath;
 import com.tracker.domain.project.Project;
 import com.tracker.domain.receipt.Receipt;
 import com.tracker.domain.users.User;
@@ -285,8 +289,7 @@ public class UserAPI {
 				stream.close();
 				
 				String fileName = "../ExpenseTracker/src/main/pictures/" + uid + "/" + pid;
-				
-		        picture.setTextAnnotation( visionService.detect( fileName ).getResponses().get(0) );
+		        picture.setTextAnnotations( visionService.detect( fileName ).getResponses().get(0).getTextAnnotations() );
 		        
 		        pictureService.update(picture);
 				return receipt;
@@ -300,11 +303,27 @@ public class UserAPI {
 		}
 	}
 	
-	@RequestMapping( value="/{uid}/receipts/{rid}/pictures/{pid}", method=RequestMethod.GET )
+	@RequestMapping( value="/{uid}/pictures/{pid}", method=RequestMethod.GET )
 	@ResponseBody
-	public File analyseImage( 	@PathVariable String pid ,
+	public File getOnePicture( 	@PathVariable String pid ,
 									@PathVariable String uid ) throws Exception {
-		return new File("../ExpenseTracker/src/main/pictures/" + uid + "/" + pid);
+//		ByteArrayOutputStream jpegOutputStream = new ByteArrayOutputStream();
+		
+		return new File("/src/main/pictures/" + uid + "/" + pid);
+		
 	}
 	
+	@RequestMapping( value="/{uid}/pictures", method=RequestMethod.GET )
+	@ResponseBody
+	public Page<PictureWithPath> getPictures( 	@AuthenticationPrincipal User user ,
+									@PathVariable String uid,
+									@RequestParam( required=false, defaultValue="0" ) int page,
+									@RequestParam( required=false, defaultValue="10" ) int size,
+									HttpServletResponse response ) throws ParseException, IOException {
+		if( !uid.equals( user.getId())) {
+		response.sendError(403,"You are not allowed to browse other user's data!");
+		} 
+		Pageable pageable = new PageRequest( page, size );
+		return pictureService.findByOwnerId( uid, pageable);
+	}
 }

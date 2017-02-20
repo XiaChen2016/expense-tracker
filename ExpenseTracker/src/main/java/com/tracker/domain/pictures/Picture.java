@@ -1,14 +1,16 @@
 package com.tracker.domain.pictures;
 
 
-import com.google.api.services.vision.v1.model.AnnotateImageResponse;
+import java.util.List;
+
+import com.google.api.services.vision.v1.model.EntityAnnotation;
 
 
 public class Picture {
 	private String id;
 	private String ownerId;
 	private String receiptId;
-	private AnnotateImageResponse textAnnotation;
+	private List<EntityAnnotation> textAnnotations;
 	
 	public String getId() {
 		return id;
@@ -28,10 +30,10 @@ public class Picture {
 	public void setReceiptId(String receiptId) {
 		this.receiptId = receiptId;
 	}
-	public AnnotateImageResponse getTextAnnotation() {
-		return textAnnotation;
+	public List<EntityAnnotation> getTextAnnotations() {
+		return textAnnotations;
 	}
-	public void setTextAnnotation( AnnotateImageResponse textAnnotation ) {
-		this.textAnnotation = textAnnotation ;
+	public void setTextAnnotations( List<EntityAnnotation> textAnnotations ) {
+		this.textAnnotations = textAnnotations ;
 	}
 }

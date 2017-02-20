@@ -2,3 +2,7 @@
 1487531193909	Rename type 'UpdataablePictureRepository'
 1487531798077	Rename local variable 'pid'
 1487540838032	Delete element
+1487547188923	Rename package 'com.tracker.domain.pictures'
+1487547225150	Rename package 'com.tracker.domain.picture'
+1487560118544	Rename field 'textAnnotation'
+1487561810550	Rename local variable 'pwp'
