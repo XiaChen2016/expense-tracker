@@ -1,32 +1,22 @@
-<nav class="navbar navbar-default" role="navigation">
-   <div class = "pull right">
-   	<ul class="nav navbar-nav">
-         <li>
-          <a href="/#/editUser" class="btn btn-default">
-          <span class="glyphicon glyphicon-user"></span>{{user.username}}
-          </a>
-        </li>
-        <li>
-          <a class="btn btn-default" ng-click="logout()">
-          <span class="glyphicon glyphicon-log-out"></span>Log out
-          </a>
-        </li>
-      </ul>
-   </div>
-   <div class = "pull left">
-      <ul class="nav navbar-nav">
-         <!-- <li><img ng-src="/photos/{{user.avatarIamage}}" class="img-circle" style = "max-width: 50px"></li> -->
-         <li><a href="/#/createReceipt">Add receipt</a></li>
-         <li><a href="/#/browseMyReceipt">Receipts</a></li>
-         <li><a href="/#/manageMyCategory">Projects</a></li>
-      </ul>
-   </div>
+<div class = "well well-sm">
+  <form class = "form-inline">
+            <div class = "form-group pull-right">
+              <button type="submit" class="btn btn-default" ng-click="editUser(user)"><span class="glyphicon glyphicon-user"></span>{{user.username}}</button>
+              <button type="submit" class="btn btn-default" ng-click="logout()"><span class="glyphicon glyphicon-log-out"></span>logout</button>
+            </div>
 
-</nav>
+            <div class = "form-group">
+              <button type="submit" class="btn btn-link" ng-click="jumpToCreateReceipt()">Add receipt</button>
+            </div>
+            <div class = "form-group">
+              <button type="submit" class="btn btn-link" ng-click="Receipts()">Projects</button>
+            </div>
+  </form>
+</div>
 
         <div class="pull left">
         <a>Project </a>
-          <select ng-change = "setProject()" ng-model = "project" ng-options = "project for project in projectList">
+          <select ng-change = "setProject()" ng-model = "project" ng-options = "project as project.name for project in projectList track by project.id">
           </select>
         </div>
         <div class="pull right">

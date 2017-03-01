@@ -125,6 +125,7 @@ tracker.controller('adminHome.Controller', ['$scope', '$resource','userService',
 			home.get(function(loggedUser){
 				$scope.user = loggedUser;
 				userService.setUser(loggedUser);
+				userService.setEditUser(loggedUser);
 				console.log("Username: " + userService.getUser().username);
 				getUserList();
 			});	
@@ -136,7 +137,6 @@ tracker.controller('adminHome.Controller', ['$scope', '$resource','userService',
 		Users.get({ aid : $scope.user.id, page : pagingService.getCurrentPage(), size : pagingService.getSize() },updateListOfUser);
 	}
 	getCurrentUser();
-	userService.setEditUser($scope.user);
 	
 //	-----------------------------search--------------------------------
 	$scope.searchUsers = function(){
@@ -175,6 +175,9 @@ tracker.controller('adminHome.Controller', ['$scope', '$resource','userService',
 		Users.get({aid : $scope.user.id, page : pagingService.getCurrentPage(), size : pagingService.getSize() ,username: searchService.getState().username, email: searchService.getState().email, name : searchService.getState().name, isAdmin : searchService.getState().admin} ,updateListOfUser );
 		
 	}
+	$scope.jumpToCreateUser = function(){
+		window.location.href = '/#/createUser';
+	}
 
 //	-------------------------update role---------------------------------
 	$scope.updateRole = function(id,role){
@@ -211,11 +214,18 @@ tracker.controller('createUser.Controller', ['$scope', '$resource','userService'
 		window.location.href = '/#/';
 	}
 
+
+	function validateEmail(email) {
+    		var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    		return re.test(email);
+		};
+
 	$scope.createUser = function(){
 		if($scope.newUserType)
 			var isAdmin = true;
 		else
 			var isAdmin = false;
+		
 		var newUser = {
 				username: $scope.newUserName,
 				name: $scope.newName,
@@ -246,7 +256,7 @@ tracker.controller('editUser.Controller', ['$scope', 'userService','Users', func
 	$scope.newUserType = editUser.admin;
 
 	if(editUser.phone)$scope.newPhoneNumber = editUser.phone;
-	else $scope.newPhoneNumber = ["0"];
+	else $scope.newPhoneNumber = [];
 
 	$scope.PN =
 	{
@@ -259,354 +269,38 @@ tracker.controller('editUser.Controller', ['$scope', 'userService','Users', func
 			}
 	}
 
-
+	function validateEmail(email) {
+    		var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    		return re.test(email);
+		};
+	
 	$scope.confirmEditUser = function(){
 		if($scope.newUserType)
 			var isAdmin = true;
 		else
 			var isAdmin = false;
-		var updatedUser = {
+		console.log(validateEmail($scope.newEmailAddress));
+		if(!validateEmail($scope.newEmailAddress)){
+			$("#errorMessage").fadeIn();
+		}else{
+			var updatedUser = {
 				id:editUser.id,
 				username: editUser.username,
 				name: $scope.newName,
 				newPhoneNumber : $scope.newPhoneNumber,
 				email: editUser.email,
 				isAdmin : isAdmin
-		}
-		Users.save({aid:$scope.user.id},updatedUser,function(){window.location.href = '/#/admin';});
+				}
+			Users.save({aid:$scope.user.id},updatedUser,function(){window.location.href = '/#/admin';});
+			}
 	};
 
 	$scope.cancel = function(){
-		window.location.href = '/#/admin'
+		if($scope.user.admin){
+		window.location.href = '/#/admin';
+		}else{
+			window.location.href = '/#/user';
+		}
 	}
 } ] );
 
-
-
-tracker.controller('userHome.Controller', ['$scope', '$resource','userService', function( $scope, $resource, userService ) {
-	$scope.currentPage = 0;
-	$scope.userPerPage = 10;
-
-	$scope.sizeList = [5,10,20];
-
-
-	$scope.logout = function(){
-		$.ajax('/logout',{type : 'POST'});
-		window.location.href = '/#/';
-	}
-
-	var updateListOfReceipt = function ( result ) {
-
-		console.log("updateListOfUser");
-		$scope.receiptList = result.content;
-		$scope.totalPage = result.totalPages;
-		$scope.responseContent = result;
-		$scope.currentPage = result.number;
-		$scope.userPerPage = result.size;
-		$scope.$digest();
-	}
-
-	var getCurrentUser = function(){
-		console.log("name = " +userService.getUser().username )
-		if(userService.getUser().username)
-		{
-			$scope.user = userService.getUser();
-			getReceiptList();
-		}
-		else
-		{
-			$.ajax(  '/home',{ type : 'GET', success: function( loggedUser, responseHeaders ){
-
-
-				$scope.user = loggedUser;
-				userService.setUser(loggedUser);
-				console.log("Username: " + userService.getUser().username);
-				getReceiptList();
-
-			}});
-
-		}
-	}
-
-	var getReceiptList = function(){
-		console.log("hello from getUserList!");
-		$.ajax(  '/user/'+ $scope.user.id+'/receipt?size='+$scope.userPerPage+ '&page='+$scope.currentPage,{ type : 'GET', success: updateListOfReceipt  });
-	}
-
-	getCurrentUser();
-	userService.setEditUser($scope.user);
-
-
-
-//	-----------------------------search--------------------------------
-	$scope.searchBy = function(searchKey){
-		var url = "";
-		if($scope.receiptLocation)
-			url = url + "&location=" + $scope.receiptLocation;
-		if($scope.receiptCategory)
-			url = url + "&project=" + $scope.receiptCategory;
-		if($scope.receiptTag)
-			url = url + "&tag=" + $scope.receiptTag;
-
-		userService.setSearchKey(url);
-
-		getUserListWithSearch();
-
-	}
-
-	var getUserListWithSearch = function(){
-		console.log("hello from getUserListWithSearch");
-		$.ajax(  '/admin/'+ $scope.user.id+'/users?size='+$scope.userPerPage+
-				'&page='+$scope.currentPage+
-				userService.getSearchKey,{ type : 'GET', success: updateListOfUser });
-	}
-
-
-//	----------------------------paging------------------------
-
-	$scope.prevPage = function(){
-		if(userService.getSearchKey)
-			$.ajax(  '/admin/'+ $scope.user.id+'/receipt?size='+$scope.userPerPage+
-					'&page='+ ($scope.currentPage - 1)+
-					userService.getSearchKey,{ type : 'GET', success: updateListOfUser  });
-		else
-			$.ajax(  '/user/'+ $scope.user.id+'/receipt?size='+$scope.userPerPage+
-					'&page='+ ($scope.currentPage - 1),{ type : 'GET', success: updateListOfReceipt  });
-
-	}
-
-	$scope.nextPage = function(){
-		if(userService.getSearchKey)
-			$.ajax(  '/admin/'+ $scope.user.id+'/receipt?size='+$scope.userPerPage+
-					'&page='+ ($scope.currentPage + 1)+
-					userService.getSearchKey,{ type : 'GET', success: updateListOfUser  });
-		else
-			$.ajax(  '/user/'+ $scope.user.id+'/receipt?size='+$scope.userPerPage+
-					'&page='+ ($scope.currentPage + 1),{ type : 'GET', success: updateListOfReceipt  });
-	}
-
-	$scope.setPage = function()
-	{
-		var page = document.getElementById("targetPage").value - 1;
-		if(Number.isInteger(page)&& page<= $scope.totalPage && page>=0)
-		{
-			if(userService.getSearchKey)
-			{
-				$scope.currentPage = page;
-				$.ajax(  '/user/'+ $scope.user.id+'/receipt?size='+$scope.userPerPage+
-						'&page='+ $scope.currentPage+
-						userService.getSearchKey,{ type : 'GET', success: updateListOfUser  });
-
-			}
-			else{
-				$scope.currentPage = page;
-				$.ajax(  '/user/'+ $scope.user.id+'/receipt?size='+$scope.userPerPage+ '&page='+$scope.currentPage,{ type : 'GET', success: updateListOfReceipt  });
-
-			}
-		}
-		else
-			alert('Please type in right number', 'ERROR');
-
-	}
-
-	$scope.setSize = function(){
-		if(userService.getSearchKey)
-			getUserListWithSearch();
-		else
-			getReceiptList();
-	}
-
-//	--------------------------edit/view receipt---------------------------
-
-	$scope.viewDetail = function(r){
-		userService.setEditReceipt(r);
-		window.location.href = '/#/editReceipt';
-	}
-
-} ] );
-
-
-tracker.controller('editReceipt.Controller', ['$scope', 'userService', function( $scope, userService ) {
-
-	var receipt = userService.getEditReceipt();
-	$scope.user = userService.getUser();
-	$scope.receiptID = receipt.id;
-	var date = new Date(receipt.time);
-	$scope.receiptTime = date;
-	$scope.receiptLocation = receipt.place;
-	$scope.receiptCategory = receipt.project;
-	$scope.receiptNote = receipt.note;
-
-	if(receipt.list_of_items)$scope.items = receipt.list_of_items;
-	else $scope.items = [{name:" ",quantity:" ",price:" "}];
-
-	if(receipt.tags)$scope.tags = receipt.tags;
-	else $scope.tags = [" "];
-
-
-	$scope.editItem =
-	{
-			add: function(){
-				$scope.items.push({name:" ",quantity:" ",price:" "});
-			},
-
-			del: function(key){
-				$scope.items.splice(key,1);
-			}
-	}
-
-	$scope.tag =
-	{
-			add: function(){
-				$scope.tags.push(" ");
-			},
-
-			del: function(key){
-				$scope.tags.splice(key,1);
-			}
-	}
-
-
-	Number.prototype.padLeft = function(base,chr){
-		var  len = (String(base || 10).length - String(this).length)+1;
-		return len > 0? new Array(len).join(chr || '0')+this : this;
-	}
-
-
-	$scope.confirmEditUser = function(){
-		var d = $scope.receiptTime;
-		var dformat = [ (d.getMonth()+1).padLeft(),
-		                d.getDate().padLeft(),
-		                d.getFullYear()].join('-')+
-		                ' ' +
-		                [ d.getHours().padLeft(),
-		                  d.getMinutes().padLeft(),
-		                  d.getSeconds().padLeft()].join(':');
-		var total = 0;
-		var x;
-		for(x in $scope.items){
-			total += $scope.items[x].quantity * $scope.items[x].price;
-		}
-
-
-		$.ajax( {
-			url : '/user/'+ $scope.user.id +'/receipt/'+$scope.receiptID,
-			type : 'POST',
-
-			data : {
-				time:dformat,
-				place: $scope.receiptLocation,
-				project: $scope.receiptCategory,
-				note : $scope.receiptNote,
-				category: $scope.tags,
-				list_of_items : $scope.items,
-				total : total
-			},
-			success:function(){
-				window.location.href = '/#/user'
-			}
-		} );
-	}
-
-
-	$scope.cancel = function(){
-		window.location.href = '/#/user'
-	}
-
-
-
-
-} ] );
-
-
-
-
-
-tracker.controller('createReceipt.Controller', ['$scope', 'userService', function( $scope, userService ) {
-
-
-	$scope.user = userService.getUser();
-
-	var date = new Date();
-	$scope.receiptTime = date;
-	$scope.receiptLocation = " ";
-	$scope.receiptCategory = " ";
-	$scope.receiptNote = " ";
-
-	$scope.items = [{name:" ",quantity:" ",price:" "}];
-
-	$scope.tags = [" "];
-
-
-	$scope.editItem =
-	{
-			add: function(){
-				$scope.items.push({name:" ",quantity:" ",price:" "});
-			},
-
-			del: function(key){
-				$scope.items.splice(key,1);
-			}
-	}
-
-	$scope.tag =
-	{
-			add: function(){
-				$scope.tags.push(" ");
-			},
-
-			del: function(key){
-				$scope.tags.splice(key,1);
-			}
-	}
-
-	Number.prototype.padLeft = function(base,chr){
-		var  len = (String(base || 10).length - String(this).length)+1;
-		return len > 0? new Array(len).join(chr || '0')+this : this;
-	}
-
-
-	$scope.confirmEditUser = function(){
-		var d = $scope.receiptTime;
-		var dformat = [ (d.getMonth()+1).padLeft(),
-		                d.getDate().padLeft(),
-		                d.getFullYear()].join('-')+
-		                ' ' +
-		                [ d.getHours().padLeft(),
-		                  d.getMinutes().padLeft(),
-		                  d.getSeconds().padLeft()].join(':');
-		var total = 0;
-		var x;
-		for(x in $scope.items){
-			total += $scope.items[x].quantity * $scope.items[x].price;
-		}
-
-
-		$.ajax( {
-			url : '/user/'+ $scope.user.id +'/receipt',
-			type : 'POST',
-
-			data : {
-				time:dformat,
-				place: $scope.receiptLocation,
-				project: $scope.receiptCategory,
-				note : $scope.receiptNote,
-				category: $scope.tags,
-				list_of_items : $scope.items,
-				total : total
-			},
-			success:function(){
-				window.location.href = '/#/user'
-			}
-		} );
-	}
-
-
-	$scope.cancel = function(){
-		window.location.href = '/#/user'
-	}
-
-
-
-
-} ] );

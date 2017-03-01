@@ -1,12 +1,6 @@
-<nav class="navbar navbar-default" role="navigation">
-   <div class="navbar-header">
-      <a class="navbar-brand">{{user.username}}</a>
-   </div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
 
-   <div class="navbar-header">
-      <a class="navbar-brand" ng-click = "logout()">logout</a>
-   </div>
-</nav>
 
 <div  class="modal-lg" role="dialog">
     <div class="modal-content">
@@ -15,96 +9,78 @@
     	</div>
 
     	<div class="modal-body">
-
-      <div class="well well-sm form">
-    
-        <form class="form-inline">
-            <div class="form-group">
-              <label for="photoFile">Image File</label>
-              <input id="photoFile" type="file" placeholder="image file">
-            </div>
-      
-            <button type="button" class="btn btn-xs btn-primary" ng-click="upload()">Upload</button> 
-        </form>
-      </div>
-  
 	      	<table class="profileTable" style="border-collapse:separate; border-spacing:0px 10px;">
 		      	<tr>
 		      		<td>Time</td>
-		      		<td><input type="datetime-local" class="form-control" ng-model="receiptTime" ></td>
+		      		<td><input id = "time" type="datetime-local" class="form-control" ng-model="receiptTime" ></td>
 		      	</tr>
-
-            <tr>
+				<tr>
 		      		<td>Location</td>
-		      		<td><input type="text" class="form-control" ng-model="receiptLocation" ></td>
+		      		<td><input id = "location"type="text" class="form-control" ng-model="receiptLocation" ></td>
 		      	</tr>
-            <tr>
+            	<tr>
 		      		<td>Project</td>
-		      		<td><input type="text" class="form-control" ng-model="receiptCategory" ></td>
+		      		<td><select id = "selectProject" class = "form-control" ng-model = "project" ng-options = "project as project.name for project in projectList track by project.id">
+          				</select></td>
 		      	</tr>
-
-            <tr>
-		      		<td><p style="margin-top:-10px;">List</p></td>
-
+				<tr>
+		      		<td><p style="margin-top:-10px;">Tags &nbsp;</p></td>
+			  		<td><tags-input id = "finishedTags" ng-model="tags"></tags-input></td>
+		      	</tr>
+				<tr>
+					<td><p style="margin-top:-10px;">Note &nbsp;</p></td>
+					<td><input id = "note" type="text" class="form-control" ng-model="receiptNote" ></td>
+		      	</tr>
+				<tr id = "hideOne">
 					<td>
-					<!--<h5 style = "word-spacing: 40px;">Name Quantity Price</h5>
-              	  <div ng-repeat = "item in items track by $index">
-              	  	<div class="input-group">
-                      <input type="text"  ng-model="items[$index].name" size = 10 style = "z-index: 1;" >
-                      <input type="text"  ng-model="items[$index].quantity"size = 10 style = "z-index: 1;" >
-                      <input type="text"  ng-model="items[$index].price"size = 10 style = "z-index: 1;">
+					<button type="button" class="btn btn-xs btn-primary" ng-click="cancel()">Cancel</button>
+					</td>
+					<td>
+					<button type="button" class="btn btn-xs btn-primary" ng-click="createReceipt()">Create</button> 
+					</td>
+				</tr>
+				<tr>
+				<td colspan="2">
+				<div id = "hideTwo" style="display:none">
+				<div class="form-inline well well-sm form">
+    				<form class="form">
+      					<div class="form-group">
+        				<label for="photoFile">Image File</label>
+        				<input id="photoFile" type="file" placeholder="image file">
+      					</div>
+						<div class="form-group">
+      					<button type="button" class="btn btn-xs btn-primary" ng-click="upload()">Upload</button>
+						<button type="button" class="btn btn-xs btn-primary" ng-click="noImage()">No Image</button> 
+						</div>
+    				</form>
+  				</div>
+				</div>
+				</td>
+			</tr>
+            <tr id = "hideThree" style="display:none">
+		      	<td><p style="margin-top:-10px;">Items</p></td>
+					<td>
+					<h5 style = "word-spacing: 140px;">Name Quantity Price</h5>
+              			<div class="form-inline" ng-repeat = "item in items track by $index" style="margin-top:10px;">
+    	          		<div class="form-group">
+                    		<input class="form-control" ng-model="items[$index].name">
+  		          		</div>
+  		          		<div class="form-group">
+    		            	<input  class="form-control" ng-model="items[$index].quantity">
+                		</div>
+		            	<div class="form-group">
+    		            	<input   class="form-control" ng-model="items[$index].price">
+                		</div>
+                		<div class="form-group">
+						<button type="submit" class="btn btn-info" ng-click="editItem.del($index)">update</button>
+  		          		<button type="submit" class="btn btn-danger" ng-click="editItem.del($index)">delete</button>
+                		</div>
+	            		</div>
+              		<button type="button" class="btn btn-info" ng-click="editItem.add()" style="margin-top:10px;">Add Item</button>
+              		</td>
 
-                      <button ng-click="editItem.del(key)" class="btn btn-default btn-xs">delete</button>
-
-                    </div>
-                  </div>
-                  <a ng-click="editItem.add()">Add Item</a>-->
-              <h5 style = "word-spacing: 140px;">Name Quantity Price</h5>
-              <div class="form-inline" ng-repeat = "item in items track by $index" style="margin-top:10px;">
-    	          <div class="form-group">
-                    <input class="form-control" ng-model="items[$index].name">
-  		          </div>
-  		          <div class="form-group">
-    		            <input  class="form-control" ng-model="items[$index].quantity">
-                </div>
-		            <div class="form-group">
-    		            <input   class="form-control" ng-model="items[$index].price">
-                </div>
-                <div class="form-group">
-  		          <button type="submit" class="btn btn-danger" ng-click="editItem.del(key)">delete</button>
-                </div>
-	            </div>
-              <button type="button" class="btn btn-info" ng-click="editItem.add()" style="margin-top:10px;">Add Item</button>
-          </td>
-
-		      	</tr>
-            <tr>
-		      		<td><p style="margin-top:-10px;">Category &nbsp;</p></td>
-		      		<td>
-              	  <div ng-repeat = "tag in tags track by $index">
-              	  	<div class="input-group">
-                      <input type="text" class="form-control" ng-model="tags[$index]">
-                      <div class="input-group-btn">
-                      <button ng-click="tag.del(key)" class="btn btn-danger">delete</button>
-                      </div>
-                    </div>
-                  </div>
-                  <a ng-click="tag.add()">Add category</a>
-              </td>
-
-		      	</tr>
-            <tr>
-		      		<td><p style="margin-top:-10px;">Note &nbsp;</p></td>
-
-              <td><input type="text" class="form-control" ng-model="receiptNote" ></td>
 		      	</tr>
 	      	</table>
-
-
     	</div>
-	<div class="modal-footer">
-        <button type="button" class="btn btn-warning" ng-click="cancel()">Cancel</button>
-        <button type="button" class="btn btn-primary" ng-click="confirmEditUser()">Confirm</button>
-    </div>
   </div>
 </div>
