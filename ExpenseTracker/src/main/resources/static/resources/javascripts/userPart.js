@@ -437,6 +437,9 @@ tracker.controller('createReceipt.Controller', ['$scope', 'userService','project
          processData : false,
          contentType : false,
          success : function( response ) {
+			 if(!response.list_of_items){
+				 $("#hideThree").show();
+			 }
 			 
          }
       } );
@@ -450,7 +453,6 @@ tracker.controller('createReceipt.Controller', ['$scope', 'userService','project
 	}
 
 	$scope.noImage = function(){
-		$("#hideTwo").hide();
 		$("#hideThree").show();
 	}
 
