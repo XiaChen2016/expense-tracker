@@ -84,7 +84,7 @@ tracker.factory('searchService',function(){
 });
 
 tracker.factory('Receipts', function($resource) {
-	return $resource('/user/:uid/receipts/:rid', { },{ 'update' : { method : 'PUT'}});
+	return $resource('/user/:uid/receipts/:rid/:items', { },{ 'update' : { method : 'PUT'}});
 } );
 
 tracker.factory('Projects', function($resource) {
@@ -238,8 +238,24 @@ tracker.controller('userHome.Controller', ['$scope', '$resource','userService','
 
 tracker.controller('editReceipt.Controller', ['$scope', 'userService','receiptService','projectService','Receipts', function( $scope, userService ,receiptService,projectService,Receipts) {
 	
+	var getCurrentUser = function(){
+		console.log("name = " +userService.getUser().username )
+		if(userService.getUser().username)
+		{
+			$scope.user = userService.getUser();
+		}
+		else
+		{	
+			home.get(function(loggedUser){
+				$scope.user = loggedUser;
+				userService.setUser(loggedUser);
+				userService.setEditUser($scope.user);
+			});	
+		}
+	}
+	getCurrentUser();
+	
 	var receipt = receiptService.getEditReceipt();
-	$scope.user = userService.getUser();
 	$scope.receiptID = receipt.id;
 	var date = new Date(receipt.time);
 	$scope.receiptTime = date;
@@ -330,9 +346,25 @@ tracker.controller('editReceipt.Controller', ['$scope', 'userService','receiptSe
 
 
 
-tracker.controller('createReceipt.Controller', ['$scope', 'userService','projectService','Receipts', function( $scope, userService ,projectService,Receipts) {
+tracker.controller('createReceipt.Controller', ['$scope', 'userService','projectService','Receipts','receiptService', function( $scope, userService ,projectService,Receipts,receiptService) {
 
-	$scope.user = userService.getUser();
+	var getCurrentUser = function(){
+		console.log("name = " +userService.getUser().username )
+		if(userService.getUser().username)
+		{
+			$scope.user = userService.getUser();
+		}
+		else
+		{	
+			home.get(function(loggedUser){
+				$scope.user = loggedUser;
+				userService.setUser(loggedUser);
+				userService.setEditUser($scope.user);
+			});	
+		}
+	}
+	getCurrentUser();
+
 	$scope.projectList = projectService.getProjectList();
 	console.log($scope.projectList);
 
@@ -361,6 +393,11 @@ tracker.controller('createReceipt.Controller', ['$scope', 'userService','project
 	Number.prototype.padLeft = function(base,chr){
 		var  len = (String(base || 10).length - String(this).length)+1;
 		return len > 0? new Array(len).join(chr || '0')+this : this;
+	}
+
+	$scope.showUpdate = function(index){
+		console.log("ngchange");
+		$("#item-"+index).show();
 	}
 
 
@@ -396,13 +433,16 @@ tracker.controller('createReceipt.Controller', ['$scope', 'userService','project
 		var data =  {
 				time:timestamp,
 				place: $scope.receiptLocation,
-				project: $scope.receiptProject,
+				project: $scope.project,
 				note : $scope.receiptNote,
 				category: allTag,
 				list_of_items : $scope.items,
 				total : total
 			};
-		Receipts.save({uid:$scope.user.id},data,function(){alert('Create successful and more information required', 'Success');});
+		Receipts.save({uid:$scope.user.id},data,function(result){
+			alert('Create successful and more information required', 'Success');
+			receiptService.setEditReceipt(result);
+			});
 		// $.ajax( {
 		// 	url : '/user/'+ $scope.user.id +'/receipt',
 		// 	type : 'POST',
@@ -445,15 +485,33 @@ tracker.controller('createReceipt.Controller', ['$scope', 'userService','project
       } );
 
       $('#photoFile').val('');
+	  $('#hideFour').show();
    }
 
+   $scope.updateSingleItem = function(key){
+		$("#item-"+key).hide();
+	};
 
 	$scope.cancel = function(){
 		window.location.href = '/#/user'
-	}
+	};
 
 	$scope.noImage = function(){
 		$("#hideThree").show();
+		$('#hideFour').show();
+	};
+
+	$scope.confirmEditReceipt = function(){
+		var total = 0;
+		var x;
+		for(x in $scope.items){
+			total += $scope.items[x].quantity * $scope.items[x].price;
+		}
+		var data =  {
+				list_of_items : $scope.items,
+				total : total
+			};
+		Receipts.update({uid:$scope.user.id,rid:receiptService.getEditReceipt().id,items : "items"},data,function(){window.location.href = '/#/user';});
 	}
 
 

@@ -7,11 +7,6 @@
 
     	<div class="modal-body">
 	      	<table class="profileTable" style="border-collapse:separate; border-spacing:0px 10px;">
-
-		      	<tr>
-		      		<td>ID </td>
-		      		<td><input type="text" class="form-control" ng-model="receiptID"  disabled="disabled"></td>
-		      	</tr>
 		      	<tr>
 		      		<td>Time</td>
 		      		<td><input type="datetime-local" class="form-control" ng-model="receiptTime" ></td>
@@ -52,17 +47,6 @@
 		      	</tr>
             	<tr>
 		      		<td><p style="margin-top:-10px;">Tags &nbsp;</p></td>
-		      		<!-- <td>
-              	  <div ng-repeat = "tag in tags track by $index">
-              	  	<div class="input-group">
-                      <input type="text" class="form-control" ng-model="tags[$index]">
-                      <div class="input-group-btn">
-                      <button ng-click="tag.del(key)" class="btn btn-default">delete</button>
-                      </div>
-                    </div>
-                  </div>
-                  <a ng-click="tag.add()">Add Tag</a>
-              </td> -->
 			  		<td><tags-input ng-model="tags"></tags-input></td>
 
 		      	</tr>

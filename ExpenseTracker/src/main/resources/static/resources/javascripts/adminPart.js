@@ -206,7 +206,19 @@ tracker.controller('adminHome.Controller', ['$scope', '$resource','userService',
 tracker.controller('createUser.Controller', ['$scope', '$resource','userService','Users', function( $scope, $resource, userService, Users ) {
 
 	var getCurrentUser = function(){
-		$scope.user = userService.getUser();
+		console.log("name = " +userService.getUser().username )
+		if(userService.getUser().username)
+		{
+			$scope.user = userService.getUser();
+		}
+		else
+		{	
+			home.get(function(loggedUser){
+				$scope.user = loggedUser;
+				userService.setUser(loggedUser);
+				userService.setEditUser($scope.user);
+			});	
+		}
 	}
 
 	$scope.logout = function(){
@@ -246,17 +258,35 @@ tracker.controller('createUser.Controller', ['$scope', '$resource','userService'
 } ] );
 
 
-tracker.controller('editUser.Controller', ['$scope', 'userService','Users', function( $scope, userService,Users ) {
+tracker.controller('editUser.Controller', ['$scope', 'userService','Users','home', function( $scope, userService,Users,home ) {
+	var getCurrentEditUser = function(){
+		var editUser = userService.getEditUser();
+		$scope.newUserName = editUser.username;
+		$scope.newEmailAddress = editUser.email;
+		$scope.newName = editUser.name;
+		$scope.newUserType = editUser.admin;
 
-	var editUser = userService.getEditUser();
-	$scope.user = userService.getUser();
-	$scope.newUserName = editUser.username;
-	$scope.newEmailAddress = editUser.email;
-	$scope.newName = editUser.name;
-	$scope.newUserType = editUser.admin;
+		if(editUser.phone)$scope.newPhoneNumber = editUser.phone;
+		else $scope.newPhoneNumber = [];
+	};
 
-	if(editUser.phone)$scope.newPhoneNumber = editUser.phone;
-	else $scope.newPhoneNumber = [];
+	var getCurrentUser = function(){
+		console.log("name = " +userService.getUser().username )
+		if(userService.getUser().username)
+		{
+			$scope.user = userService.getUser();
+			getCurrentEditUser();
+		}
+		else
+		{	
+			home.get(function(loggedUser){
+				$scope.user = loggedUser;
+				userService.setUser(loggedUser);
+				userService.setEditUser($scope.user);
+				getCurrentEditUser();
+			});	
+		}
+	};
 
 	$scope.PN =
 	{
@@ -302,5 +332,7 @@ tracker.controller('editUser.Controller', ['$scope', 'userService','Users', func
 			window.location.href = '/#/user';
 		}
 	}
+		
+	getCurrentUser();
 } ] );
 
