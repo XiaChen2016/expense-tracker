@@ -343,8 +343,7 @@ public class UserAPI {
 	@RequestMapping( value="/items", method=RequestMethod.GET )
 	@ResponseBody
 	private List<Item> getItemsFromPicture() {
-		String pid = "58bca425a9aa36050d1104a3";
-		Picture pic = pictureService.findOne( pid );
+		Picture pic = pictureService.findOne("58bcd4f3a9aa360645f9ef16");
 		List<DetailUnit> detailUnits = pic.getDetailUnits();
 //		List<DetailUnit> descriptionWithDollar = new ArrayList<DetailUnit>();
 		/* Assume that the receipt is not oblique. */
@@ -361,11 +360,9 @@ public class UserAPI {
 		boolean quantityFirst = true;
 		List< List<DetailUnit> > blockWithDollar = new ArrayList< List<DetailUnit> > (); 
 		for( int i = 0; i< dollars.size(); i++ ) {
-			
 			List<DetailUnit> tempLine = new ArrayList<DetailUnit>();
 			for( int j = 0; j < detailUnits.size(); j++ ) {
 				if( detailUnits.get(j).getVertices()[0][1] == dollars.get(i)) {
-					System.out.println(detailUnits.get(j).getDescription());
 					tempLine.add( detailUnits.get(j) );
 				}
 			}
@@ -399,7 +396,6 @@ public class UserAPI {
         Receipt receipt = receiptService.findOne(rid);
 		receipt.setPicId(pid);
 		receiptService.update(receipt);
-		System.out.println("Set receipt: " + receipt.getId()+" with picture: " + pid);
 		// Creating the directory to store file
 		File dir = new File("src/main/pictures/" + uid );
 		if ( !dir.exists() )
@@ -414,12 +410,11 @@ public class UserAPI {
 		return pid;
 	}
 	
-	/* Get a picture by receipt's ID. */
-	@RequestMapping( value="/{uid}/receipts/{rid}/pictures", method=RequestMethod.GET )
+	/* Get a picture by pid. */
+	@RequestMapping( value="/{uid}/pictures/{pid}", method=RequestMethod.GET )
 	@ResponseBody
-	public ResponseEntity<byte[]>  getOnePicture( 	@PathVariable String rid ,
+	public ResponseEntity<byte[]>  getOnePicture( 	@PathVariable String pid ,
 									@PathVariable String uid ) throws Exception {
-		String pid = receiptService.findOne(rid).getPicId();
 		String fileName = "../ExpenseTracker/src/main/pictures/" + uid + "/" + pid;
 		Path path = Paths.get(fileName);
 		byte[] data = Files.readAllBytes(path);

@@ -343,8 +343,7 @@ public class UserAPI {
 	@RequestMapping( value="/items", method=RequestMethod.GET )
 	@ResponseBody
 	private List<Item> getItemsFromPicture() {
-		String pid = "58bca425a9aa36050d1104a3";
-		Picture pic = pictureService.findOne( pid );
+		Picture pic = pictureService.findOne("58bca425a9aa36050d1104a3");
 		List<DetailUnit> detailUnits = pic.getDetailUnits();
 //		List<DetailUnit> descriptionWithDollar = new ArrayList<DetailUnit>();
 		/* Assume that the receipt is not oblique. */

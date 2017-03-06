@@ -22,7 +22,4 @@ public class PictureService {
 	public Picture findOne( String id ) {
 		return pictureRepository.findOne(id);
 	}
-	public void delete( String id ) {
-		pictureRepository.delete(id);
-	}
 }
