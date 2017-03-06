@@ -14085,3 +14085,8 @@ Caused by: java.io.IOException: error=2, No such file or directory
 2017-03-05 23:52:12,080 [Worker-252] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 12 resources
 2017-03-05 23:52:12,082 [Worker-252] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
 2017-03-05 23:52:12,082 [Worker-252] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/test/resources
+2017-03-06 00:08:55,846 [Worker-271] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2017-03-06 00:08:55,850 [Worker-271] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2017-03-06 00:08:55,852 [Worker-271] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 12 resources
+2017-03-06 00:08:55,855 [Worker-271] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2017-03-06 00:08:55,856 [Worker-271] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Users/chenxia/Documents/workspace-sts-3.8.1.RELEASE/ExpenseTracker/src/test/resources

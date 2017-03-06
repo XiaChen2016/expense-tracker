@@ -14,18 +14,11 @@ public class Project {
 	private String name;
 	private Long startDate;
 	private Long endDate;
-	private int numOfReceipts;
 	
 	@JsonIgnore
 	@DBRef( lazy = true )
 	private List<Receipt> receipts;
-
-	public int getNumOfReceipts() {
-		return numOfReceipts;
-	}
-	public void setNumOfReceipts(int numOfReceipts) {
-		this.numOfReceipts = numOfReceipts;
-	}
+	
 	public List<Receipt> getReceipts() {
 		return receipts;
 	}
