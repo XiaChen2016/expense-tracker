@@ -126,7 +126,7 @@ public class UserAPI {
 		receipt = receiptService.save( receipt );
 		Project project = projectService.findOne( receipt.getProjectId() );
 		List<Receipt> receipts = project.getReceipts();
-		if( receipts == null ) {
+		if( receipts.isEmpty() ) {
 			receipts = new ArrayList<Receipt>();
 		}
 		receipts.add(receipt);

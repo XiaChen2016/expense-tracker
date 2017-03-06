@@ -124,11 +124,9 @@ public class UserAPI {
 							+ "\n category: " + receipt.getCategory()[0]
 							+ "\n total: " + receipt.getTotal() );
 		receipt = receiptService.save( receipt );
+		System.out.println("craeted receipt: "+receipt.getId());
 		Project project = projectService.findOne( receipt.getProjectId() );
 		List<Receipt> receipts = project.getReceipts();
-		if( receipts == null ) {
-			receipts = new ArrayList<Receipt>();
-		}
 		receipts.add(receipt);
 		project.setReceipts(receipts);
 		projectService.update(project);
