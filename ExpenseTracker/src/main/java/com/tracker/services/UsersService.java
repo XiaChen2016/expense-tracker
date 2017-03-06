@@ -27,6 +27,9 @@ public class UsersService implements UserDetailsService {
 	
 	@Autowired
 	private ReceiptsService receiptService;
+
+	@Autowired
+	private PictureService pictureService;
 	
 	public User loadUserByUsername(String email) throws UsernameNotFoundException {	
 		System.out.println("UsersService.loadUserByUsername: " + email);
@@ -89,6 +92,7 @@ public class UsersService implements UserDetailsService {
 	}
 	
 	public void initDatabase() throws ParseException {
+		pictureService.deleteAll();
 		System.out.println("Ready to init database." );
 		/* Clear all database when first run this program, recommend for better demonstration. */
 		userRepository.deleteAll();

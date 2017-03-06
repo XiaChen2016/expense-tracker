@@ -324,15 +324,15 @@ public class UserAPI {
 			List<DetailUnit> detailUnits = visionService.detect1( bytes );
 			System.out.println();
 			String pid = savePictureToDBAndServer( uid, rid, detailUnits, bytes );
-			
-//			return pictureService.findOne(pid).getDetailUnits();
-			List<Item> items = new ArrayList<Item>();
-			Item i = new Item();
-			i.setName("Default Item");
-			i.setQuantity(2);
-			i.setPrice(4f);
-			items.add(i);
-			return items;
+			System.out.println( pictureService.findOne(pid) );
+			return getItemsFromPicture( detailUnits );
+//			List<Item> items = new ArrayList<Item>();
+//			Item i = new Item();
+//			i.setName("Default Item");
+//			i.setQuantity(2);
+//			i.setPrice(4f);
+//			items.add(i);
+//			return items;
 		} catch (Exception e) {
 			response.sendError( 400, "Fail to upload picture, check if your picture is smaller than 4MB, and make sure there is text in it." );
 			return null;
@@ -340,53 +340,107 @@ public class UserAPI {
 		
 	}
 	
-	@RequestMapping( value="/items", method=RequestMethod.GET )
+	@RequestMapping( value="/{pid}/items", method=RequestMethod.GET )
 	@ResponseBody
-	private List<Item> getItemsFromPicture() {
-		String pid = "58bca425a9aa36050d1104a3";
-		Picture pic = pictureService.findOne( pid );
-		List<DetailUnit> detailUnits = pic.getDetailUnits();
+	private List<Item> getItemsFromPicture( List<DetailUnit> detailUnits ) {
+		List<Item> list_of_items = new ArrayList<Item>();
 //		List<DetailUnit> descriptionWithDollar = new ArrayList<DetailUnit>();
 		/* Assume that the receipt is not oblique. */
 		List<Integer> dollars = new ArrayList<Integer>(); 
-		System.out.println("Description with $:");
 		for( int i = 0; i < detailUnits.size(); i++ ) {
 			if( detailUnits.get(i).getDescription().toCharArray()[0] == '$') {
 				if( !dollars.contains( detailUnits.get(i).getVertices()[0][1]) ){
-					System.out.println( detailUnits.get(i).getDescription() );
 					dollars.add( detailUnits.get(i).getVertices()[0][1] );
 				}
 			}
 		}
-		boolean quantityFirst = true;
+//		boolean quantityFirst = true;
 		List< List<DetailUnit> > blockWithDollar = new ArrayList< List<DetailUnit> > (); 
 		for( int i = 0; i< dollars.size(); i++ ) {
 			
 			List<DetailUnit> tempLine = new ArrayList<DetailUnit>();
 			for( int j = 0; j < detailUnits.size(); j++ ) {
-				if( detailUnits.get(j).getVertices()[0][1] == dollars.get(i)) {
-					System.out.println(detailUnits.get(j).getDescription());
+				if( Math.abs(detailUnits.get(j).getVertices()[0][1] - dollars.get(i)) < 3 ) {
 					tempLine.add( detailUnits.get(j) );
 				}
 			}
 			if( !tempLine.isEmpty() ) {
+//				if( !isInteger(tempLine.get(0).getDescription()) ) {
+//					quantityFirst = false;
+//				}
+				
 				/* Ignore total, tax, debit and change. */
-				for( int k = 0; i < tempLine.size(); k++ ) {
-					String descript = tempLine.get(k).getDescription().toLowerCase();
-					
-					if( descript.contains("total") || descript.contains("tax")
-							|| descript.contains("debit") || descript.contains("change") ) {
-						break;
-					}
+				String descript = "";
+				for( int k = 0; k < tempLine.size(); k++ ) {
+					descript += tempLine.get(k).getDescription().toLowerCase();
 				}
+				if( !descript.contains("total") &&! descript.contains("tax")
+						&& !descript.contains("debit") && !descript.contains("change") ) {
+					blockWithDollar.add( tempLine );
+				}
+				
 			}
 		}
+		System.out.println("Items in blockWithDollar:");
+		for( int i = 0 ; i< blockWithDollar.size();i++ ) {
+			for( int j = 0 ; j < blockWithDollar.get(i).size();j++ ){
+				System.out.print(blockWithDollar.get(i).get(j).getDescription());
+			}
+			System.out.println();
+		}
 		
-		List<Item> list_of_items = new ArrayList<Item>();
+//		if( quantityFirst ) {
+//			for( int i = 0; i < blockWithDollar.size(); i++ ) {
+//				System.out.println("pattern: /* QUANTITY NAME PRICE */");
+//				
+//			}
+//		} else {
+			for( int i = 0; i < blockWithDollar.size(); i++ ) {
+				System.out.println( i + "th row of blockWithDollar");
+				Item item = new Item();
+				item.setQuantity(1);
+				int size = blockWithDollar.get(i).size();
+				String name = "";
+				for( int j = 0; j < size; j++ ) {
+					if( blockWithDollar.get(i).get(j).getDescription().toCharArray()[0] == '$' ) {
+						String price = blockWithDollar.get(i).get(j).getDescription().substring(1);
+						item.setPrice( Float.valueOf(price));
+					} else {
+						name += (name.length() < 1? "":" ") + blockWithDollar.get(i).get(j).getDescription();
+					}
+				}
+				System.out.println("name of item "+i+": " +name);
+				item.setName(name);
+				list_of_items.add(item);
+			}
+//		}
 		
 		return list_of_items;
 	}
 	
+	public static boolean isInteger(String s) {
+	    try { 
+	        Integer.parseInt(s); 
+	    } catch(NumberFormatException e) { 
+	        return false; 
+	    } catch(NullPointerException e) {
+	        return false;
+	    }
+	    // only got here if we didn't return false
+	    return true;
+	}
+	
+	private boolean isFloat( String s ) {
+		try
+		{
+		  Float.parseFloat(s);
+		  return true;
+		}
+		catch(NumberFormatException e)
+		{
+		  return false;
+		}
+	}
 	private String savePictureToDBAndServer( String uid, String rid, List<DetailUnit> detailUnits, byte[] bytes) throws IOException{
 		Picture picture = new Picture();
 		picture.setOwnerId(uid);
@@ -394,7 +448,6 @@ public class UserAPI {
 		picture.setDetailUnits(detailUnits);
         picture = pictureService.save(picture);
         String pid = picture.getId();
-        System.out.println("Saved picture with id: "+ pid);
         
         Receipt receipt = receiptService.findOne(rid);
 		receipt.setPicId(pid);
