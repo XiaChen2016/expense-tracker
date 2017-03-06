@@ -84,7 +84,7 @@ tracker.factory('searchService',function(){
 });
 
 tracker.factory('Receipts', function($resource) {
-	return $resource('/user/:uid/receipts/:rid/:items', { },{ 'update' : { method : 'PUT'}});
+	return $resource('/user/:uid/receipts/:rid/:items/:pictures', { },{ 'update' : { method : 'PUT'}});
 } );
 
 tracker.factory('Projects', function($resource) {
@@ -433,33 +433,14 @@ tracker.controller('createReceipt.Controller', ['$scope', 'userService','project
 		var data =  {
 				time:timestamp,
 				place: $scope.receiptLocation,
-				project: $scope.project,
+				projectId: $scope.project.id,
 				note : $scope.receiptNote,
-				category: allTag,
-				list_of_items : $scope.items,
-				total : total
+				category: allTag
 			};
 		Receipts.save({uid:$scope.user.id},data,function(result){
 			alert('Create successful and more information required', 'Success');
 			receiptService.setEditReceipt(result);
 			});
-		// $.ajax( {
-		// 	url : '/user/'+ $scope.user.id +'/receipt',
-		// 	type : 'POST',
-
-		// 	data : {
-		// 		time:dformat,
-		// 		place: $scope.receiptLocation,
-		// 		project: $scope.receiptCategory,
-		// 		note : $scope.receiptNote,
-		// 		category: $scope.tags,
-		// 		list_of_items : $scope.items,
-		// 		total : total
-		// 	},
-		// 	success:function(){
-		// 		window.location.href = '/#/user'
-		// 	}
-		// } );
 	}
  
    $scope.upload = function() {
@@ -471,7 +452,7 @@ tracker.controller('createReceipt.Controller', ['$scope', 'userService','project
 	  console.log($scope.project);
 
       $.ajax( {
-         url : '/user/' + $scope.user.id +'/projects/'+$scope.project.id+'/pictures',
+		 url : '/user/' + $scope.user.id +'/receipts/'+receiptService.getEditReceipt().id+'/pictures',
          type : 'POST',
          data : formData,
          processData : false,
@@ -502,14 +483,8 @@ tracker.controller('createReceipt.Controller', ['$scope', 'userService','project
 	};
 
 	$scope.confirmEditReceipt = function(){
-		var total = 0;
-		var x;
-		for(x in $scope.items){
-			total += $scope.items[x].quantity * $scope.items[x].price;
-		}
 		var data =  {
 				list_of_items : $scope.items,
-				total : total
 			};
 		Receipts.update({uid:$scope.user.id,rid:receiptService.getEditReceipt().id,items : "items"},data,function(){window.location.href = '/#/user';});
 	}
