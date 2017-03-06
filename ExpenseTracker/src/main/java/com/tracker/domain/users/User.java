@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -22,7 +21,6 @@ public class User implements UserDetails {
 	private String email;
 	private String password;
 	private String username;
-	private String name;
 	private List<String> phone;
 	private String status;
 	private boolean isAdmin;
@@ -54,14 +52,6 @@ public class User implements UserDetails {
 
 	public void setEmail(String email) {
 		this.email = email;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public List<String> getPhone() {
@@ -103,8 +93,6 @@ public class User implements UserDetails {
 		this.id = id;
 	}
 	
-	
-	
 	public String getUsername() {
 		return username;
 	}
@@ -120,7 +108,6 @@ public class User implements UserDetails {
 		this.password = builder.password;
 		this.roles = builder.roles;	
 		this.email = builder.email;
-		this.name = builder.name;
 		this.phone = builder.phone;
 		this.status = builder.status;
 		this.isAdmin = builder.isAdmin;
@@ -132,7 +119,6 @@ public class User implements UserDetails {
 		private String id;
 		private List<Role> roles;
 		private String password;
-		private String name;
 		private List<String> phone;
 		private String status;
 		private boolean isAdmin;
@@ -167,11 +153,6 @@ public class User implements UserDetails {
 			return this;
 		}
 		
-		public Builder name(String name) {
-			this.name = name;
-			return this;
-		}
-		
 		public Builder username(String username) {
 			this.username = username;
 			return this;
@@ -194,11 +175,8 @@ public class User implements UserDetails {
 
 	@Override
 	public Collection<Role> getAuthorities() {
-//		this.setRoles(roles);
 		return roles;
 	}
-		
-//	public void setAuthorities(){}
 	
 	@Override
 	public boolean isAccountNonExpired() {

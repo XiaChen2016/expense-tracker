@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
@@ -57,19 +58,13 @@ public class AdminAPI {
 			Page<User> result = userService.searchUsers( name, email, username, isAdmin, pageable );
 			return result;
 		}
-		
-//		if( isAdmin.length() > 0 ) {
-//			System.out.println("Browse users isAdmin..." + isAdmin );
-//			if( isAdmin.equals("true") ){
-//				Page<User> result = userService.getUsersByRoles( true, pageable );
-//				return result;
-//			} else{
-//				Page<User> result = userService.getUsersByRoles( false, pageable );	
-//				return result;
-//			}
-//		}
-		
+		/* Hide all the passwords. */
 		Page<User> result = userService.getUsers(pageable);
+//		List<User> users = result.getContent();
+//		for( User temp: users ) {
+//			temp.setPassword(null);
+//		}
+//		result = new PageImpl<User>( users, pageable, users.size() );
 		return result;
 	}
 	
@@ -82,14 +77,22 @@ public class AdminAPI {
 						@RequestBody User newUser,
 						HttpServletResponse response
 						) throws IOException {
-		if( userService.save(newUser) ) {
-			newUser = userService.loadUserByUsername( newUser.getUsername() );
-			// User's password is not visible for admin, so set it null before returning it.
-			newUser.setPassword( null );
-			return newUser;
+		if( newUser.isAdmin() ) {
+			List<Role> roles = Arrays.asList( new Role[] { new Role("ROLE_ADMIN") ,new Role("ROLE_USER") } );
+			newUser.setRoles(roles);
 		} else {
-			response.sendError(400, "Invalid request, make sure you create account with unique username and email address.");
+			List<Role> roles = Arrays.asList( new Role[] { new Role("ROLE_USER") } );
+			newUser.setRoles(roles);
+		}
+		User result =  userService.save(newUser);
+		if( result == null ) {
+			response.sendError(400, "Invalid request, make sure you create account with unique email address.");
 			return null;
+		} else {
+			System.out.println("Returning newly created user: " + result.getUsername());
+			// User's password is not visible for admin, so set it null before returning it.
+			result.setPassword( null );
+			return result;
 		}
 	}
 	

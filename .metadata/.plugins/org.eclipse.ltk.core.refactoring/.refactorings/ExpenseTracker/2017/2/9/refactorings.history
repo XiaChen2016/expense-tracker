@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename local variable &apos;username&apos; in &apos;com.tracker.services.UsersService.loadUserByUsername(...)&apos; to &apos;email&apos;&#x0A;- Original project: &apos;ExpenseTracker&apos;&#x0A;- Original element: &apos;com.tracker.services.UsersService.loadUserByUsername(String).username&apos;&#x0A;- Renamed element: &apos;username&apos;&#x0A;- Update references to refactored element" description="Rename local variable &apos;username&apos;" id="org.eclipse.jdt.ui.rename.local.variable" input="/src\/main\/java&lt;com.tracker.services{UsersService.java[UsersService~loadUserByUsername~QString;@username!976!990!983!990!QString;!0!true" name="email" references="true" stamp="1488176236757" version="1.0"/>
+</session>

@@ -28,16 +28,14 @@ public class UsersService implements UserDetailsService {
 	@Autowired
 	private ReceiptsService receiptService;
 	
-	public User loadUserByUsername(String username) throws UsernameNotFoundException {	
-//		System.out.println("UsersService.loadUserByUsername: " + username);
+	public User loadUserByUsername(String email) throws UsernameNotFoundException {	
+		System.out.println("UsersService.loadUserByUsername: " + email);
 		
-		User user = userRepository.findByUsername(username);
+		User user = userRepository.findByEmail(email);
 		if( user == null || user.getStatus().equals("") ) {
 			return null;
 		}
-//		else {
-//			System.out.println("User exists");
-//		}
+		System.out.println("returning user.");
 		return user;
 	}
 	
@@ -46,12 +44,12 @@ public class UsersService implements UserDetailsService {
 	}
 	
 	public Page<User> getUsersByName( String name, Pageable pageable ) {
-		return  userRepository.findByNameLike( name, pageable );
+		return  userRepository.findByUsernameLike( name, pageable );
 	}
 	
 	public Page<User> getUsersByNameAndEmail( String name, String email, Pageable pageable ) {
 		System.out.println("Search by name or email.");
-		return  userRepository.findByNameContainingAndEmailContaining(  name, email, pageable );
+		return  userRepository.findByUsernameContainingAndEmailContaining(  name, email, pageable );
 	}
 	
 	public Page<User> getUsersByEmail( String email, Pageable pageable ) {
@@ -70,29 +68,28 @@ public class UsersService implements UserDetailsService {
 		return userRepository.findOne( uid );
 	}
 	
-	public boolean save( User user ) {
+	public User save( User user ) {
 		
 		/* Encrypt password */
 		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 		user.setPassword( passwordEncoder.encode( user.getPassword() ) );
 		
 		/* If there exist user with the same user name or email, then return false */
-		if( userRepository.findByUsername(user.getUsername()) != null 
-				|| userRepository.findByEmail(user.getEmail()) != null )
-			return false;
-		
-		userRepository.save( user );
-		return true;
+		if( userRepository.findByEmail( user.getEmail()) != null )
+			return null;
+		user.setStatus("enabled");
+		return userRepository.save( user );
 	}
 	
 	public boolean update( User user ) {
+		User temp = loadUserByUsername( user.getEmail() );
+		user.setPassword( temp.getPassword() );
 		userRepository.update( user );
 		return true;
 	}
 	
-//	@PostConstruct
 	public void initDatabase() throws ParseException {
-		System.out.println("Ready to init database.");
+		System.out.println("Ready to init database." );
 		/* Clear all database when first run this program, recommend for better demonstration. */
 		userRepository.deleteAll();
 		receiptService.deleteAll();
@@ -104,16 +101,15 @@ public class UsersService implements UserDetailsService {
 		List<Role> roles = Arrays.asList( new Role[] { new Role("ROLE_ADMIN") ,new Role("ROLE_USER") } );
 		User user = new User.Builder()
 				.roles(roles)
-				.username( "bilbo" )
-				.name("Bilbo")
-				.id("0")
+				.username( "Bilbo" )
 				.password( "123" )
+				.id("0")
 				.email("bilbo@uwlax.edu")
 				.status("enabled")
 				.isAdmin(true)
 				.build();
 		save(user);
-		user  = loadUserByUsername( "bilbo" );
+		user  = loadUserByUsername( "bilbo@uwlax.edu" );
 		
 		/* Create some receipts for Bilbo */
 		receiptService.initDatabase( user.getId() );
@@ -131,8 +127,7 @@ public class UsersService implements UserDetailsService {
 							+ (int)( Math.random() * 10 ) + (int)( Math.random() * 10 )
 							+ (int)( Math.random() * 10 ) + (int)( Math.random() * 10 ) );
 			user =	 new User.Builder()
-					.username( usernames[i] )
-					.name( usernames[i] +" " + lastnames[indexOfLastName] )
+					.username( usernames[i] +" " + lastnames[indexOfLastName] )
 					.password( "123" )
 					.email( usernames[i] + "@uwlax.edu")
 					.status("enabled")
@@ -152,7 +147,7 @@ public class UsersService implements UserDetailsService {
 			save( user );
 			
 			/* Create some receipts for current user. */
-			user  = loadUserByUsername( usernames[i] );
+			user  = loadUserByUsername( user.getEmail() );
 			receiptService.initDatabase( user.getId() );
 		}
 		System.out.println("Finish initing database.");

@@ -1,16 +1,30 @@
 package com.tracker.domain.project;
 
-import org.springframework.data.annotation.Id;
+import java.util.List;
+
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+
+import com.tracker.domain.receipt.Receipt;
 
 public class Project {
 
-	@Id
 	private String id;
 	private String ownerId;
 	private String name;
 	private Long startDate;
 	private Long endDate;
 	
+	@JsonIgnore
+	@DBRef( lazy = true )
+	private List<Receipt> receipts;
+	
+	public List<Receipt> getReceipts() {
+		return receipts;
+	}
+	public void setReceipts(List<Receipt> receipts) {
+		this.receipts = receipts;
+	}
 	public Long getStartDate() {
 		return startDate;
 	}

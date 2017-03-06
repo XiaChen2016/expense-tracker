@@ -13,7 +13,10 @@ import com.google.api.services.vision.v1.model.BatchAnnotateImagesResponse;
 import com.google.api.services.vision.v1.model.EntityAnnotation;
 import com.google.api.services.vision.v1.model.Feature;
 import com.google.api.services.vision.v1.model.Image;
+import com.google.api.services.vision.v1.model.Vertex;
 import com.google.common.collect.ImmutableList;
+import com.tracker.domain.pictures.DetailUnit;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,6 +24,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -42,13 +46,13 @@ public class VisionService {
 				.setApplicationName("ExpenseTracker").build();
 	}
 
-	public BatchAnnotateImagesResponse detect( String fileName ) throws Exception {
+	public BatchAnnotateImagesResponse detect( byte[] data ) throws Exception {
 		// The path to the image file to annotate
 //		String fileName = "/Users/hunt/temp/receipt.jpg";
 
 		// Reads the image file into memory
-		Path path = Paths.get(fileName);
-		byte[] data = Files.readAllBytes(path);
+//		Path path = Paths.get(fileName);
+//		byte[] data = Files.readAllBytes(path);
 
 		// Builds the image annotation request
 		List<AnnotateImageRequest> requests = new ArrayList<>();
@@ -73,5 +77,38 @@ public class VisionService {
 		// return result; -- you could return a processed version of the
 		// batchresponse
 		return batchResponse;
+	}
+	
+	public List<DetailUnit> detect1( byte[] data ) throws Exception {
+		// Builds the image annotation request
+		List<AnnotateImageRequest> requests = new ArrayList<>();
+		AnnotateImageRequest request = new AnnotateImageRequest().setImage(new Image().encodeContent(data))
+				.setFeatures(ImmutableList.of(new Feature().setType("TEXT_DETECTION").setMaxResults(MAX_RESULTS)));
+		requests.add(request);
+
+		Vision.Images.Annotate annotate = vision.images()
+				.annotate(new BatchAnnotateImagesRequest().setRequests(requests));
+
+		// Due to a bug: requests to Vision API containing large images fail
+		// when GZipped.
+		List<DetailUnit> result = new ArrayList<DetailUnit>();
+		
+		annotate.setDisableGZipContent(true);
+		BatchAnnotateImagesResponse batchResponse = annotate.execute();
+		for (AnnotateImageResponse response : batchResponse.getResponses()) {
+			for (EntityAnnotation text : response.getTextAnnotations()) {
+				DetailUnit unit = new DetailUnit();
+				 unit.setDescription( text.getDescription() );
+				 int[][] vertices = new int[4][2];
+				 List<Vertex> vertex = text.getBoundingPoly().getVertices();
+				 for( int i=0; i < vertices.length; i++ ){
+						 vertices[i][0] = vertex.get(i).getX();
+						 vertices[i][1] = vertex.get(i).getY();
+				 }
+				 unit.setVertices(vertices);
+				 result.add(unit);
+			}
+		}
+		return result;
 	}
 }

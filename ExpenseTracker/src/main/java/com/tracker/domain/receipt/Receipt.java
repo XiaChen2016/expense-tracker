@@ -36,7 +36,7 @@ public class Receipt {
 	public String getPicId() {
 		return picId;
 	}
-	public void setPicId(String picId) {
+	public void setPicId( String picId ) {
 		this.picId = picId;
 	}
 	public String getPlace() {

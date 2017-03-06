@@ -53,7 +53,7 @@ public class ReceiptsService {
 				String upperLimit, String lowerLimit, String category, Pageable pageable ) {
 		String projectId ="";
 		if( project.length()>0 && projectService.findByOwnerIdAndNameLike(ownerId, project) != null ) {
-			projectId = projectService.findByOwnerIdAndNameLike(ownerId, project).getId();
+			projectId = projectService.findByOwnerIdAndNameLike(ownerId, project).getId().toString();
 		}
 		System.out.println( "project id: " + projectId);
 		return receiptRepository.find( ownerId, place, projectId, upperLimit, lowerLimit , category, pageable );

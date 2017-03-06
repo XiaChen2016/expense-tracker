@@ -1,7 +1,0 @@
-package com.tracker.repositories.pictures;
-
-import com.tracker.domain.pictures.Picture;
-
-public interface UpdataablePictureRepository {
-	public void update( Picture picture);
-}

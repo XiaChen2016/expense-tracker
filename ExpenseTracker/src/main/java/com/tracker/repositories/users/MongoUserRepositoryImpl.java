@@ -42,7 +42,7 @@ public class MongoUserRepositoryImpl implements UpdateableUserRepository {
 	private Update getUpdate(User x, User y) {
 		Update update = new Update();
 		update.set( "password", y.getPassword() );
-		update.set( "name", y.getName() );
+		update.set( "name", y.getUsername() );
 		update.set( "status", y.getStatus() );
 		update.set( "isAdmin", y.isAdmin() );
 		update.set( "phone", y.getPhone() );

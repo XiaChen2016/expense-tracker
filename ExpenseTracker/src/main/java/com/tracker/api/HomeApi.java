@@ -33,11 +33,12 @@ public class HomeApi {
 			
 		System.out.println("Redirecting to HOME");
 		User result =  new User.Builder()
-				.username( user.getUsername() )
 				.email( user.getEmail())
+				.username( user.getUsername() )
 				.id( user.getId())
 				.isAdmin(user.isAdmin())
 				.roles( user.getRoles())
+				.phone( user.getPhone() )
 				.build();
 		
 		return result;
@@ -52,14 +53,12 @@ public class HomeApi {
 	@RequestMapping( value="/logoutSuccess", method=RequestMethod.GET )
 	public String logout( HttpSession session ) {
 		session.invalidate();
-		System.out.println("Clearing session...");
 		return "redirect:#/";
 	}
 	
 	@RequestMapping( value="/", method=RequestMethod.GET )
 	public String welcome(@RequestParam(required=false, defaultValue="false") Boolean error, Model model) {
 		model.addAttribute("error", error);
-		System.out.println("Returning the login page");
 		return "index.html";
 	}
 	

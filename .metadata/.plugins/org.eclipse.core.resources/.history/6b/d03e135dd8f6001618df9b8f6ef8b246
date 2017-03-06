@@ -1,9 +1,0 @@
-package com.tracker.services;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.tracker.repositories.pictures.MongoPictureRepository;
-
-public class PictureService {
-	@Autowired MongoPictureRepository pictureRepository;
-}

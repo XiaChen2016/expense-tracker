@@ -10,12 +10,12 @@ import com.tracker.domain.users.User;
 public interface MongoUserRepository extends UpdateableUserRepository,
 												PagingAndSortingRepository< User,String > {
 	public User findByUsername(String username );
-	public User findByEmail(String username );
+	public User findByEmail(String email );
 	public Page<User> findAll( Pageable pageable );
-	public Page<User> findByNameLike( String name, Pageable pageable );
+	public Page<User> findByUsernameLike( String username, Pageable pageable );
 	public Page<User> findByEmailLike( String email, Pageable pageable );
 	public Page<User> findByIsAdmin( Boolean isAdmin, Pageable pageable );
-	public Page<User> findByNameContainingAndEmailContaining( String name, String email, Pageable pageable );
+	public Page<User> findByUsernameContainingAndEmailContaining( String username, String email, Pageable pageable );
 	public Page<User> find(
 			@Param("name") String name,
 			@Param("email") String email,
