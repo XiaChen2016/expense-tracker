@@ -15,7 +15,7 @@ import com.google.api.services.vision.v1.model.Feature;
 import com.google.api.services.vision.v1.model.Image;
 import com.google.api.services.vision.v1.model.Vertex;
 import com.google.common.collect.ImmutableList;
-import com.tracker.domain.pictures.DetailUnit;
+import com.tracker.domain.pictures.DetailBox;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -79,7 +79,7 @@ public class VisionService {
 		return batchResponse;
 	}
 	
-	public List<DetailUnit> detect1( byte[] data ) throws Exception {
+	public List<DetailBox> detect1( byte[] data ) throws Exception {
 		// Builds the image annotation request
 		List<AnnotateImageRequest> requests = new ArrayList<>();
 		AnnotateImageRequest request = new AnnotateImageRequest().setImage(new Image().encodeContent(data))
@@ -91,13 +91,13 @@ public class VisionService {
 
 		// Due to a bug: requests to Vision API containing large images fail
 		// when GZipped.
-		List<DetailUnit> result = new ArrayList<DetailUnit>();
+		List<DetailBox> result = new ArrayList<DetailBox>();
 		
 		annotate.setDisableGZipContent(true);
 		BatchAnnotateImagesResponse batchResponse = annotate.execute();
 		for (AnnotateImageResponse response : batchResponse.getResponses()) {
 			for (EntityAnnotation text : response.getTextAnnotations()) {
-				DetailUnit unit = new DetailUnit();
+				DetailBox unit = new DetailBox();
 				 unit.setDescription( text.getDescription() );
 				 int[][] vertices = new int[4][2];
 				 List<Vertex> vertex = text.getBoundingPoly().getVertices();

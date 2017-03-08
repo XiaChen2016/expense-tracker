@@ -139,7 +139,16 @@ public class ReceiptsService {
 				r.setProjectId( p.getId() );
 			}
 			
-			save( r );
+			r = save( r );
+
+			List<Receipt> receipts = p.getReceipts();
+			if( receipts == null ) {
+				receipts = new ArrayList<Receipt>();
+			}
+			receipts.add(r);
+			p.setReceipts(receipts);
+			p.setNumOfReceipts( p.getNumOfReceipts() +1 );
+			projectService.update(p);
 		}
 	}
 }

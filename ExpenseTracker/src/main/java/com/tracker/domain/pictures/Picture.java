@@ -8,13 +8,13 @@ public class Picture {
 	private String id;
 	private String ownerId;
 	private String receiptId;
-	private List<DetailUnit> detailUnits;
+	private List<DetailBox> detailBoxs;
 	
-	public List<DetailUnit> getDetailUnits() {
-		return detailUnits;
+	public List<DetailBox> getDetailBoxs() {
+		return detailBoxs;
 	}
-	public void setDetailUnits(List<DetailUnit> detailUnits) {
-		this.detailUnits = detailUnits;
+	public void setDetailUnits(List<DetailBox> detailBoxs) {
+		this.detailBoxs = detailBoxs;
 	}
 	public String getId() {
 		return id;

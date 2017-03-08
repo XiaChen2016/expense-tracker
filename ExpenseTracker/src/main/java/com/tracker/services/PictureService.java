@@ -25,8 +25,14 @@ public class PictureService {
 	public Picture findOne( String id ) {
 		return pictureRepository.findOne(id);
 	}
-	public void delete( String id ) {
-		pictureRepository.delete(id);
+	public void delete( String uid , String pid ) {
+		pictureRepository.delete(pid);
+		File directory = new File("../ExpenseTracker/src/main/pictures/"+ uid +"/"+pid);
+		try{
+			delete(directory);
+		} catch ( IOException e ) {
+			e.printStackTrace();
+		}
 	}
 	public void deleteAll() {
 		pictureRepository.deleteAll();
@@ -38,7 +44,6 @@ public class PictureService {
 
 	           }catch(IOException e){
 	               e.printStackTrace();
-	               System.exit(0);
 	           }
 		}
 	}

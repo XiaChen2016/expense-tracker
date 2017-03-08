@@ -18,6 +18,8 @@ public class MongoProjectRepositoryImpl implements UpdateableProjectRepository{
 		update.set( "startDate",  p2.getStartDate() );
 		update.set( "endDate",  p2.getEndDate() );
 		update.set( "name", p2.getName() );
+		update.set( "receipts", p2.getReceipts() );
+		update.set( "numOfReceipts", p2.getNumOfReceipts() );
 		return update;
 	}
 	public boolean deleteAll() {

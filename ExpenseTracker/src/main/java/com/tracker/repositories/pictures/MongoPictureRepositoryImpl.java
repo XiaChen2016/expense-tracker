@@ -24,7 +24,7 @@ public class MongoPictureRepositoryImpl implements UpdateablePictureRepository {
 		Update update = new Update();
 		update.set( "ownerId", p2.getOwnerId() );
 		update.set( "receiptId", p2.getReceiptId() );
-		update.set( "detailUnits", p2.getDetailUnits() );
+		update.set( "detailBoxs", p2.getDetailBoxs() );
 		return update;
 	}
 }
