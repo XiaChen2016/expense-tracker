@@ -12,8 +12,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -325,9 +329,7 @@ public class UserAPI {
 			
 			byte[] bytes = file.getBytes();
 			List<DetailBox> detailUnits = visionService.detect1( bytes );
-			System.out.println();
-			String pid = savePictureToDBAndServer( uid, rid, detailUnits, bytes );
-			System.out.println( pictureService.findOne(pid) );
+//			String pid = savePictureToDBAndServer( uid, rid, detailUnits, bytes );
 			return getItemsFromPicture( detailUnits );
 
 		} catch (Exception e) {
@@ -339,84 +341,82 @@ public class UserAPI {
 	
 	@RequestMapping( value="/{pid}/items", method=RequestMethod.GET )
 	@ResponseBody
-	private List<Item> getItemsFromPicture( List<DetailBox> detailUnits ) {
-		String priceFormat =  "[0-9]+[,.][0-9]{2}";
+	private List<Item> getItemsFromPicture( List<DetailBox> detailBoxes ) {
+		String priceFormat =  "\\(?([$])?[0-9]+[,.][0-9]{2}+([A-Z])?\\)?";
 		try{
 			List<Item> list_of_items = new ArrayList<Item>();
-//			List<DetailUnit> descriptionWithDollar = new ArrayList<DetailUnit>();
-			/* Assume that the receipt is not oblique. */
-			List<Integer> dollars = new ArrayList<Integer>(); 
-			for( int i = 0; i < detailUnits.size(); i++ ) {
-				if( detailUnits.get(i).getDescription().toCharArray()[0] == '$') {
-					if( !dollars.contains( detailUnits.get(i).getVertices()[0][1]) ){
-						dollars.add( detailUnits.get(i).getVertices()[0][1] );
-					}
-				}
+			List< List<DetailBox> > copyOfReceipt = new ArrayList< List<DetailBox> >();
+			List<Integer> linesWithPrice = new ArrayList<Integer>(); 
+			/* 
+			 * Get the line height and Y coordinate of centroid of first box in the receipt.
+			 * */
+			int[][] vertices = detailBoxes.get(1).getVertices();
+			int i = 0;
+			int averageY = 0;
+			while( i < 4 ) {
+				averageY+= vertices[i++][1];
 			}
-//			boolean quantityFirst = true;
-			List< List<DetailBox> > blockWithDollar = new ArrayList< List<DetailBox> > (); 
-			for( int i = 0; i< dollars.size(); i++ ) {
-				
-				List<DetailBox> tempLine = new ArrayList<DetailBox>();
-				for( int j = 0; j < detailUnits.size(); j++ ) {
-					if( Math.abs(detailUnits.get(j).getVertices()[0][1] - dollars.get(i)) < 3 ) {
-						tempLine.add( detailUnits.get(j) );
-					}
-				}
-				if( !tempLine.isEmpty() ) {
-//					if( !isInteger(tempLine.get(0).getDescription()) ) {
-//						quantityFirst = false;
-//					}
-					
-					/* Ignore total, tax, debit and change. */
-					String descript = "";
-					for( int k = 0; k < tempLine.size(); k++ ) {
-						descript += tempLine.get(k).getDescription().toLowerCase();
-					}
-					if( !descript.contains("total") &&! descript.contains("tax")
-							&& !descript.contains("debit") && !descript.contains("change") ) {
-						blockWithDollar.add( tempLine );
-					}
-					
-				}
-			}
-			System.out.println("Items in blockWithDollar:");
-			for( int i = 0 ; i< blockWithDollar.size();i++ ) {
-				for( int j = 0 ; j < blockWithDollar.get(i).size();j++ ){
-					System.out.print(blockWithDollar.get(i).get(j).getDescription());
-				}
-				System.out.println();
-			}
+			averageY /= 4;
+			int lineHeight = vertices[3][1] - vertices[0][1];
+			System.out.println("line height: " + lineHeight);
+			List<DetailBox> tempLine = new ArrayList<DetailBox>();
 			
-//			if( quantityFirst ) {
-//				for( int i = 0; i < blockWithDollar.size(); i++ ) {
-//					System.out.println("pattern: /* QUANTITY NAME PRICE */");
-//					
-//				}
-//			} else {
-				for( int i = 0; i < blockWithDollar.size(); i++ ) {
-					System.out.println( i + "th row of blockWithDollar");
-					Item item = new Item();
-					item.setQuantity(1);
-					int size = blockWithDollar.get(i).size();
-					String name = "";
-					for( int j = 0; j < size; j++ ) {
-						if( blockWithDollar.get(i).get(j).getDescription().toCharArray()[0] == '$' ) {
-							String price = blockWithDollar.get(i).get(j).getDescription().substring(1);
-							item.setPrice( Float.valueOf(price));
-						} else {
-							name += (name.length() < 1? "":" ") + blockWithDollar.get(i).get(j).getDescription();
-						}
-					}
-					System.out.println("name of item "+i+": " +name);
-					item.setName(name);
-					list_of_items.add(item);
+			for( i = 1; i < detailBoxes.size(); i++ ) {
+				vertices = detailBoxes.get(i).getVertices();
+				int j = 0, centroidY = 0;
+				while( j < 4 ){
+					centroidY += vertices[j++][1];
 				}
-//			}
+				centroidY /= 4;
+				if( Math.abs( centroidY - averageY ) <= lineHeight*2.0/3.0 ) {
+					tempLine.add( detailBoxes.get(i) );
+				} else {
+					tempLine = sortBoxes( tempLine );
+					System.out.println("\nAdding tempLine: ");
+					for( int k=0; k< tempLine.size(); k++ ){
+						System.out.print(tempLine.get(k).getDescription() +" ");
+					}
+					copyOfReceipt.add( tempLine );
+					tempLine = new ArrayList<DetailBox>();
+					tempLine.add( detailBoxes.get(i));
+					averageY = centroidY;
+					lineHeight = vertices[3][1] - vertices[0][1];
+				}
+				if( detailBoxes.get(i).getDescription().matches( priceFormat )
+						&& !linesWithPrice.contains(copyOfReceipt.size()) ) {
+					System.out.println("\nAdding "+ copyOfReceipt.size() 
+						+" to the lines with price for "+detailBoxes.get(i).getDescription());
+					linesWithPrice.add( copyOfReceipt.size() );	
+				}
+				
+			}
+			for( i = 0; i < linesWithPrice.size(); i++ ) {
+				int index = linesWithPrice.get(i);
+				Item item = new Item();
+				item.setQuantity(1); 
+				String name = "";
+				for( int j = 0; j < copyOfReceipt.get( index ).size(); j++ ) {
+					String temp = copyOfReceipt.get(index).get(j).getDescription();
+					if( temp.matches(priceFormat) ) {
+					    Pattern pattern = Pattern.compile("\\d{1,3}[,\\.]?(\\d{1,2})?");
+					    Matcher matcher = pattern.matcher(temp);
+					    if ( matcher.find() )
+					    {
+					        item.setPrice( Float.valueOf( matcher.group(0) ) );
+					    }
+					} else {
+						name += temp + " ";
+					}
+				}
+				
+				System.out.println("name of item "+i+": " +name);
+				item.setName(name);
+				list_of_items.add(item);
+			}
 			
 			return list_of_items;
 		} catch( Exception e ) {
-			System.out.println("Error occurs in getItemsFromPicture(): "+e);
+			System.out.println( "Error occurs in getItemsFromPicture(): " + e );
 			List<Item> items = new ArrayList<Item>();
 			Item i = new Item();
 			i.setName("Default Item");
@@ -428,6 +428,19 @@ public class UserAPI {
 		
 	}
 	
+	private List<DetailBox> sortBoxes( List<DetailBox> boxes) {
+		Collections.sort( boxes, new Comparator<DetailBox>(){
+			public int compare( DetailBox d1, DetailBox d2 ) {
+				if( d1.getVertices()[0][0] > d2.getVertices()[0][0])
+					return 1;
+				else if( d1.getVertices()[0][0] < d2.getVertices()[0][0] )
+					return -1;
+				else
+					return 0;
+			}
+		});
+		return boxes;
+	}
 	public static boolean isInteger(String s) {
 	    try { 
 	        Integer.parseInt(s); 
