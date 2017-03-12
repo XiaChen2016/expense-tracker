@@ -9,21 +9,43 @@
 	      	<table class="profileTable" style="border-collapse:separate; border-spacing:0px 10px;">
 		      	<tr>
 		      		<td>Time</td>
-		      		<td><input type="datetime-local" class="form-control" ng-model="receiptTime" ></td>
+		      		<td><input type="datetime-local" class="form-control" ng-model="receipt.time" ></td>
 		      	</tr>
 
             <tr>
 		      		<td>Location</td>
-		      		<td><input type="text" class="form-control" ng-model="receiptLocation" ></td>
+		      		<td><input type="text" class="form-control" ng-model="receipt.place" ></td>
 		      	</tr>
             <tr>
 		      		<td>Project</td>
 		      		<td><select class = "form-control" ng-model = "receiptProject" ng-options = "receiptProject as receiptProject.name for receiptProject in projectList track by receiptProject.id">
           				</select></td>
 		      	</tr>
-
+			<tr>
+				<td colspan="2">
+					<button type="button" class="btn btn-info" data-toggle="modal" data-target="#picModal">Receipt Picture</button>
+				</td>
+			</tr>
+			<div class="modal fade" id="picModal" role="dialog">
+    			<div class="modal-dialog">
+      				<!-- Modal content-->
+      				<div class="modal-content">
+        				<div class="modal-header">
+          					<button type="button" class="close" data-dismiss="modal">&times;</button>
+          					<h4 class="modal-title">Receipt Picture</h4>
+       		 			</div>
+        				<div class="modal-body">
+          					<img id = "pictureBody" ng-src="/user/{{receipt.ownerId}}/receipts/{{receipt.id}}/pictures" alt="receipt image">
+        				</div>
+        				<div class="modal-footer">
+          				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        				</div>
+      				</div>
+      
+    			</div>
+  			</div>
             <tr>
-		      		<td><p style="margin-top:-10px;">Shopping List&nbsp;</p></td>
+		      		<td><p style="margin-top:-10px;">Items &nbsp;</p></td>
 
 					<td>
 					<h5 style = "word-spacing: 140px;">Name Quantity Price</h5>

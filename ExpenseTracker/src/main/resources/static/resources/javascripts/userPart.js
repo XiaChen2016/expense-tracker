@@ -116,7 +116,6 @@ tracker.controller('userHome.Controller', ['$scope', '$resource','userService','
 		var receipts = result.content;
 		for(var i = 0; i < receipts.length; i ++){
 			receipts[i].projectName = projectService.getCurrentProjectInName(receipts[i].projectId);
-			
 		}
 		$scope.receiptList = receipts;
 		$scope.totalPage = result.totalPages;
@@ -129,22 +128,19 @@ tracker.controller('userHome.Controller', ['$scope', '$resource','userService','
 
 	var getCurrentUser = function(){
 		console.log("name = " +userService.getUser().username )
-		if(userService.getUser().username)
-		{
+		if(userService.getUser().username) {
 			$scope.user = userService.getUser();
 			getReceiptList();
 			getAllProject();
-		}
-		else
-		{	
-			home.get(function(loggedUser){
-				$scope.user = loggedUser;
-				userService.setUser(loggedUser);
-				console.log("Username: " + userService.getUser().username);
-				getReceiptList();
-				getAllProject();
-				userService.setEditUser($scope.user);
-			});	
+		} else {	
+				home.get(function(loggedUser){
+					$scope.user = loggedUser;
+					userService.setUser(loggedUser);
+					console.log("Username: " + userService.getUser().username);
+					getReceiptList();
+					getAllProject();
+					userService.setEditUser($scope.user);
+				});	
 		}
 	}
 
@@ -158,27 +154,20 @@ tracker.controller('userHome.Controller', ['$scope', '$resource','userService','
 		projectService.setProjectList(result.content);
 		$scope.projectList = result.content;
 		});
-
 	}
-
 	getCurrentUser();
-
-
-//  -----------------------------getSingleProject--------------------
+// -----------------------------getSingleProject--------------------
 	$scope.getSingleProject = function(project){
 		Projects.get({uid : userService.getUser().id , pid : project.id, receipts : "receipts"},function(result){
-
 		})
 	};
-//	-----------------------------search--------------------------------
+// -----------------------------search--------------------------------
 	$scope.searchReceipts = function(){
 		var state = {project : $scope.project};
 		searchService.setState(state);
 		Users.get({aid : $scope.user.id, page : 0 , size : pagingService.getSize() ,username: $scope.search.username, email: $scope.search.email, name : $scope.search.name, isAdmin : $scope.search.admin} ,updateListOfReceipt );
 	}
-
-
-//	----------------------------paging------------------------
+// ----------------------------paging------------------------
 
 	$scope.prevPage = function(){
 		pagingService.setCurrentPage(pagingService.getCurrentPage() - 1);
@@ -190,18 +179,15 @@ tracker.controller('userHome.Controller', ['$scope', '$resource','userService','
 		Receipts.get({uid : $scope.user.id, page : pagingService.getCurrentPage(), size : pagingService.getSize() , project : searchService.getState().project} ,updateListOfReceipt );
 	}
 
-	$scope.setPage = function()
-	{
+	$scope.setPage = function(){
 	var page = document.getElementById("targetPage").value - 1;
-	if(Number.isInteger(page)&& page<= $scope.totalPage && page>=0)
-	{
-	$scope.currentPage = page;
-	pagingService.setCurrentPage(page);
-	Receipts.get({uid : $scope.user.id, page : pagingService.getCurrentPage(), size : pagingService.getSize() , project : searchService.getState().project} ,updateListOfReceipt );
-	}
-	else{
-	alert('Please type in right number', 'ERROR');
-	}
+		if(Number.isInteger(page)&& page<= $scope.totalPage && page>=0){
+			$scope.currentPage = page;
+			pagingService.setCurrentPage(page);
+			Receipts.get({uid : $scope.user.id, page : pagingService.getCurrentPage(), size : pagingService.getSize() , project : searchService.getState().project} ,updateListOfReceipt );
+		} else {
+			alert('Please type in right number', 'ERROR');
+		}
 	}
 
 	$scope.setSize = function(){
@@ -216,7 +202,7 @@ tracker.controller('userHome.Controller', ['$scope', '$resource','userService','
 		
 	}
 
-//	--------------------------edit/view receipt---------------------------
+// --------------------------edit/view receipt---------------------------
 	$scope.viewDetail = function(r){
 		console.log("hello from viewDetail");
 		receiptService.setEditReceipt(r);
@@ -233,19 +219,21 @@ tracker.controller('userHome.Controller', ['$scope', '$resource','userService','
 		window.location.href = '/#/editUser';
 	}
 
+	$scope.deleteReceipt = function(receipt){
+		Receipts.delete({uid:receipt.ownerId,rid:receipt.id},function(){
+			window.location.href = '/#/user';
+		})
+	}
 } ] );
 
 
 tracker.controller('editReceipt.Controller', ['$scope', 'userService','receiptService','projectService','Receipts', function( $scope, userService ,receiptService,projectService,Receipts) {
-	
+	$scope.receipt = receiptService.getEditReceipt();
 	var getCurrentUser = function(){
 		console.log("name = " +userService.getUser().username )
-		if(userService.getUser().username)
-		{
+		if(userService.getUser().username){
 			$scope.user = userService.getUser();
-		}
-		else
-		{	
+		} else {	
 			home.get(function(loggedUser){
 				$scope.user = loggedUser;
 				userService.setUser(loggedUser);
@@ -255,27 +243,34 @@ tracker.controller('editReceipt.Controller', ['$scope', 'userService','receiptSe
 	}
 	getCurrentUser();
 	
-	var receipt = receiptService.getEditReceipt();
-	$scope.receiptID = receipt.id;
-	var date = new Date(receipt.time);
-	$scope.receiptTime = date;
-	$scope.receiptLocation = receipt.place;
-	
+	// var receipt = receiptService.getEditReceipt();
+	// $scope.receiptObejct = receipt;
+	// console.log(receipt);
+	// getPictures(receipt);
+	// $scope.receiptID = receipt.id;
+	// var date = new Date(receipt.time);
+	// $scope.receiptTime = new Date(receipt.time);
+	// $scope.receiptLocation = receipt.place;
+	$scope.receipt.time = new Date( $scope.receipt.time );
+
 	$scope.projectList = projectService.getProjectList();
-	var p = {id : receipt.projectId,
-			name : projectService.getCurrentProjectInName(receipt.projectId)};
+	var p = {id : $scope.receipt.projectId,
+			name : projectService.getCurrentProjectInName($scope.receipt.projectId)};
 	$scope.receiptProject = p;
 
 	console.log($scope.receiptProject);
 
-	$scope.receiptNote = receipt.note;
+	$scope.receiptNote = $scope.receipt.note;
 	var rawTags = [];
-	if(receipt.list_of_items)$scope.items = receipt.list_of_items;
-	else $scope.items = [{name:" ",quantity:" ",price:" "}];
+	if($scope.receipt.list_of_items) {
+		$scope.items = $scope.receipt.list_of_items;
+	} else {
+		$scope.items = [{name:" ",quantity:" ",price:" "}];
+	}
 
-	if(receipt.category){
-		for(var i = 0; i<receipt.category.length;i++ )
-		rawTags.push({"text" : receipt.category[i]});
+	if($scope.receipt.category){
+		for(var i = 0; i<$scope.receipt.category.length;i++ )
+		rawTags.push({"text" : $scope.receipt.category[i]});
 		$scope.tags = rawTags;
 	}
 	else {
@@ -293,15 +288,13 @@ tracker.controller('editReceipt.Controller', ['$scope', 'userService','receiptSe
 			}
 	}
 
-
 	Number.prototype.padLeft = function(base,chr){
 		var  len = (String(base || 10).length - String(this).length)+1;
 		return len > 0? new Array(len).join(chr || '0')+this : this;
 	}
 
-
 	$scope.confirmEditReceipt = function(){
-		var d = $scope.receiptTime;
+		var d = $scope.receipt.time;
 		var dformat = [ (d.getMonth()+1).padLeft(),
 		                d.getDate().padLeft(),
 		                d.getFullYear()].join('-')+
@@ -332,18 +325,19 @@ tracker.controller('editReceipt.Controller', ['$scope', 'userService','receiptSe
 		Receipts.update({uid:$scope.user.id,rid:$scope.receiptID},data,function(){window.location.href = '/#/user';});
 	}
 
-
 	$scope.cancel = function(){
-		window.location.href = '/#/user'
+		window.location.href = '/#/user';
 	}
 
-
-
+	$('#pictureBody').click(function () {
+            $('#pictureBody').not(this).animate({height: "250px"}, 'fast');
+            var $this = $(this),
+            flag = !$this.data('flag');
+            $this.stop().animate({height: (flag ? "500px" : "250px")}, 'fast')
+                 .data('flag', flag);
+          });
 
 } ] );
-
-
-
 
 
 tracker.controller('createReceipt.Controller', ['$scope', 'userService','projectService','Receipts','receiptService', function( $scope, userService ,projectService,Receipts,receiptService) {
@@ -370,36 +364,28 @@ tracker.controller('createReceipt.Controller', ['$scope', 'userService','project
 
 	var date = new Date();
 	$scope.receiptTime = date;
-	$scope.receiptLocation = " ";
-	$scope.receiptCategory = " ";
-	$scope.receiptNote = " ";
-
+	$scope.receiptLocation = "";
+	$scope.receiptCategory = "";
+	$scope.receiptNote = "";
 	$scope.items = [];
-
 	$scope.tags = [];
+	
+	var createNewItem = function() { return {name :'', quantity : '', price : ''}; };
+	$scope.newItem = createNewItem();
 
+	$scope.addItem = function( ) {
+		$scope.items.push( $scope.newItem );
+		$scope.newItem = createNewItem();
+	};
 
-	$scope.editItem =
-	{
-			add: function(){
-				$scope.items.push({name:" ",quantity:" ",price:" "});
-			},
-
-			del: function(key){
-				$scope.items.splice(key,1);
-			}
-	}
+	$scope.deleteItem = function(index) {
+		$scope.items = $scope.items.filter( (item,i) => i != index );
+	};
 
 	Number.prototype.padLeft = function(base,chr){
 		var  len = (String(base || 10).length - String(this).length)+1;
 		return len > 0? new Array(len).join(chr || '0')+this : this;
 	}
-
-	$scope.showUpdate = function(index){
-		console.log("ngchange");
-		$("#item-"+index).show();
-	}
-
 
 	$scope.createReceipt = function(){
 		$("#hideOne").hide();
@@ -429,7 +415,6 @@ tracker.controller('createReceipt.Controller', ['$scope', 'userService','project
 		for(var y in $scope.tags){
 			allTag.push($scope.tags[y].text);
 		}
-
 		var data =  {
 				time:timestamp,
 				place: $scope.receiptLocation,
@@ -438,19 +423,18 @@ tracker.controller('createReceipt.Controller', ['$scope', 'userService','project
 				category: allTag
 			};
 		Receipts.save({uid:$scope.user.id},data,function(result){
-			alert('Create successful and more information required', 'Success');
-			receiptService.setEditReceipt(result);
-			});
+		alert('Create successful and more information required', 'Success');
+		receiptService.setEditReceipt(result);
+		});
 	}
  
    $scope.upload = function() {
       var formData = new FormData();
-      if( !$('#photoFile').val() ) return;
-      
+      if(!$('#photoFile').val()){
+			return;
+	  	}
       formData.append("file", $('#photoFile')[0].files[0]);
-
 	  console.log($scope.project);
-
       $.ajax( {
 		 url : '/user/' + $scope.user.id +'/receipts/'+receiptService.getEditReceipt().id+'/pictures',
          type : 'POST',
@@ -461,11 +445,10 @@ tracker.controller('createReceipt.Controller', ['$scope', 'userService','project
 			 if(!response.list_of_items){
 				 $("#hideThree").show();
 			 }
-			 
          }
       } );
-
       $('#photoFile').val('');
+	  $("#delete-0").hide();
 	  $('#hideFour').show();
    }
 
@@ -480,16 +463,13 @@ tracker.controller('createReceipt.Controller', ['$scope', 'userService','project
 	$scope.noImage = function(){
 		$("#hideThree").show();
 		$('#hideFour').show();
+		$("#delete-0").hide();
 	};
 
 	$scope.confirmEditReceipt = function(){
-		var data =  {
+		var data = {
 				list_of_items : $scope.items,
 			};
 		Receipts.update({uid:$scope.user.id,rid:receiptService.getEditReceipt().id,items : "items"},data,function(){window.location.href = '/#/user';});
 	}
-
-
-
-
 } ] );

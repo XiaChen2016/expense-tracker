@@ -43,7 +43,9 @@
     <td>{{receipt.projectName}}</td>
     <td><p ng-repeat=" c in receipt.category">{{c}}</p></td>
     <td>{{receipt.total}}</td>
-    <td><button class = "btn btn-info"ng-click = "viewDetail(receipt)">Detail</button><td>
+    <td><button class = "btn btn-info"ng-click = "viewDetail(receipt)">Detail</button>
+        <button class = "btn btn-danger"ng-click = "deleteReceipt(receipt)"><span class="glyphicon glyphicon-trash"></span></button></td>
+</tr>
 </tbody>
 <tfoot>
 <td colspan = "6">
