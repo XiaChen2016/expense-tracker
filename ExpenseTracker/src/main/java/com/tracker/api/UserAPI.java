@@ -329,10 +329,12 @@ public class UserAPI {
 			
 			byte[] bytes = file.getBytes();
 			List<DetailBox> detailUnits = visionService.detect1( bytes );
-//			String pid = savePictureToDBAndServer( uid, rid, detailUnits, bytes );
+			String pid = savePictureToDBAndServer( uid, rid, detailUnits, bytes );
+			System.out.println("save picture as: "+pid);
 			return getItemsFromPicture( detailUnits );
 
 		} catch (Exception e) {
+			System.out.println( e + ": " + e.getStackTrace()[0].getLineNumber() );
 			response.sendError( 400, "Fail to upload picture, check if your picture is smaller than 4MB, and make sure there is text in it." );
 			return null;
 		}
@@ -453,7 +455,7 @@ public class UserAPI {
 	    return true;
 	}
 
-	private String savePictureToDBAndServer( String uid, String rid, List<DetailBox> detailUnits, byte[] bytes) throws IOException{
+	private String savePictureToDBAndServer( String uid, String rid, List<DetailBox> detailUnits, byte[] bytes) throws IOException {
 		Picture picture = new Picture();
 		picture.setOwnerId(uid);
 		picture.setReceiptId(rid);
@@ -462,7 +464,7 @@ public class UserAPI {
         String pid = picture.getId();
         
         Receipt receipt = receiptService.findOne(rid);
-        if( receipt.getPicId().isEmpty() ) {
+        if( receipt.getPicId() == null ) {
         	receipt.setPicId(pid);
     	} else {
     		String oldPid = receipt.getPicId();
@@ -492,16 +494,14 @@ public class UserAPI {
 													@PathVariable String uid ,
 													HttpServletResponse response) throws Exception {
 		try{
-		
-		String pid = receiptService.findOne(rid).getPicId();
-		String fileName = "../ExpenseTracker/src/main/pictures/" + uid + "/" + pid;
-		Path path = Paths.get(fileName);
-		byte[] data = Files.readAllBytes(path);
-		return ResponseEntity.ok().contentType( getType( data ) ).body( data );
-			
+			String pid = receiptService.findOne(rid).getPicId();
+			String fileName = "../ExpenseTracker/src/main/pictures/" + uid + "/" + pid;
+			Path path = Paths.get(fileName);
+			byte[] data = Files.readAllBytes(path);
+			return ResponseEntity.ok().contentType( getType( data ) ).body( data );
 		} catch( Exception e ) {
-			System.out.println(e);
-			response.sendError( 400,"There is no picture for the receipt.");
+			System.out.println( e + ": " + e.getStackTrace()[0].getLineNumber() );
+			response.sendError( 400, "There is no picture for the receipt.");
 			return null;
 		}
 	}

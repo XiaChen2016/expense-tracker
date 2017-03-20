@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="com.jayway.jsonpath.internal.Path"/>
-<fullyQualifiedTypeName name="java.nio.file.Path"/>
-<fullyQualifiedTypeName name="java.nio.file.Files"/>
-<fullyQualifiedTypeName name="com.google.cloud.vision.v1.Image"/>
-<fullyQualifiedTypeName name="com.google.cloud.vision.v1.Feature"/>
-<fullyQualifiedTypeName name="com.google.cloud.vision.v1.BatchAnnotateImagesRequest"/>
 <fullyQualifiedTypeName name="com.google.common.base.MoreObjects"/>
 <fullyQualifiedTypeName name="com.google.cloud.vision.v1.EntityAnnotation"/>
 <fullyQualifiedTypeName name="com.google.rpc.Status"/>
@@ -20,7 +14,6 @@
 <fullyQualifiedTypeName name="com.google.api.client.googleapis.auth.oauth2.GoogleCredential"/>
 <fullyQualifiedTypeName name="javax.annotation.PostConstruct"/>
 <fullyQualifiedTypeName name="java.security.GeneralSecurityException"/>
-<fullyQualifiedTypeName name="java.io.IOException"/>
 <fullyQualifiedTypeName name="com.google.api.client.json.JsonFactory"/>
 <fullyQualifiedTypeName name="com.tracker.services.VisionService"/>
 <fullyQualifiedTypeName name="com.google.cloud.vision.v1.BatchAnnotateImagesResponse"/>
@@ -34,9 +27,7 @@
 <fullyQualifiedTypeName name="com.google.cloud.vision.v1.AnnotateImageResponse"/>
 <fullyQualifiedTypeName name="org.springframework.data.domain.Page"/>
 <fullyQualifiedTypeName name="org.springframework.data.domain.Pageable"/>
-<fullyQualifiedTypeName name="java.io.File"/>
 <fullyQualifiedTypeName name="com.tracker.domain.pictures.PictureWithPath"/>
-<fullyQualifiedTypeName name="java.util.ArrayList"/>
 <fullyQualifiedTypeName name="org.apache.tomcat.util.http.fileupload.IOUtils"/>
 <fullyQualifiedTypeName name="com.google.api.client.util.IOUtils"/>
 <fullyQualifiedTypeName name="java.io.ByteArrayOutputStream"/>
@@ -60,4 +51,13 @@
 <fullyQualifiedTypeName name="org.springframework.data.annotation.Id"/>
 <fullyQualifiedTypeName name="org.bson.types.ObjectId"/>
 <fullyQualifiedTypeName name="com.google.api.services.vision.v1.model.AnnotateImageResponse"/>
+<fullyQualifiedTypeName name="com.google.api.services.vision.v1.model.Vertex"/>
+<fullyQualifiedTypeName name="java.util.HashMap"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="java.io.File"/>
+<fullyQualifiedTypeName name="java.io.IOException"/>
+<fullyQualifiedTypeName name="java.util.Comparator"/>
+<fullyQualifiedTypeName name="java.util.Collections"/>
+<fullyQualifiedTypeName name="java.util.regex.Pattern"/>
+<fullyQualifiedTypeName name="java.util.regex.Matcher"/>
 </qualifiedTypeNameHistroy>

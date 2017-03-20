@@ -32,7 +32,6 @@ public class UsersService implements UserDetailsService {
 	private PictureService pictureService;
 	
 	public User loadUserByUsername(String email) throws UsernameNotFoundException {	
-		System.out.println("UsersService.loadUserByUsername: " + email);
 		
 		User user = userRepository.findByEmail(email);
 		if( user == null || user.getStatus().equals("") ) {

@@ -127,8 +127,6 @@ public class AdminAPI {
 		try{
 			
 			User userToEdit = userService.findOne(userid);
-			
-//			String isAdmin = userData.get("isAdmin").get(0);
 			if( isAdmin ) {
 				List<Role> roles = Arrays.asList( new Role[] { new Role("ROLE_ADMIN") ,new Role("ROLE_USER") } );
 				userToEdit.setRoles(roles);
