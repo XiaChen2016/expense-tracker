@@ -20,8 +20,10 @@ public class MongoReceiptRepositoryImpl implements UpdateableReceiptRepository {
 	public Page<Receipt> find(	String ownerId,
 								String place,
 								String projectId,
-								String upperLimit, 
-								String lowerLimit,
+								String maxTotal, 
+								String minTotal,
+								String maxDate,
+								String minDate,
 								String category,
 								Pageable pageable ){
 		Query query = new Query();
@@ -35,25 +37,68 @@ public class MongoReceiptRepositoryImpl implements UpdateableReceiptRepository {
 		if( category.length() > 0 ) {
 			query.addCriteria( Criteria.where("category").regex( category, "i" ) );
 		}
-		if( lowerLimit.length() > 0 ) {
-			if( upperLimit.length() > 0 ) {
+		if( minTotal.length() > 0 ) {
+			if( maxTotal.length() > 0 ) {
 				/* Query for a range of total */
 				query.addCriteria( Criteria.where("total")
-						.gt( Double.valueOf( lowerLimit ) ).lt(  Double.valueOf(upperLimit ) ) );
-				System.out.println( "Query by the range: " + lowerLimit +"~" + upperLimit );
+						.gte( Double.valueOf( minTotal ) ).lte(  Double.valueOf( maxTotal ) ) );
+				System.out.println( "Query by the range: " + minTotal +"~" + maxTotal );
 			} else {
 				/* Query by total greater than lowerLimit */
-				query.addCriteria( Criteria.where("total").gt( Double.valueOf( lowerLimit ) ) );
-				System.out.println( "Query by total greater than: " + lowerLimit );
+				query.addCriteria( Criteria.where("total").gte( Double.valueOf( minTotal ) ) );
+				System.out.println( "Query by total greater than: " + minTotal );
 			}
-		} else if( upperLimit.length() > 0 ) {
+		} else if( maxTotal.length() > 0 ) {
 			/* Query by total less than upperLimit */
-			query.addCriteria( Criteria.where("total").lt( Double.valueOf( upperLimit ) ) );
-			System.out.println( "Query by total less than: " + upperLimit );
+			query.addCriteria( Criteria.where("total").lte( Double.valueOf( maxTotal ) ) );
+			System.out.println( "Query by total less than: " + maxTotal );
 		}
+		
+		if( minDate.length() > 0 ) {
+			if( maxDate.length() > 0 ) {
+				/* Query for a period between minDate ~ maxDate */
+				query.addCriteria( Criteria.where("time")
+						.gte( Long.valueOf( minDate ) ).lte(  Long.valueOf( maxDate ) ) );
+				System.out.println("query for time between " + minDate+ " ~ " + maxDate);
+			} else {
+				/* Query for all receipts after minDate */
+				query.addCriteria( Criteria.where("time").gte( Long.valueOf( minDate ) ) );
+				System.out.println("query for time after " +minDate );
+			}
+		} else if( maxDate.length() > 0 ) {
+			/* Query for all receipts before maxDate */
+			query.addCriteria( Criteria.where("time").lte( Long.valueOf( maxDate ) ) );
+			System.out.println("query for time before " + maxDate);
+		}
+		System.out.println("Searching receipt, page size: "+pageable.getPageSize());
+		System.out.println("offset: " + pageable.getOffset());
 		List<Receipt> result = mongo.find( query, Receipt.class );
-		Page<Receipt> page = new PageImpl<Receipt>( result, pageable, result.size() );
+		List<Receipt> subListOfResult = subList( result, pageable.getOffset(), pageable.getPageSize() );
+		Page<Receipt> page = new PageImpl<Receipt>( subListOfResult, pageable, result.size() );
+	
 		return page;
+	}
+	private List<Receipt> subList(List<Receipt> list, int offset, int limit) {
+	    if (offset<0) throw new IllegalArgumentException("Offset must be >=0 but was "+offset+"!");
+	    if (limit<-1) throw new IllegalArgumentException("Limit must be >=-1 but was "+limit+"!");
+
+	    if (offset>0) {
+	        if (offset >= list.size()) {
+	            return list.subList(0, 0); //return empty.
+	        }
+	        if (limit >-1) {
+	            //apply offset and limit
+	            return list.subList(offset, Math.min(offset+limit, list.size()));
+	        } else {
+	            //apply just offset
+	            return list.subList(offset, list.size());
+	        }
+	    } else if (limit >-1) {
+	        //apply just limit
+	        return list.subList(0, Math.min(limit, list.size()));
+	    } else {
+	        return list.subList(0, list.size());
+	    }
 	}
 	
 	public void findAndRemove( String pid ) {

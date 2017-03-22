@@ -17,8 +17,10 @@ public interface MongoReceiptRepository  extends UpdateableReceiptRepository,
 	public Page<Receipt> find(	@Param("ownerId") String ownerId,
 								@Param("place") String place,
 								@Param("projectId") String projectId,
-								@Param("upperLimit") String upperLimit, 
-								@Param("lowerLimit") String lowerLimit,
+								@Param("maxTotal") String maxTotal, 
+								@Param("minTotal") String minTotal,
+								@Param("maxDate") String maxDate, 
+								@Param("minDate") String minDate,
 								@Param("category") String category,
 								Pageable pageable );
 	public void findAndRemove( String pid );

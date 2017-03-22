@@ -3,7 +3,6 @@ package com.tracker.api;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,9 +42,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.google.api.services.vision.v1.model.AnnotateImageResponse;
-import com.google.api.services.vision.v1.model.BoundingPoly;
-import com.google.api.services.vision.v1.model.EntityAnnotation;
 import com.tracker.domain.pictures.DetailBox;
 import com.tracker.domain.pictures.Picture;
 import com.tracker.domain.project.Project;
@@ -87,21 +83,22 @@ public class UserAPI {
 										@PathVariable String uid,
 										@RequestParam( required=false, defaultValue="" ) String place,
 										@RequestParam( required=false, defaultValue="" ) String project,
-										@RequestParam( required=false, defaultValue="" ) String upperLimit,
-										@RequestParam( required=false, defaultValue="" ) String lowerLimit,
+										@RequestParam( required=false, defaultValue="" ) String maxTotal,
+										@RequestParam( required=false, defaultValue="" ) String minTotal,
+										@RequestParam( required=false, defaultValue="" ) String maxDate,
+										@RequestParam( required=false, defaultValue="" ) String minDate,
 										@RequestParam( required=false, defaultValue="" ) String category,
 										@RequestParam( required=false, defaultValue="0" ) String page,
 										@RequestParam( required=false, defaultValue="10" ) String size,
 										HttpServletResponse response ) throws IOException {
-		if( !uid.equals( user.getId())) {
+		if( !uid.equals( user.getId() ) ) {
 			response.sendError(403,"You are not allowed to browse other user's data!");
 		}
 		Pageable pageable = new PageRequest(  Integer.valueOf( page ), Integer.valueOf( size ) );
 		
-		if( place.length() > 0 || project.length() > 0 || category.length() > 0
-				|| upperLimit.length() > 0 || lowerLimit.length() > 0 ) {
-			System.out.println("Searching receipt");
-			Page<Receipt> result = receiptService.searchReceipt( uid, place, project, upperLimit, lowerLimit , category, pageable);
+		if( place.length() > 0 || project.length() > 0 || category.length() > 0 || maxDate.length() > 0
+				|| minDate.length() > 0 || maxTotal.length() > 0 || minTotal.length() > 0 ) {
+			Page<Receipt> result = receiptService.searchReceipt( uid, place, project, maxTotal, minTotal , maxDate, minDate, category, pageable);
 			return result;
 		}
 		
@@ -504,6 +501,27 @@ public class UserAPI {
 			response.sendError( 400, "There is no picture for the receipt.");
 			return null;
 		}
+	}
+	/* Delete a picture by receipt's ID. */
+	@RequestMapping( value="/{uid}/receipts/{rid}/pictures", method=RequestMethod.DELETE )
+	@ResponseBody
+	public void  deleteOnePicture( 	@PathVariable String rid ,
+									@PathVariable String uid ,
+									HttpServletResponse response )  throws Exception  {
+		try{
+			Receipt receipt = receiptService.findOne(rid); 
+			if( receipt.getPicId() == null ) {
+				response.sendError( 400, "There is no picture for the receipt." );
+			} else {
+				pictureService.delete(uid, receipt.getPicId());
+				receipt.setPicId(null);
+				receiptService.update(receipt);
+			}
+		} catch( Exception e ) {
+			System.out.println( "Catch an error when delete picture " + e + ": " + e.getStackTrace()[0].getLineNumber() );
+			response.sendError( 400, "There is no picture for the receipt.");
+		}
+
 	}
 	
 	private MediaType getType( byte[] array ) throws IOException {
