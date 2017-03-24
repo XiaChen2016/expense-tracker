@@ -30,10 +30,13 @@ tracker.factory('pagingService',function(){
 tracker.factory('projectService',function(){
 	var projectList = {};
 	var currentProject = "";
+	var editProject = {};
 
 	return{
 		setProjectList: function(p){projectList = p;},
 		getProjectList: function(){return projectList;},
+		setEditProject: function(p){editProject = p;},
+		getEditProject: function(){return editProject;},
 		setCurrentProjectWithName: function(p){currentProject = p;},
 		getCurrentProjectInId: function(){
 			for(var i = 0 ; i< projectList.length; i++){
@@ -102,8 +105,7 @@ tracker.controller('userHome.Controller', ['$scope', '$resource','userService','
 	$scope.currentPage = pagingService.getCurrentPage();
 	$scope.userPerPage = pagingService.getSize();
 	$scope.sizeList = pagingService.getSizeList();
-	$scope.projectList = projectService.getProjectList();
-	$scope.project = "All";
+	// $scope.projectList = projectService.getProjectList();
 
 	$scope.logout = function(){
 		$.ajax('/logout',{type : 'POST'});
@@ -117,6 +119,7 @@ tracker.controller('userHome.Controller', ['$scope', '$resource','userService','
 		for(var i = 0; i < receipts.length; i ++){
 			receipts[i].projectName = projectService.getCurrentProjectInName(receipts[i].projectId);
 		}
+		console.log(receipts);
 		$scope.receiptList = receipts;
 		$scope.totalPage = result.totalPages;
 		$scope.responseContent = result;
@@ -130,15 +133,16 @@ tracker.controller('userHome.Controller', ['$scope', '$resource','userService','
 		console.log("name = " +userService.getUser().username )
 		if(userService.getUser().username) {
 			$scope.user = userService.getUser();
-			getReceiptList();
 			getAllProject();
+			getReceiptList();
+			
 		} else {	
 				home.get(function(loggedUser){
 					$scope.user = loggedUser;
 					userService.setUser(loggedUser);
 					console.log("Username: " + userService.getUser().username);
-					getReceiptList();
 					getAllProject();
+					getReceiptList();
 					userService.setEditUser($scope.user);
 				});	
 		}
@@ -162,29 +166,66 @@ tracker.controller('userHome.Controller', ['$scope', '$resource','userService','
 		})
 	};
 // -----------------------------search--------------------------------
+	Number.prototype.padLeft = function(base,chr){
+		var  len = (String(base || 10).length - String(this).length)+1;
+		return len > 0? new Array(len).join(chr || '0')+this : this;
+	}
+
+	var transferToTimestamp = function(timelocal){
+		var d = timelocal;
+		var dformat = [ (d.getMonth()+1).padLeft(),
+		                d.getDate().padLeft(),
+		                d.getFullYear()].join('-')+
+		                ' ' +
+		                [ d.getHours().padLeft(),
+		                  d.getMinutes().padLeft(),
+		                  d.getSeconds().padLeft()].join(':');
+		var  date = new Date(dformat);
+		var timestamp=Math.round(date.getTime());
+		return timestamp;
+	}
+
 	$scope.searchReceipts = function(){
-		var state = {project : $scope.project};
-		searchService.setState(state);
-		Users.get({aid : $scope.user.id, page : 0 , size : pagingService.getSize() ,username: $scope.search.username, email: $scope.search.email, name : $scope.search.name, isAdmin : $scope.search.admin} ,updateListOfReceipt );
+		if($scope.search.startTime && $scope.search.endTime){
+			var state = {project: $scope.search.project.name, tag: $scope.search.tag, item : $scope.search.wordsInItem,minDate : transferToTimestamp($scope.search.startTime), maxDate : transferToTimestamp($scope.search.endTime) , minTotal: $scope.search.minTotal, maxTotal: $scope.search.maxTotal };
+			searchService.setState(state);
+		} else {
+			var state = {project: $scope.search.project.name, tag: $scope.search.tag, item : $scope.search.wordsInItem, minTotal: $scope.search.minTotal, maxTotal: $scope.search.maxTotal };
+			searchService.setState(state);
+		}
+		Receipts.get({uid : $scope.user.id, page : 0 , size : pagingService.getSize() ,project: state.project, tag: state.tag, minDate : state.minDate, maxDate : state.maxDate, item : state.item, minTotal:state.minTotal, maxTotal : state.maxTotal} ,updateListOfReceipt );
 	}
 // ----------------------------paging------------------------
 
 	$scope.prevPage = function(){
 		pagingService.setCurrentPage(pagingService.getCurrentPage() - 1);
-		Receipts.get({uid : $scope.user.id, page : pagingService.getCurrentPage(), size : pagingService.getSize() , project : searchService.getState().project} ,updateListOfReceipt );
+		var state = searchService.getState();
+		Receipts.get({uid : $scope.user.id, page : pagingService.getCurrentPage()  , size : pagingService.getSize() ,project: state.project, tag: state.tag, minDate : state.minDate, maxDate : state.maxDate, item : state.item, minTotal:state.minTotal, maxTotal : state.maxTotal} ,updateListOfReceipt );
 	}
 
 	$scope.nextPage = function(){
 		pagingService.setCurrentPage(pagingService.getCurrentPage() + 1);
-		Receipts.get({uid : $scope.user.id, page : pagingService.getCurrentPage(), size : pagingService.getSize() , project : searchService.getState().project} ,updateListOfReceipt );
+		var state = searchService.getState();
+		Receipts.get({uid : $scope.user.id, page : pagingService.getCurrentPage() , size : pagingService.getSize() ,project: state.project, tag: state.tag, minDate : state.minDate, maxDate : state.maxDate, item : state.item, minTotal:state.minTotal, maxTotal : state.maxTotal} ,updateListOfReceipt );
 	}
+
+	// $scope.setPage = function(){
+	// var page = document.getElementById("targetPage").value - 1;
+	// 	if(Number.isInteger(page)&& page<= $scope.totalPage && page>=0){
+	// 		$scope.currentPage = page;
+	// 		pagingService.setCurrentPage(page);
+	// 	Receipts.get({uid : $scope.user.id, page : pagingService.getCurrentPage(), size : pagingService.getSize() , project : searchService.getState().project.name , tag : searchService.getState().tag , upperLimit : searchService.getState().upperLimit , lowerLimit : searchService.getState().lowerLimit , item : searchService.getState().item} ,updateListOfReceipt );		} else {
+	// 		alert('Please type in right number', 'ERROR');
+	// 	}
+	// }
 
 	$scope.setPage = function(){
 	var page = document.getElementById("targetPage").value - 1;
 		if(Number.isInteger(page)&& page<= $scope.totalPage && page>=0){
 			$scope.currentPage = page;
 			pagingService.setCurrentPage(page);
-			Receipts.get({uid : $scope.user.id, page : pagingService.getCurrentPage(), size : pagingService.getSize() , project : searchService.getState().project} ,updateListOfReceipt );
+			var state = searchService.getState();
+			Receipts.get({uid : $scope.user.id, page : pagingService.getCurrentPage() , size : pagingService.getSize() ,project: state.project, tag: state.tag, minDate : state.minDate, maxDate : state.maxDate, item : state.item, minTotal:state.minTotal, maxTotal : state.maxTotal} ,updateListOfReceipt );		
 		} else {
 			alert('Please type in right number', 'ERROR');
 		}
@@ -192,14 +233,7 @@ tracker.controller('userHome.Controller', ['$scope', '$resource','userService','
 
 	$scope.setSize = function(){
 		pagingService.setSize($scope.userPerPage);
-		Receipts.get({uid : $scope.user.id, page : pagingService.getCurrentPage(), size : pagingService.getSize() , project : searchService.getState().project} ,updateListOfReceipt );
-		
-	}
-
-	$scope.setProject = function(){
-		projectService.setCurrentProjectWithName($scope.project);
-		Receipts.get({uid : $scope.user.id, page : pagingService.getCurrentPage(), size : pagingService.getSize() , project : $scope.project.id} ,updateListOfReceipt );
-		
+		Receipts.get({uid : $scope.user.id, page : pagingService.getCurrentPage(), size : pagingService.getSize() , project : searchService.getState().project.name , tag : searchService.getState().tag , upperLimit : searchService.getState().upperLimit , lowerLimit : searchService.getState().lowerLimit , item : searchService.getState().item} ,updateListOfReceipt );		
 	}
 
 // --------------------------edit/view receipt---------------------------
@@ -212,6 +246,10 @@ tracker.controller('userHome.Controller', ['$scope', '$resource','userService','
 
 	$scope.jumpToCreateReceipt = function (){
 		window.location.href = "/#/createReceipt";
+	}
+
+	$scope.jumpToProjects = function (){
+		window.location.href = "/#/project";
 	}
 	
 	$scope.editUser = function(selectedUser){
@@ -242,7 +280,7 @@ tracker.controller('editReceipt.Controller', ['$scope', 'userService','receiptSe
 		}
 	}
 	getCurrentUser();
-	
+	var createNewItem = function() { return {name :'', quantity : '', price : ''}; };
 	// var receipt = receiptService.getEditReceipt();
 	// $scope.receiptObejct = receipt;
 	// console.log(receipt);
@@ -265,7 +303,7 @@ tracker.controller('editReceipt.Controller', ['$scope', 'userService','receiptSe
 	if($scope.receipt.list_of_items) {
 		$scope.items = $scope.receipt.list_of_items;
 	} else {
-		$scope.items = [{name:" ",quantity:" ",price:" "}];
+		$scope.newItem = createNewItem();
 	}
 
 	if($scope.receipt.category){
@@ -274,19 +312,17 @@ tracker.controller('editReceipt.Controller', ['$scope', 'userService','receiptSe
 		$scope.tags = rawTags;
 	}
 	else {
-		$scope.tags = [" "];
+		$scope.tags = [];
 	}
 
-	$scope.editItem =
-	{
-			add: function(){
-				$scope.items.push({name:" ",quantity:" ",price:" "});
-			},
+	$scope.addItem = function( ) {
+		$scope.items.push( $scope.newItem );
+		$scope.newItem = createNewItem();
+	};
 
-			del: function(key){
-				$scope.items.splice(key,1);
-			}
-	}
+	$scope.deleteItem = function(index) {
+		$scope.items = $scope.items.filter( (item,i) => i != index );
+	};
 
 	Number.prototype.padLeft = function(base,chr){
 		var  len = (String(base || 10).length - String(this).length)+1;
@@ -322,12 +358,55 @@ tracker.controller('editReceipt.Controller', ['$scope', 'userService','receiptSe
 				list_of_items : $scope.items,
 				total : total
 			};
-		Receipts.update({uid:$scope.user.id,rid:$scope.receiptID},data,function(){window.location.href = '/#/user';});
+		Receipts.save({uid:$scope.user.id,rid:$scope.receiptID},data,function(){window.location.href = '/#/user';});
 	}
 
 	$scope.cancel = function(){
 		window.location.href = '/#/user';
 	}
+
+	var processReturnData = function(result){
+		if(!$scope.keepOldItems){
+			$scope.items = result;
+		}
+	   $scope.itemArea =true;
+	   $scope.confirmArea = true;
+   }
+
+	$scope.upload = function() {
+      var formData = new FormData();
+      if(!$('#photoFile').val()){
+			return;
+	  	}
+      formData.append("file", $('#photoFile')[0].files[0]);
+	  console.log($scope.project);
+      $.ajax( {
+		 url : '/user/' + $scope.user.id +'/receipts/'+receiptService.getEditReceipt().id+'/pictures',
+         type : 'POST',
+         data : formData,
+		 async: false,
+         processData : false,
+         contentType : false,
+         success : processReturnData
+      } );
+      $('#photoFile').val('');
+   }
+
+   var getReceipt = function(receiptID){
+	   Receipts.get({uid : $scope.user.id, rid : receiptID}, function(result){
+
+	   });
+   }
+
+   $scope.deletePctures = function(receiptID) {
+      Receipts.delete({uid:$scope.user.id,rid:receiptID , pictures : "pictures"}, function(){
+		  $('#picModal').modal('hide');
+		//   getReceipt(receiptID);
+		$scope.receipt.picId = undefined;
+	  })
+   }
+
+
 
 	$('#pictureBody').click(function () {
             $('#pictureBody').not(this).animate({height: "250px"}, 'fast');
@@ -369,6 +448,7 @@ tracker.controller('createReceipt.Controller', ['$scope', 'userService','project
 	$scope.receiptNote = "";
 	$scope.items = [];
 	$scope.tags = [];
+	$scope.createArea = true;
 	
 	var createNewItem = function() { return {name :'', quantity : '', price : ''}; };
 	$scope.newItem = createNewItem();
@@ -388,8 +468,11 @@ tracker.controller('createReceipt.Controller', ['$scope', 'userService','project
 	}
 
 	$scope.createReceipt = function(){
-		$("#hideOne").hide();
-		$("#hideTwo").show();
+		// $("#hideOne").hide();
+		$scope.createArea = false;
+		// $("#hideTwo").show();
+		$scope.imageArea = true;
+		$scope.imageButtonArea = true;
 		$("#time").prop('disabled', true);
 		$("#location").prop('disabled', true);
 		$("#selectProject").prop('disabled', true);
@@ -423,8 +506,8 @@ tracker.controller('createReceipt.Controller', ['$scope', 'userService','project
 				category: allTag
 			};
 		Receipts.save({uid:$scope.user.id},data,function(result){
-		alert('Create successful and more information required', 'Success');
 		receiptService.setEditReceipt(result);
+		$scope.receipt = result;
 		});
 	}
  
@@ -439,37 +522,274 @@ tracker.controller('createReceipt.Controller', ['$scope', 'userService','project
 		 url : '/user/' + $scope.user.id +'/receipts/'+receiptService.getEditReceipt().id+'/pictures',
          type : 'POST',
          data : formData,
+		 async: false,
          processData : false,
          contentType : false,
-         success : function( response ) {
-			 if(!response.list_of_items){
-				 $("#hideThree").show();
-			 }
-         }
+         success : processReturnData
       } );
       $('#photoFile').val('');
-	  $("#delete-0").hide();
-	  $('#hideFour').show();
+	  $scope.imageButtonArea = false;
+	  $scope.imageShowArea = true;
    }
 
-   $scope.updateSingleItem = function(key){
-		$("#item-"+key).hide();
-	};
+   var processReturnData = function(result){
+	   $scope.items = result;
+	   $scope.itemArea =true;
+	   $scope.confirmArea = true;
+   }
 
 	$scope.cancel = function(){
 		window.location.href = '/#/user'
 	};
 
 	$scope.noImage = function(){
-		$("#hideThree").show();
-		$('#hideFour').show();
-		$("#delete-0").hide();
+		$scope.itemArea = true;
+		$scope.confirmArea = true;
+		$scope.imageButtonArea = false;
 	};
 
 	$scope.confirmEditReceipt = function(){
-		var data = {
-				list_of_items : $scope.items,
-			};
-		Receipts.update({uid:$scope.user.id,rid:receiptService.getEditReceipt().id,items : "items"},data,function(){window.location.href = '/#/user';});
+		var data = $scope.items;
+		Receipts.save({uid:$scope.user.id,rid:receiptService.getEditReceipt().id,items : "items"},data,function(){window.location.href = '/#/user';});
 	}
 } ] );
+
+tracker.controller('project.Controller', ['$scope', '$resource','userService','pagingService','Receipts','home', 'searchService','receiptService','projectService','Projects', function( $scope, $resource, userService,pagingService,Receipts,home, searchService, receiptService, projectService,Projects  ) {
+
+	$scope.logout = function(){
+		$.ajax('/logout',{type : 'POST'});
+		window.location.href = '/#/';
+	}
+
+	var getCurrentUser = function(){
+		console.log("name = " +userService.getUser().username )
+		if(userService.getUser().username) {
+			$scope.user = userService.getUser();
+			getAllProject();
+			
+		} else {	
+				home.get(function(loggedUser){
+					$scope.user = loggedUser;
+					userService.setUser(loggedUser);
+					console.log("Username: " + userService.getUser().username);
+					getAllProject();
+					userService.setEditUser($scope.user);
+				});	
+		}
+	}
+
+	var getAllProject = function () {
+		Projects.get({ uid : userService.getUser().id },function(result){
+		projectService.setProjectList(result.content);
+		$scope.projectList = result.content;
+		$scope.responseContent = result;
+		$scope.totalPage = result.totalPages;
+		$scope.currentPage = result.number;
+		});
+	}
+	getCurrentUser();
+
+	$scope.currentPage = pagingService.getCurrentPage();
+	$scope.userPerPage = pagingService.getSize();
+	$scope.sizeList = pagingService.getSizeList();
+	$scope.projectList = projectService.getProjectList();
+	$scope.user = userService.getUser();
+
+	var updateProjectList = function(result){
+		projectService.setProjectList(result.content);
+		$scope.projectList = result.content;
+		$scope.responseContent = result;
+		$scope.totalPage = result.totalPages;
+		$scope.currentPage = result.number;
+	}
+
+	$scope.editUser = function(selectedUser){
+		userService.setEditUser(selectedUser);
+		window.location.href = '/#/editUser';
+	}
+
+	$scope.editProject = function(selectedProject){
+		projectService.setEditProject(selectedProject);
+		window.location.href = '/#/editProject';
+	}
+
+	$scope.createProject = function(){
+		window.location.href = '/#/createProject';
+	}
+
+	$scope.jumpToReceipts = function(){
+		window.location.href = '/#/user';
+	}
+
+	$scope.deleteProject = function(project){
+		Projects.delete({uid:$scope.user.id,pid:project.id},function(){
+			getAllProject();
+		})
+	}
+
+//---------------paging ----------------------------------
+$scope.prevPage = function(){
+		pagingService.setCurrentPage(pagingService.getCurrentPage() - 1);
+		Projects.get({uid : $scope.user.id, page : pagingService.getCurrentPage(), size : pagingService.getSize()} ,updateProjectList );	
+	}
+
+	$scope.nextPage = function(){
+		pagingService.setCurrentPage(pagingService.getCurrentPage() + 1);
+		Projects.get({uid : $scope.user.id, page : pagingService.getCurrentPage(), size : pagingService.getSize()} ,updateProjectList );		}
+
+	$scope.setPage = function(){
+	var page = document.getElementById("targetPage").value - 1;
+		if(Number.isInteger(page)&& page<= $scope.totalPage && page>=0){
+			$scope.currentPage = page;
+			pagingService.setCurrentPage(page);
+		Projects.get({uid : $scope.user.id, page : pagingService.getCurrentPage(), size : pagingService.getSize()} ,updateProjectList );			} else {
+			alert('Please type in right number', 'ERROR');
+		}
+	}
+
+	$scope.setSize = function(){
+		pagingService.setSize($scope.userPerPage);
+		Projects.get({uid : $scope.user.id, page : pagingService.getCurrentPage(), size : pagingService.getSize()} ,updateProjectList );		
+	}
+
+}]);
+
+
+tracker.controller('createProject.Controller', ['$scope', '$resource','userService','pagingService','Receipts','home', 'searchService','receiptService','projectService','Projects', function( $scope, $resource, userService,pagingService,Receipts,home, searchService, receiptService, projectService,Projects  ) {
+
+
+	var getCurrentUser = function(){
+		console.log("name = " +userService.getUser().username )
+		if(userService.getUser().username) {
+			$scope.user = userService.getUser();
+			getAllProject();
+			
+		} else {	
+				home.get(function(loggedUser){
+					$scope.user = loggedUser;
+					userService.setUser(loggedUser);
+					console.log("Username: " + userService.getUser().username);
+					getAllProject();
+					userService.setEditUser($scope.user);
+				});	
+		}
+	}
+
+	var getAllProject = function () {
+		Projects.get({ uid : userService.getUser().id },function(result){
+		projectService.setProjectList(result.content);
+		$scope.projectList = result.content;
+		});
+	}
+	getCurrentUser();
+
+	$scope.cancel = function(){
+		window.location.href = '/#/project';
+	}
+
+	Number.prototype.padLeft = function(base,chr){
+		var  len = (String(base || 10).length - String(this).length)+1;
+		return len > 0? new Array(len).join(chr || '0')+this : this;
+	}
+
+	var transferToTimestamp = function(timelocal){
+		var d = timelocal;
+		var dformat = [ (d.getMonth()+1).padLeft(),
+		                d.getDate().padLeft(),
+		                d.getFullYear()].join('-')+
+		                ' ' +
+		                [ d.getHours().padLeft(),
+		                  d.getMinutes().padLeft(),
+		                  d.getSeconds().padLeft()].join(':');
+		var  date = new Date(dformat);
+		var timestamp=Math.round(date.getTime());
+		return timestamp;
+	}
+
+	$scope.createProject = function(){
+		
+		var data = {
+			ownerId : $scope.user.id,
+			name : $scope.newProject.name,
+			startDate : transferToTimestamp($scope.newProject.startDate),
+			endDate : transferToTimestamp($scope.newProject.endDate)
+		}
+		Projects.save({uid:$scope.user.id},data,function(){window.location.href = '/#/project';});
+	}
+
+
+
+}]);
+
+
+tracker.controller('editProject.Controller', ['$scope', '$resource','userService','pagingService','Receipts','home', 'searchService','receiptService','projectService','Projects', function( $scope, $resource, userService,pagingService,Receipts,home, searchService, receiptService, projectService,Projects  ) {
+
+	Number.prototype.padLeft = function(base,chr){
+		var  len = (String(base || 10).length - String(this).length)+1;
+		return len > 0? new Array(len).join(chr || '0')+this : this;
+	}
+
+	var transferToTimestamp = function(timelocal){
+		var d = timelocal;
+		var dformat = [ (d.getMonth()+1).padLeft(),
+		                d.getDate().padLeft(),
+		                d.getFullYear()].join('-')+
+		                ' ' +
+		                [ d.getHours().padLeft(),
+		                  d.getMinutes().padLeft(),
+		                  d.getSeconds().padLeft()].join(':');
+		var  date = new Date(dformat);
+		var timestamp=Math.round(date.getTime());
+		return timestamp;
+	}
+
+	var getCurrentUser = function(){
+		console.log("name = " +userService.getUser().username )
+		if(userService.getUser().username) {
+			$scope.user = userService.getUser();
+			getAllProject();
+			
+		} else {	
+				home.get(function(loggedUser){
+					$scope.user = loggedUser;
+					userService.setUser(loggedUser);
+					console.log("Username: " + userService.getUser().username);
+					getAllProject();
+					userService.setEditUser($scope.user);
+				});	
+		}
+	}
+
+	var getAllProject = function () {
+		Projects.get({ uid : userService.getUser().id },function(result){
+		projectService.setProjectList(result.content);
+		$scope.projectList = result.content;
+		});
+	}
+	getCurrentUser();
+
+	$scope.projectList = projectService.getProjectList();
+	$scope.user = userService.getUser();
+	console.log(projectService.getEditProject());
+	var project = projectService.getEditProject();
+	$scope.pname = project.name;
+	console.log($scope.pname);
+	$scope.psdate = new Date(project.startDate);
+	$scope.pedate = new Date(project.endDate);
+
+
+	$scope.updateProject = function(){
+		
+		var data = {
+			name : $scope.pname,
+			startDate : transferToTimestamp($scope.psdate),
+			endDate : transferToTimestamp($scope.pedate)
+		}
+		Projects.update({uid:$scope.user.id,pid:project.id},data,function(){window.location.href = '/#/project';});
+	}
+
+	$scope.cancel = function(){
+		window.location.href = '/#/project';
+	}
+
+}]);

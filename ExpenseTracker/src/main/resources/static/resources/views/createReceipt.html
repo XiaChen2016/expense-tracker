@@ -31,33 +31,33 @@
 					<td><p style="margin-top:-10px;">Note &nbsp;</p></td>
 					<td><input id = "note" type="text" class="form-control" ng-model="receiptNote" ></td>
 		      	</tr>
-				<tr id = "hideOne">
+				<!--<tr id = "hideOne">-->
+				<!--<tr ng-if = "createArea">
 					<td>
-					<button type="button" class="btn btn-xs btn-primary" ng-click="cancel()">Cancel</button>
+					
 					</td>
 					<td>
-					<button type="button" class="btn btn-xs btn-primary" ng-click="createReceipt()">Create</button> 
+					
 					</td>
-				</tr>
+				</tr>-->
 				<tr>
 				<td colspan="2">
-				<div id = "hideTwo" style="display:none">
+				<div ng-if="imageArea">
 				<div class="form-inline well well-sm form">
     				<form class="form">
       					<div class="form-group">
-        				<label for="photoFile">Image File</label>
-        				<input id="photoFile" type="file" placeholder="image file">
+        					<label for="photoFile">Image File</label>
+        					<input id="photoFile" type="file" placeholder="image file">
       					</div>
-						<div class="form-group">
-      					<button type="button" class="btn btn-xs btn-primary" ng-click="upload()">Upload</button>
-						<button type="button" class="btn btn-xs btn-primary" ng-click="noImage()">No Image</button> 
-						</div>
-    				</form>
+					</form>
+					<div ng-if = "imageShowArea" class = "tile">
+          					<img ng-src="/user/{{receipt.ownerId}}/receipts/{{receipt.id}}/pictures" alt="receipt pictures" id = "pictureBody">
+        			</div>
   				</div>
 				</div>
 				</td>
 			</tr>
-            <tr id = "hideThree" style="display:none">
+            <tr ng-if="itemArea">
 		      	<td><p style="margin-top:-10px;">Items</p></td>
 					<td>
 					<h5 style = "word-spacing: 140px;">Name Quantity Price</h5>
@@ -94,9 +94,19 @@
 		      	</tr>
 	      	</table>
     	</div>
-		<div class="modal-footer" id = "hideFour" style="display:none">
-        	<button type="button" class="btn btn-default" ng-click="cancel()">Cancel</button>
-        	<button type="button" class="btn btn-primary" ng-click="confirmEditReceipt()">Confirm</button>
+		<div class="modal-footer">
+			<div ng-if="imageButtonArea">
+				<button type="button" class="btn btn-default" ng-click="noImage()">No Image</button>
+				<button type="button" class="btn btn-primary" ng-click="upload()">Upload</button>
+			</div>
+			<div ng-if="createArea">
+				<button type="button" class="btn btn-default" ng-click="cancel()">Cancel</button>
+				<button type="button" class="btn btn-primary" ng-click="createReceipt()">Create</button> 
+			</div>
+			<div ng-if="confirmArea">
+        		<button type="button" class="btn btn-default" ng-click="cancel()">Cancel</button>
+        		<button type="button" class="btn btn-primary" ng-click="confirmEditReceipt()">Confirm</button>
+			</div>
     	</div>
   </div>
 </div>
