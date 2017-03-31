@@ -39,8 +39,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter  {
 	@Bean
     public MultipartConfigElement multipartConfigElement() {
         MultipartConfigFactory factory = new MultipartConfigFactory();
-        factory.setMaxFileSize("4MB");
-        factory.setMaxRequestSize("4MB");
+        factory.setMaxFileSize("20MB");
+        factory.setMaxRequestSize("20MB");
         return factory.createMultipartConfig();
     }
 	

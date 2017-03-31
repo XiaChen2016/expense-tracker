@@ -50,13 +50,13 @@ public class ReceiptsService {
 		return receiptRepository.findOne( id );
 	}
 	public Page<Receipt> searchReceipt( String ownerId, String place, String project, 
-				String maxTotal, String minTotal, String maxDate, String minDate,  String category, Pageable pageable ) {
+				String maxTotal, String minTotal, String maxDate, String minDate,  String category, String item, Pageable pageable ) {
 		String projectId ="";
 		if( project.length()>0 && projectService.findByOwnerIdAndNameLike(ownerId, project) != null ) {
 			projectId = projectService.findByOwnerIdAndNameLike(ownerId, project).getId().toString();
 		}
 		System.out.println( "project id: " + projectId);
-		return receiptRepository.find( ownerId, place, projectId, maxTotal, minTotal, maxDate, minDate , category, pageable );
+		return receiptRepository.find( ownerId, place, projectId, maxTotal, minTotal, maxDate, minDate , category, item, pageable );
 	}
 	
 	public Receipt save( Receipt receipt ) {

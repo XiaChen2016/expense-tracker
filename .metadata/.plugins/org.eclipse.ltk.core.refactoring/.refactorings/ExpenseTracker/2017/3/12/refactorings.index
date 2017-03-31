@@ -6,3 +6,6 @@
 1490150582031	Rename local variable 'lowerLimit'
 1490150612395	Rename local variable 'upperLimit'
 1490150621495	Rename local variable 'lowerLimit'
+1490475388559	Rename local variable 'regPunctuations'
+1490475406091	Rename local variable 'regOnlyNumbers'
+1490475594182	Rename local variable 'regNonAlphanumeric'

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename local variable &apos;matcher1&apos; in &apos;com.tracker.api.UserAPI.getDate(...)&apos; to &apos;matcherDate1&apos;&#x0A;- Original project: &apos;ExpenseTracker&apos;&#x0A;- Original element: &apos;com.tracker.api.UserAPI.getDate(List&lt;DetailBox&gt;, Date).matcher1&apos;&#x0A;- Renamed element: &apos;matcher1&apos;&#x0A;- Update references to refactored element" description="Rename local variable &apos;matcher1&apos;" id="org.eclipse.jdt.ui.rename.local.variable" input="/src\/main\/java&lt;com.tracker.api{UserAPI.java[UserAPI~getDate~QList\&lt;QDetailBox;&gt;;~QDate;@matcher1!20975!21012!20983!20990!QMatcher;!0!false" name="matcherDate1" references="true" stamp="1490584571076" version="1.0"/>
+</session>

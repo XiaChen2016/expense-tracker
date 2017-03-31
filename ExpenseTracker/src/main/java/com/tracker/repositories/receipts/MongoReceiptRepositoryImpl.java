@@ -25,6 +25,7 @@ public class MongoReceiptRepositoryImpl implements UpdateableReceiptRepository {
 								String maxDate,
 								String minDate,
 								String category,
+								String item,
 								Pageable pageable ){
 		Query query = new Query();
 		query.addCriteria( Criteria.where("ownerId").is( ownerId ) );
@@ -36,6 +37,10 @@ public class MongoReceiptRepositoryImpl implements UpdateableReceiptRepository {
 		}
 		if( category.length() > 0 ) {
 			query.addCriteria( Criteria.where("category").regex( category, "i" ) );
+		}
+		if( item.length() >0 ) {
+			System.out.println("Search receitps by items: " + item);
+			query.addCriteria( Criteria.where("list_of_items").elemMatch(Criteria.where("name").regex( item, "i")) );
 		}
 		if( minTotal.length() > 0 ) {
 			if( maxTotal.length() > 0 ) {
@@ -53,7 +58,6 @@ public class MongoReceiptRepositoryImpl implements UpdateableReceiptRepository {
 			query.addCriteria( Criteria.where("total").lte( Double.valueOf( maxTotal ) ) );
 			System.out.println( "Query by total less than: " + maxTotal );
 		}
-		
 		if( minDate.length() > 0 ) {
 			if( maxDate.length() > 0 ) {
 				/* Query for a period between minDate ~ maxDate */
@@ -70,8 +74,6 @@ public class MongoReceiptRepositoryImpl implements UpdateableReceiptRepository {
 			query.addCriteria( Criteria.where("time").lte( Long.valueOf( maxDate ) ) );
 			System.out.println("query for time before " + maxDate);
 		}
-		System.out.println("Searching receipt, page size: "+pageable.getPageSize());
-		System.out.println("offset: " + pageable.getOffset());
 		List<Receipt> result = mongo.find( query, Receipt.class );
 		List<Receipt> subListOfResult = subList( result, pageable.getOffset(), pageable.getPageSize() );
 		Page<Receipt> page = new PageImpl<Receipt>( subListOfResult, pageable, result.size() );
@@ -102,7 +104,7 @@ public class MongoReceiptRepositoryImpl implements UpdateableReceiptRepository {
 	}
 	
 	public void findAndRemove( String pid ) {
-		System.out.println("Deleting project: " + pid);
+//		System.out.println("Deleting project: " + pid);
 		Query query = new Query();
 		query.addCriteria( Criteria.where("projectId").is( pid ) );
 		mongo.remove( query, Receipt.class );

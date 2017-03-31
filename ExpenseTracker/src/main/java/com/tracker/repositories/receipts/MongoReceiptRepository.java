@@ -22,6 +22,7 @@ public interface MongoReceiptRepository  extends UpdateableReceiptRepository,
 								@Param("maxDate") String maxDate, 
 								@Param("minDate") String minDate,
 								@Param("category") String category,
+								@Param("item") String item,
 								Pageable pageable );
 	public void findAndRemove( String pid );
 	public Page<Receipt> 
