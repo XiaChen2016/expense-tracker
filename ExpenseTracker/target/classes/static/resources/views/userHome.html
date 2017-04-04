@@ -9,16 +9,51 @@
               <button type="submit" class="btn btn-link" ng-click="jumpToCreateReceipt()">Add receipt</button>
             </div>
             <div class = "form-group">
-              <button type="submit" class="btn btn-link" ng-click="Receipts()">Projects</button>
+              <button type="submit" class="btn btn-link" ng-click="jumpToProjects()">Projects</button>
             </div>
   </form>
 </div>
-
-        <div class="pull left">
-        <a>Project </a>
-          <select ng-change = "setProject()" ng-model = "project" ng-options = "project as project.name for project in projectList track by project.id">
-          </select>
-        </div>
+  <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#searchTable">Search Filter</button>
+  <form class="form-horizontal well well-sm collapse" id="searchTable">
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="pwd">Project :</label>
+      <div class="col-sm-2">
+        <select id = "selectProject" class = "form-control" ng-model = "search.project" ng-options = "project as project.name for project in projectList track by project.id">
+        </select>
+      </div>
+      <label class="control-label col-sm-2" for="pwd">Tag name :</label>
+      <div class="col-sm-2">          
+        <input class="form-control" placeholder="Tag Name" ng-model="search.tag">
+      </div>
+      <label class="control-label col-sm-2" for="pwd">Words In Item :</label>
+      <div class="col-sm-2">          
+        <input class="form-control" placeholder="Item" ng-model="search.wordsInItem">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="pwd">Account Total :</label>
+      <div class="col-sm-2">          
+        <input class="form-control" placeholder="Minimum Total" ng-model="search.minTotal">
+      </div>
+      <div class="col-sm-2">          
+        <input class="form-control" placeholder="Maximum Total" ng-model="search.maxTotal">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="pwd">Start Time :</label>
+      <div class="col-sm-3">          
+    		<input id = "time" type="date" class="form-control" ng-model="search.startTime">
+      </div>
+      <label class="control-label col-sm-2" for="pwd">End Time :</label>
+      <div class="col-sm-3">          
+        <input id = "time" type="date" class="form-control" ng-model="search.endTime" >
+      </div>
+      <div class="col-sm-2">          
+         <button type="submit" class="btn btn-default pull-right" ng-click="searchReceipts()">Search</button>
+      </div>
+    </div>
+  </form>
+  
         <div class="pull right">
           <a>Per page </a>
           <select ng-change = "setSize()" ng-model = "userPerPage" ng-options = "size for size in sizeList">
@@ -31,7 +66,7 @@
 <th>Time</th>
 <th>Location</th>
 <th>Project</th>
-<th>Category</th>
+<th>Tags</th>
 <th>Total Account</th>
 </tr>
 </thead>

@@ -77,15 +77,16 @@
 					<h5 style = "word-spacing: 140px;">Name Quantity Price</h5>
               			<div class="form-inline" ng-repeat = "item in items track by $index" style="margin-top:10px;">
     	          			<div class="form-group">
-                    			<input class="form-control" ng-model="item.name">
+                    			<input class="form-control" ng-model="item.name" ng-change = "showUpdate($index)">
   		          			</div>
   		          			<div class="form-group">
-    		            		<input  class="form-control" ng-model="item.quantity">
+    		            		<input  class="form-control" ng-model="item.quantity" ng-change = "showUpdate($index)">
                 			</div>
 		            		<div class="form-group">
-    		            		<input   class="form-control" ng-model="item.price">
+    		            		<input   class="form-control" ng-model="item.price" ng-change = "showUpdate($index)">
                 			</div>
                 			<div class="form-group">
+								<button type="submit" class="btn btn-info" ng-attr-id="{{ 'item-' + $index }}" ng-click="updateItem(item,$index)" style="display: none">update</button>
   		          				<button type="submit" class="btn btn-danger" ng-click="deleteItem($index)">x</button>
                 			</div>
 	            		</div>
@@ -113,7 +114,7 @@
     	</div>
 	<div class="modal-footer">
         <button type="button" class="btn btn-default" ng-click="cancel()">Cancel</button>
-        <button type="button" class="btn btn-primary" ng-click="confirmEditReceipt()">Confirm</button>
+        <button type="button" class="btn btn-primary" ng-click="confirmEditReceipt()" ng-if="receiptWatch">Confirm</button>
     </div>
   </div>
 </div>
