@@ -189,24 +189,27 @@ tracker.controller('userHome.Controller', ['$scope', '$resource','userService','
 		if($scope.search.startTime && $scope.search.endTime){
 			var state = {project: $scope.search.project.name, tag: $scope.search.tag, item : $scope.search.wordsInItem,minDate : transferToTimestamp($scope.search.startTime), maxDate : transferToTimestamp($scope.search.endTime) , minTotal: $scope.search.minTotal, maxTotal: $scope.search.maxTotal };
 			searchService.setState(state);
-		} else {
+		} else if($scope.search.project){
 			var state = {project: $scope.search.project.name, tag: $scope.search.tag, item : $scope.search.wordsInItem, minTotal: $scope.search.minTotal, maxTotal: $scope.search.maxTotal };
 			searchService.setState(state);
+		} else {
+			var state = {tag: $scope.search.tag, item : $scope.search.wordsInItem, minTotal: $scope.search.minTotal, maxTotal: $scope.search.maxTotal };
+			searchService.setState(state);
 		}
-		Receipts.get({uid : $scope.user.id, page : 0 , size : pagingService.getSize() ,project: state.project, tag: state.tag, minDate : state.minDate, maxDate : state.maxDate, item : state.item, minTotal:state.minTotal, maxTotal : state.maxTotal} ,updateListOfReceipt );
+		Receipts.get({uid : $scope.user.id, page : 0 , size : pagingService.getSize() ,project: state.project, category: state.tag, minDate : state.minDate, maxDate : state.maxDate, item : state.item, minTotal:state.minTotal, maxTotal : state.maxTotal} ,updateListOfReceipt );
 	}
 // ----------------------------paging------------------------
 
 	$scope.prevPage = function(){
 		pagingService.setCurrentPage(pagingService.getCurrentPage() - 1);
 		var state = searchService.getState();
-		Receipts.get({uid : $scope.user.id, page : pagingService.getCurrentPage()  , size : pagingService.getSize() ,project: state.project, tag: state.tag, minDate : state.minDate, maxDate : state.maxDate, item : state.item, minTotal:state.minTotal, maxTotal : state.maxTotal} ,updateListOfReceipt );
+		Receipts.get({uid : $scope.user.id, page : pagingService.getCurrentPage()  , size : pagingService.getSize() ,project: state.project, category: state.tag, minDate : state.minDate, maxDate : state.maxDate, item : state.item, minTotal:state.minTotal, maxTotal : state.maxTotal} ,updateListOfReceipt );
 	}
 
 	$scope.nextPage = function(){
 		pagingService.setCurrentPage(pagingService.getCurrentPage() + 1);
 		var state = searchService.getState();
-		Receipts.get({uid : $scope.user.id, page : pagingService.getCurrentPage() , size : pagingService.getSize() ,project: state.project, tag: state.tag, minDate : state.minDate, maxDate : state.maxDate, item : state.item, minTotal:state.minTotal, maxTotal : state.maxTotal} ,updateListOfReceipt );
+		Receipts.get({uid : $scope.user.id, page : pagingService.getCurrentPage() , size : pagingService.getSize() ,project: state.project, category: state.tag, minDate : state.minDate, maxDate : state.maxDate, item : state.item, minTotal:state.minTotal, maxTotal : state.maxTotal} ,updateListOfReceipt );
 	}
 
 	// $scope.setPage = function(){
@@ -315,13 +318,34 @@ tracker.controller('editReceipt.Controller', ['$scope', 'userService','receiptSe
 		$scope.tags = [];
 	}
 
+	var watchChange = function(){
+		return angular.equals($scope.receipt , receiptService.getEditReceipt());
+	}
+
 	$scope.addItem = function( ) {
 		$scope.items.push( $scope.newItem );
 		$scope.newItem = createNewItem();
+		$scope.receiptWatch = watchChange();
 	};
+
+	$scope.updateItem = function(item,index) {
+		var x;
+		for(x in $scope.items){
+			if (x == index){
+				$scope.items[x] = item;
+				$('#item-'+x).hide();
+			}
+		}
+		$scope.receiptWatch = watchChange();
+	};
+
+	$scope.showUpdate = function(index){
+		$('#item-'+index).show();
+	}
 
 	$scope.deleteItem = function(index) {
 		$scope.items = $scope.items.filter( (item,i) => i != index );
+		$scope.receiptWatch = watchChange();
 	};
 
 	Number.prototype.padLeft = function(base,chr){
@@ -358,7 +382,7 @@ tracker.controller('editReceipt.Controller', ['$scope', 'userService','receiptSe
 				list_of_items : $scope.items,
 				total : total
 			};
-		Receipts.save({uid:$scope.user.id,rid:$scope.receiptID},data,function(){window.location.href = '/#/user';});
+		Receipts.update({uid:$scope.user.id,rid:$scope.receipt.id},data,function(){window.location.href = '/#/user';});
 	}
 
 	$scope.cancel = function(){
@@ -406,8 +430,6 @@ tracker.controller('editReceipt.Controller', ['$scope', 'userService','receiptSe
 	  })
    }
 
-
-
 	$('#pictureBody').click(function () {
             $('#pictureBody').not(this).animate({height: "250px"}, 'fast');
             var $this = $(this),
@@ -449,13 +471,37 @@ tracker.controller('createReceipt.Controller', ['$scope', 'userService','project
 	$scope.items = [];
 	$scope.tags = [];
 	$scope.createArea = true;
+
+	function isNormalInteger(str) {
+    	return /^\+?(0|[1-9]\d*)$/.test(str);
+	}
+
+	var checkPrice = function(num){
+		if(!isNaN(num) && num.toString().indexOf('.') != -1){
+			console.log("NaN");
+			return true;
+		}
+		if(isNormalInteger(num)){
+			console.log("int");
+			return true;
+		}
+		return false;
+	}
 	
 	var createNewItem = function() { return {name :'', quantity : '', price : ''}; };
 	$scope.newItem = createNewItem();
 
 	$scope.addItem = function( ) {
-		$scope.items.push( $scope.newItem );
-		$scope.newItem = createNewItem();
+		if(isNormalInteger($scope.newItem.quantity)){
+			if(checkPrice($scope.newItem.price)){
+				$scope.items.push( $scope.newItem );
+				$scope.newItem = createNewItem();
+			} else {
+				alert("Wrong price , Please check");
+			}
+		} else {
+			alert("Wrong quantity , Please check");
+		}
 	};
 
 	$scope.deleteItem = function(index) {
@@ -468,9 +514,7 @@ tracker.controller('createReceipt.Controller', ['$scope', 'userService','project
 	}
 
 	$scope.createReceipt = function(){
-		// $("#hideOne").hide();
 		$scope.createArea = false;
-		// $("#hideTwo").show();
 		$scope.imageArea = true;
 		$scope.imageButtonArea = true;
 		$("#time").prop('disabled', true);
@@ -538,6 +582,13 @@ tracker.controller('createReceipt.Controller', ['$scope', 'userService','project
 	   $scope.confirmArea = true;
    }
 
+   $scope.$on('$locationChangeStart', function( event ) {
+    var answer = confirm("Are you sure you want to leave this page? Data not uploaded will not be saved")
+    if (!answer) {
+        event.preventDefault();
+    }
+});
+
 	$scope.cancel = function(){
 		window.location.href = '/#/user'
 	};
@@ -552,6 +603,7 @@ tracker.controller('createReceipt.Controller', ['$scope', 'userService','project
 		var data = $scope.items;
 		Receipts.save({uid:$scope.user.id,rid:receiptService.getEditReceipt().id,items : "items"},data,function(){window.location.href = '/#/user';});
 	}
+
 } ] );
 
 tracker.controller('project.Controller', ['$scope', '$resource','userService','pagingService','Receipts','home', 'searchService','receiptService','projectService','Projects', function( $scope, $resource, userService,pagingService,Receipts,home, searchService, receiptService, projectService,Projects  ) {
