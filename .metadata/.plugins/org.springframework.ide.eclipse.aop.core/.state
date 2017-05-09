@@ -3,8 +3,8 @@
 <aop-project name="Calculator"/>
 <aop-project name="form_login"/>
 <aop-project name="digest_auth"/>
+<aop-project name="ExpenseTracker"/>
 <aop-project name="Tasker"/>
 <aop-project name="Tweeger"/>
 <aop-project name="task_list"/>
-<aop-project name="ExpenseTracker"/>
 </aop-reference-model>

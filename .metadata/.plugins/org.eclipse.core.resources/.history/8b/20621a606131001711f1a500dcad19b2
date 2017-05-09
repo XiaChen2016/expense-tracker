@@ -1,0 +1,626 @@
+package com.tracker.services;
+
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.services.vision.v1.Vision;
+import com.google.api.services.vision.v1.VisionScopes;
+import com.google.api.services.vision.v1.model.AnnotateImageRequest;
+import com.google.api.services.vision.v1.model.AnnotateImageResponse;
+import com.google.api.services.vision.v1.model.BatchAnnotateImagesRequest;
+import com.google.api.services.vision.v1.model.BatchAnnotateImagesResponse;
+import com.google.api.services.vision.v1.model.EntityAnnotation;
+import com.google.api.services.vision.v1.model.Feature;
+import com.google.api.services.vision.v1.model.Image;
+import com.google.api.services.vision.v1.model.Vertex;
+import com.google.code.regexp.Matcher;
+import com.google.code.regexp.Pattern;
+import com.google.common.collect.ImmutableList;
+import com.tracker.domain.pictures.DetailBox;
+import com.tracker.domain.pictures.Picture;
+import com.tracker.domain.receipt.Item;
+import com.tracker.domain.receipt.Receipt;
+
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
+import javax.imageio.stream.MemoryCacheImageInputStream;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+
+@Service
+public class VisionService {
+	private GoogleCredential credentials;
+	private Vision vision;
+	private int MAX_RESULTS = 10;
+	private int status = 200;
+	private Long timeOnReceipt;
+	private float total;
+	private String location;
+	
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
+	}
+
+	public float getTotal() {
+		return total;
+	}
+
+	public void setTotal(float total) {
+		this.total = total;
+	}
+
+	public Long getTimeOnReceipt() {
+		return timeOnReceipt;
+	}
+
+	public void setTimeOnReceipt(Long timeOnReceipt) {
+		this.timeOnReceipt = timeOnReceipt;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
+	@Autowired
+	private ReceiptsService receiptService;
+	@Autowired
+	private PictureService pictureService;
+	
+	@PostConstruct
+	public void init() throws GeneralSecurityException, IOException {
+		credentials = GoogleCredential.fromStream(new FileInputStream("../ExpenseTracker/ExpenseTracker-579b2651e126.json"))
+				.createScoped(VisionScopes.all());
+		JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+		vision = new Vision.Builder(GoogleNetHttpTransport.newTrustedTransport(), jsonFactory, credentials)
+				.setApplicationName("ExpenseTracker").build();
+	}
+	
+	// The path to the image file to annotate
+//	String fileName = "/Users/hunt/temp/receipt.jpg";
+
+	// Reads the image file into memory
+//	Path path = Paths.get(fileName);
+//	byte[] data = Files.readAllBytes(path);
+
+	// Builds the image annotation request
+	
+	public BatchAnnotateImagesResponse detect( byte[] data ) throws Exception {
+
+		List<AnnotateImageRequest> requests = new ArrayList<>();
+		AnnotateImageRequest request = new AnnotateImageRequest().setImage(new Image().encodeContent(data))
+				.setFeatures(ImmutableList.of(new Feature().setType("TEXT_DETECTION").setMaxResults(MAX_RESULTS)));
+		requests.add(request);
+
+		Vision.Images.Annotate annotate = vision.images()
+				.annotate(new BatchAnnotateImagesRequest().setRequests(requests));
+
+		annotate.setDisableGZipContent(true);
+		BatchAnnotateImagesResponse batchResponse = annotate.execute();
+		List<String> result = new ArrayList<>();
+		for (AnnotateImageResponse response : batchResponse.getResponses()) {
+			for (EntityAnnotation text : response.getTextAnnotations()) {
+				result.add(text.getDescription() + " at " + text.getBoundingPoly());
+			}
+		}
+
+		return batchResponse;
+	}
+	
+	public List<DetailBox> detect1( byte[] data ) throws Exception {
+		// Builds the image annotation request
+		List<AnnotateImageRequest> requests = new ArrayList<>();
+		AnnotateImageRequest request = new AnnotateImageRequest().setImage(new Image().encodeContent(data))
+				.setFeatures(ImmutableList.of(new Feature().setType("TEXT_DETECTION").setMaxResults(MAX_RESULTS)));
+		requests.add(request);
+
+		Vision.Images.Annotate annotate = vision.images()
+				.annotate(new BatchAnnotateImagesRequest().setRequests(requests));
+
+		List<DetailBox> result = new ArrayList<DetailBox>();
+		
+		annotate.setDisableGZipContent(true);
+		BatchAnnotateImagesResponse batchResponse = annotate.execute();
+		for (AnnotateImageResponse response : batchResponse.getResponses()) {
+			for (EntityAnnotation text : response.getTextAnnotations()) {
+				DetailBox unit = new DetailBox();
+				 unit.setDescription( text.getDescription() );
+				 int[][] vertices = new int[4][2];
+				 List<Vertex> vertex = text.getBoundingPoly().getVertices();
+				 for( int i=0; i < vertices.length; i++ ){
+						 vertices[i][0] = vertex.get(i).getX();
+						 vertices[i][1] = vertex.get(i).getY();
+				 }
+				 unit.setVertices(vertices);
+				 result.add(unit);
+			}
+		}
+		return result;
+	}
+	
+	/* Receipts with quantity: 23, 33, 39, 40*/
+	public List<Item> getItemsFromPicture( List<DetailBox> detailBoxes, Date dateFromImage ) {
+		setStatus(200);
+		setTotal(0);
+		setTimeOnReceipt(0l);
+		setLocation("");
+		
+		String priceFormat =  "\\(?([$])?(-)?[0-9]+[,.][0-9]{2}+([A-Z])?\\)?";
+		String location = "";
+		String tempDate = "";
+		String tempTime = "";
+		float total = 0f;
+		boolean checkTotal = true;
+		int lineNumber = 0;
+		try{
+			List<Item> list_of_items = new ArrayList<Item>();
+			List< List<DetailBox> > copyOfReceipt = new ArrayList< List<DetailBox> >();
+			List<Integer> linesWithPrice = new ArrayList<Integer>(); 
+			/* 
+			 * Get the line height and Y coordinate of centroid of first box in the receipt.
+			 * */
+			int[][] vertices = detailBoxes.get(1).getVertices();
+			int i = 0;
+			int averageY = 0;
+			while( i < 4 ) {
+				averageY+= vertices[i++][1];
+			}
+			averageY /= 4;
+			int lineHeight = vertices[3][1] - vertices[0][1];
+			System.out.println("line height: " + lineHeight);
+			List<DetailBox> tempLine = new ArrayList<DetailBox>();
+			
+			for( i = 1; i < detailBoxes.size(); i++ ) {
+//				if( copyOfReceipt.size() < 4 ) {
+//					System.out.println( detailBoxes.get(i).getDescription());
+//				}
+				vertices = detailBoxes.get(i).getVertices();
+				int j = 0, centroidY = 0;
+				while( j < 4 ){
+					centroidY += vertices[j++][1];
+				}
+				centroidY /= 4;
+				if( Math.abs( centroidY - averageY ) <= lineHeight*2.0/3.0 ) {
+					tempLine.add( detailBoxes.get(i) );
+				} else {
+					tempLine = sortBoxes( tempLine );
+//					System.out.print("\nAdding line "+ lineNumber +": ");
+//					for( int k = 0; k< tempLine.size(); k++ ){
+//						System.out.print(tempLine.get(k).getDescription() +" ");
+//					}
+//					System.out.println();
+					
+					copyOfReceipt.add( tempLine );
+					if( location.length() < 1 && lineNumber < 2 ) {
+						String tempLocation = getLocation( tempLine );
+						if( tempLocation.length() > 1 ) {
+							location = tempLocation;
+							System.out.println("************************* location: "+ tempLocation +" *************************");
+						}
+					}
+					if( tempDate.length() < 1 ) {
+						tempDate = getDate( tempLine, dateFromImage );
+					}
+					if( tempTime.length() < 1 ) {
+						tempTime = getTime( tempLine );
+					}
+					lineNumber++;
+					
+					tempLine = new ArrayList<DetailBox>();
+					tempLine.add( detailBoxes.get(i));
+					averageY = centroidY;
+					lineHeight = vertices[3][1] - vertices[0][1];
+				}
+				if( detailBoxes.get(i).getDescription().matches( priceFormat )
+						&& !linesWithPrice.contains(copyOfReceipt.size()) ) {
+//					System.out.println("\nAdding "+ copyOfReceipt.size() 
+//						+" to the lines with price for "+detailBoxes.get(i).getDescription());
+					linesWithPrice.add( copyOfReceipt.size() );	
+				}
+				
+			}
+			for( i = 0; i < linesWithPrice.size(); i++ ) {
+				int index = linesWithPrice.get(i);
+				Item item = new Item();
+				item.setQuantity(1); 
+				String name = "";
+				for( int j = 0; j < copyOfReceipt.get( index ).size(); j++ ) {
+					String temp = copyOfReceipt.get(index).get(j).getDescription();
+					if( temp.matches(priceFormat) ) {
+					    Pattern pattern = Pattern.compile("(-)?\\d{1,7}[,\\.](\\d{1,2})?");
+					    Matcher matcher = pattern.matcher(temp);
+					    if ( matcher.find() )
+					    {
+					    	/*
+					    	 * Replace "," with "." in prices
+					    	 * */
+					    	String priceFound = matcher.group(0);
+					    	if( priceFound.indexOf(",") > 0 ) {
+					    		String[] parts = priceFound.split(",");
+					    		priceFound = parts[0] + "." + parts[1];
+					    	}
+					        item.setPrice( Float.valueOf( priceFound ) );
+					        if( checkTotal && name.toLowerCase().contains("total") ) {
+					        	if( !name.toLowerCase().contains("sub") ) {
+					        		checkTotal = false;
+						        	if( Float.valueOf( priceFound ) != total ) {
+						        		System.out.println("****************Wrong total");
+						        		setStatus(205);
+						        	} else{
+						        		setTotal(total);
+						        	}
+					        	}
+					        } else {
+					        	total += Float.valueOf( priceFound );
+					        	System.out.println("Current sub total is: " + total);
+					        }
+					    }
+					} else {
+						name += temp + " ";
+					}
+				}
+				System.out.println("name of item "+i+": " +name);
+				item.setName(name);
+				list_of_items.add(item);
+			}
+
+			
+			if( location.length() > 0 ) {
+				setLocation( location );
+			}
+			if( tempDate.length() > 0 ) {
+				Date date;
+				if( tempTime.length() > 0 ) {
+					SimpleDateFormat dt = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss"); 
+//					dt.setTimeZone( TimeZone.getTimeZone("America/New_York") );
+					if( tempTime.length() > 6 ) {
+						System.out.println("converting: " + tempDate +" " + tempTime +" to time");
+						date = dt.parse( tempDate +" " + tempTime );
+						System.out.println("date: " + dt.format(date));
+						setTimeOnReceipt( date.getTime() );
+					} else {
+						date = dt.parse( tempDate +" " + tempTime +":00");
+						setTimeOnReceipt( date.getTime() );
+					}
+				} else {
+					SimpleDateFormat dt = new SimpleDateFormat("MM-dd-yyyyy"); 
+					date = dt.parse( tempDate );
+				}
+				setTimeOnReceipt( date.getTime() );
+			}
+			return list_of_items;
+		} catch( Exception e ) {
+			System.out.println( "Error occurs in getItemsFromPicture(): " + e + ": line " + e.getStackTrace()[0].getLineNumber()  );
+			List<Item> items = new ArrayList<Item>();
+			Item i = new Item();
+			i.setName("Default Item");
+			i.setQuantity(2);
+			i.setPrice(4f);
+			items.add(i);
+			return items;
+		}
+		
+	}
+	
+
+	/* 
+	 * Check if there is date in current line,
+	 * and return date in "MM-DD-YYYY" format. 
+	 * */
+	public String getDate( List<DetailBox> line,  Date dateFromImage ) {
+		try{
+			Pattern number = Pattern.compile("[0-9]{1,4}");
+			Pattern date1 = Pattern.compile("([0-9]{1,2}(-)[0-9]{1,2}(-)([0-9]{4}|[0-9]{2}))"
+											+ "|([0-9]{1,2}(/)[0-9]{1,2}(/)([0-9]{4}|[0-9]{2}))"
+											+ "|([0-9]{1,2}(\\.)[0-9]{1,2}(\\.)([0-9]{4}|[0-9]{2}))");
+			Pattern date2 = Pattern.compile("(("
+												+ "(?<01>(jan|january))|(?<02>(feb|february))|(?<03>(mar|march))"
+												+ "|(?<04>(apr|april))|(?<05>may)|(?<06>(jun|june))"
+												+ "|(?<07>(jul|july))|(?<08>(aug|august))|(?<09>(sep|september))"
+												+ "|(?<10>(oct|october))|(?<11>(nov|november))|(?<12>(dec|december))"
+												+ ")(\\s)?[0-9]{1,2}(\\,|\\'|\\’)?( )?[0-9]{2,4})"
+												+ "|([0-9]{1,2}-("
+												+ "(?<13>(jan))|(?<14>(feb))|(?<15>(mar))"
+												+"|(?<16>(apr))|(?<17>(may))|(?<18>(jun))|(?<19>(jul))"
+												+"|(?<20>(aug))|(?<21>(sep))|(?<22>(oct))|(?<23>(nov))|(?<24>(dec))"
+												+ ")-[0-9]{2,4})"
+											,Pattern.CASE_INSENSITIVE);
+//			Pattern word = Pattern.compile("[a-zA-Z]{3,9}");
+			String result = "";
+			String sum = "";
+			
+			for( int i = 0; i < line.size(); i++ ) {
+				sum += line.get(i).getDescription() + " ";
+			}
+			Matcher matcherDate1 = date1.matcher(sum);
+			Matcher matcherDate2 = date2.matcher(sum);
+			if( matcherDate1.find() ) {
+				int month, day;
+//				System.out.println("Consider \""+sum+"\" contains date with format __-__-yyyy.");
+
+				int[] nums = new int[3];
+				int j = 0;
+				Matcher matcherNum = number.matcher( matcherDate1.group(0) );
+				while( matcherNum.find() ) {
+					nums[j++] = Integer.valueOf( matcherNum.group(0) );
+				}
+				if( nums[0] > 12 ) {
+					day = nums[0];
+					month = nums[1];
+				} else if( nums[1] > 12 ) {
+					day = nums[1];
+					month = nums[0];
+				} else if( dateFromImage != null ) {
+					
+					Long dateInImage = dateFromImage.getTime();
+					SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+					Long monthFirst = sdf.parse( String.format( "%02d", nums[0])
+							+"/" + String.format( "%02d", nums[1] )
+							+ "/" + String.format( "%4d", nums[2] )).getTime();
+					Long dayFirst = sdf.parse( String.format( "%02d", nums[1])
+							+"/" + String.format( "%02d", nums[0] )
+							+ "/" + String.format( "%4d", nums[2] )).getTime();
+					
+					if( Math.abs( monthFirst - dateInImage) < Math.abs( dayFirst - dateInImage) ) {
+						day = nums[1];
+						month = nums[0];
+					} else {
+						day = nums[0];
+						month = nums[1];
+					}
+				} else {
+					day = nums[1];
+					month = nums[0];
+				}
+				
+				String patch = "";
+				if( nums[2] < 100 ) {
+					patch = "20";
+				}
+				result =  String.format( "%02d", Integer.valueOf(month)) +"-" + String.format( "%02d", Integer.valueOf(day)) + "-" + patch + nums[2];
+				System.out.println( "Date---->" + result );
+				return result;
+			
+			} else if( matcherDate2.find() ) {
+				
+//				System.out.println("Consider \""+sum+"\" contains date with format 01-xxx-2014");
+				Map<String, String> foundMonth = matcherDate2.namedGroups().entrySet()
+					    .stream()
+					    .filter(e -> e.getValue() != null)
+					    .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
+				String month = foundMonth.toString().substring(1,3);
+				if( Integer.valueOf(month) > 12 ) {
+					month = String.valueOf( Integer.valueOf(month) % 12);
+				}
+				
+				Matcher matcherNum = number.matcher( matcherDate2.group(0) );
+				matcherNum.find();
+				String day = String.format("%02d",Integer.valueOf( matcherNum.group(0)));
+				matcherNum.find();
+				String patch ="";
+				
+				if( Integer.valueOf( matcherNum.group(0)) < 100 ) {
+					patch = "20";
+				}
+
+				String year = patch + matcherNum.group(0);	
+				result = month + "-"+ day +"-" + year;
+				return result;
+			} else
+				return "";
+		} catch( Exception e ) {
+			System.out.println("Exception occurs when extracting date from receipt: \n\t" + e +" at line"+ e.getStackTrace()[0].getLineNumber()  );
+			return "";
+		}
+		
+	}
+	
+	/* 
+	 * Check if there is time in current line,
+	 * and return date in "HH:MM:SS" format. 
+	 * */
+	public String getTime ( List<DetailBox> line ) {
+		try{
+			String sum = "";
+			for( int i = 0; i < line.size(); i++ ) {
+				sum += line.get(i).getDescription() + " ";
+			}
+			Pattern longPattern = Pattern.compile( "[0-9]{1,2}: ?[0-9]{2}: ?[0-9]{2} ?(p|a|P|A)?" );
+			Pattern shortPattern = Pattern.compile( "[0-9]{1,2}: ?[0-9]{1,2} ?(p|a|P|A)?" );
+			Pattern number = Pattern.compile("[0-9]{1,2}");
+			Matcher longMatcher = longPattern.matcher( sum );
+			Matcher shortMatcher = shortPattern.matcher( sum );
+			boolean isAfternoon = false;
+			
+			if( longMatcher.find() ) {
+//				System.out.println("Consider \""+ sum +"\" contains time with format 00:00:00");
+				if( longMatcher.group(0).toLowerCase().contains("p"))
+					isAfternoon = true;
+				
+				String[] splitedTime = longMatcher.group(0).split(":");
+				Matcher hourMatch = number.matcher( splitedTime[0]);
+				Matcher minuteMatch = number.matcher( splitedTime[1]);
+				Matcher secondMatch = number.matcher( splitedTime[2]);
+				hourMatch.find();
+				minuteMatch.find();
+				secondMatch.find();
+				int hour = Integer.valueOf(hourMatch.group(0));
+				if( hour == 12) {
+					hour = isAfternoon? 12:0;
+				} else {
+					hour += isAfternoon? 12:0;
+				}
+				String result = String.format("%02d", hour)
+									+":" + minuteMatch.group(0) +":" + secondMatch.group(0); 
+				System.out.println("~~~~Found time: "+result);
+				return result;
+			} else if ( shortMatcher.find() ) {
+//				System.out.println("Consider \""+ sum +"\" contains time with format 00:00");
+				if( shortMatcher.group(0).toLowerCase().contains("p"))
+					isAfternoon = true;
+				String[] splitedTime = shortMatcher.group(0).split(":");
+				Matcher hourMatch = number.matcher( splitedTime[0]);
+				Matcher minuteMatch = number.matcher( splitedTime[1]);
+				hourMatch.find();
+				minuteMatch.find();
+				int hour = Integer.valueOf(hourMatch.group(0));
+				if( hour == 12) {
+					hour = isAfternoon? 12:0;
+				} else {
+					hour += isAfternoon? 12:0;
+				}
+				String result = String.format("%02d",hour) +":" + minuteMatch.group(0); 
+				System.out.println("~~~~Found time: "+result);
+				return result;
+			} else
+				return "";
+		} catch( Exception e ) {
+			System.out.println("Exception occurs when extracting time from receipt: \n\t" + e +" at line"+ e.getStackTrace()[0].getLineNumber()  );
+			return "";
+		}
+		
+	}
+	public String getLocation( List<DetailBox> line ) {
+		String onlyNumbers = "[0-9]+\\s";
+		String containAlphanumeric = "^.*[a-zA-Z].*$";
+		String certainPunctuations = "(.*)?(\\*|\\?|:|!|%|,|/).*";
+		String sum = "";
+		for( int i = 0; i < line.size(); i++ ) {
+			sum += line.get(i).getDescription() + " ";
+		}
+		if( sum.matches( onlyNumbers )
+				|| sum.toLowerCase().contains("receipt")
+				|| sum.toLowerCase().contains("thank")
+				|| !sum.matches( containAlphanumeric )
+				|| sum.matches( certainPunctuations ) ) {
+			return "0";
+		}
+		
+		/* If the interval of descriptions upsurges,
+		 * then this line is not considered to have name of stores */
+		if( line.size() > 1) {
+			int interval = line.get(1).getVertices()[0][0] - line.get(0).getVertices()[1][0];
+			System.out.println("first interval: " + interval);
+			for( int i = 1; i < line.size()-1 ; i++ ){
+				int temp = line.get(i+1).getVertices()[0][0] - line.get(i).getVertices()[1][0];
+				if( temp/interval > 5) {
+					System.out.println("Find big interval after " + line.get(i).getDescription());
+					return "0";
+				}
+			}
+		}
+		
+		/* If there is "welcome to" remove it and return the description*/
+		String arr[] = sum.split("(?i)welcome to ");
+		return arr[ arr.length-1 ];
+	}
+	
+	private List<DetailBox> sortBoxes( List<DetailBox> boxes) {
+		Collections.sort( boxes, new Comparator<DetailBox>(){
+			public int compare( DetailBox d1, DetailBox d2 ) {
+				if( d1.getVertices()[0][0] > d2.getVertices()[0][0])
+					return 1;
+				else if( d1.getVertices()[0][0] < d2.getVertices()[0][0] )
+					return -1;
+				else
+					return 0;
+			}
+		});
+		return boxes;
+	}
+	public static boolean isInteger(String s) {
+	    try { 
+	        Integer.parseInt(s); 
+	    } catch(NumberFormatException e) { 
+	        return false; 
+	    } catch(NullPointerException e) {
+	        return false;
+	    }
+	    // only got here if we didn't return false
+	    return true;
+	}
+
+	public String savePictureToDBAndServer( String uid, String rid, List<DetailBox> detailUnits, byte[] bytes) throws IOException {
+		Picture picture = new Picture();
+		picture.setOwnerId(uid);
+		picture.setReceiptId(rid);
+		picture.setDetailUnits(detailUnits);
+        picture = pictureService.save(picture);
+        String pid = picture.getId();
+        
+        Receipt receipt = receiptService.findOne(rid);
+        if( receipt.getPicId() == null ) {
+        	receipt.setPicId(pid);
+    	} else {
+    		String oldPid = receipt.getPicId();
+    		pictureService.delete( uid, oldPid );
+    		receipt.setPicId( pid );
+    	}
+		receiptService.update(receipt);
+		System.out.println("Set receipt: " + receipt.getId() + " with picture: " + pid);
+		// Creating the directory to store file
+		File dir = new File("src/main/pictures/" + uid );
+		if ( !dir.exists() )
+			dir.mkdirs();
+
+		// Create the file on server
+		File serverFile = new File( dir.getAbsolutePath() + File.separator + pid );
+		BufferedOutputStream stream = new BufferedOutputStream(
+				new FileOutputStream(serverFile) );
+		stream.write(bytes);
+		stream.close();
+		return pid;
+	}
+	
+	public MediaType getType( byte[] array ) throws IOException {
+		ImageInputStream iis = new MemoryCacheImageInputStream( new ByteArrayInputStream( array ) );
+		Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
+		
+		if( readers.hasNext() ) {
+			ImageReader reader = readers.next();
+			reader.setInput(iis, true);
+			String name = reader.getFormatName();
+			if( "jpeg".equals( name.toLowerCase() ) ) {
+				return MediaType.IMAGE_JPEG;
+			} else if( "png".equals( name.toLowerCase()) ) {
+				return MediaType.IMAGE_PNG;
+			} else if( "gif".equals( name.toLowerCase())) {
+				return MediaType.IMAGE_GIF;
+			} else {
+				throw new IllegalArgumentException("not an image");
+			}
+		} else {
+			throw new IllegalArgumentException("not an image");
+		}
+	}
+
+}

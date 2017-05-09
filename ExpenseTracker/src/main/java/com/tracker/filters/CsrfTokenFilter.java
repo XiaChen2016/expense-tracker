@@ -1,7 +1,6 @@
 package com.tracker.filters;
 
 import java.io.IOException;
-import java.util.Enumeration;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -20,7 +19,10 @@ public class CsrfTokenFilter extends OncePerRequestFilter {
     protected static final String RESPONSE_TOKEN_NAME = "X-CSRF-TOKEN";
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, javax.servlet.FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(	HttpServletRequest request, 
+    									HttpServletResponse response, 
+    									javax.servlet.FilterChain filterChain
+    									) throws ServletException, IOException {
         CsrfToken token = (CsrfToken) request.getAttribute(REQUEST_ATTRIBUTE_NAME);
         
         if (token != null) {

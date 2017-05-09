@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
@@ -32,42 +31,30 @@ import com.tracker.domain.users.Role;
 public class AdminAPI {
 	@Autowired
 	private UsersService userService;
+	
+	@RequestMapping( value="/{uid}/users", method=RequestMethod.GET )
+	@ResponseBody
+	public Page<User> getAllUser( @AuthenticationPrincipal User user,
+			@RequestParam( required=false, defaultValue="" ) String email,
+			@RequestParam( required=false, defaultValue="" ) String username,
+			@RequestParam( required=false, defaultValue="" ) String isAdmin,
+			@RequestParam( required=false, defaultValue="0" ) String page,
+			@RequestParam( required=false, defaultValue="10" ) String size ) {
 		
+		Pageable pageable = new PageRequest(  Integer.valueOf( page ), Integer.valueOf( size ) );
+		if( email.length() > 0 || username.length() > 0 || isAdmin.length() > 0 ) {
+			Page<User> result = userService.searchUsers( email, username, isAdmin, pageable );
+			return result;
+		}
+		Page<User> result = userService.getUsers(pageable);
+		return result;
+	}
 	
 	@RequestMapping( value="", method=RequestMethod.GET )
 	public String getAdminHome(@AuthenticationPrincipal User user, Model model) {
 		System.out.println("Returning the admin home page");
 		return "redirect:#/admin";
 	}
-	
-	// Administrator browse all user
-	@RequestMapping( value="/{uid}/users", method=RequestMethod.GET )
-	@ResponseBody
-	public Page<User> getAllUser( @AuthenticationPrincipal User user,
-			@RequestParam( required=false, defaultValue="" ) String name,
-			@RequestParam( required=false, defaultValue="" ) String email,
-			@RequestParam( required=false, defaultValue="" ) String username,
-			@RequestParam( required=false, defaultValue="" ) String isAdmin,
-			@RequestParam( required=false, defaultValue="0" ) String page,
-			@RequestParam( required=false, defaultValue="10" ) String size ) {
-		System.out.println("Browse users...");
-		Pageable pageable = new PageRequest(  Integer.valueOf( page ), Integer.valueOf( size ) );
-
-		if( name.length() > 0 || email.length() > 0 
-				|| username.length() > 0 || isAdmin.length() > 0 ) {
-			Page<User> result = userService.searchUsers( name, email, username, isAdmin, pageable );
-			return result;
-		}
-		/* Hide all the passwords. */
-		Page<User> result = userService.getUsers(pageable);
-//		List<User> users = result.getContent();
-//		for( User temp: users ) {
-//			temp.setPassword(null);
-//		}
-//		result = new PageImpl<User>( users, pageable, users.size() );
-		return result;
-	}
-	
 	
 	// Administrator create user
 	@RequestMapping( value="/{uid}/users", method=RequestMethod.POST )
@@ -117,35 +104,35 @@ public class AdminAPI {
 		}
 	}
 	
-	@RequestMapping( value="/{uid}/users/{userid}/isAdmin", method=RequestMethod.PUT )
-	@ResponseBody
-	public User editUserRole(	@AuthenticationPrincipal User user ,
-								@PathVariable String uid,
-								@PathVariable String userid, 
-								Model model,
-								@RequestBody boolean isAdmin ){		
-		try{
-			
-			User userToEdit = userService.findOne(userid);
-			if( isAdmin ) {
-				List<Role> roles = Arrays.asList( new Role[] { new Role("ROLE_ADMIN") ,new Role("ROLE_USER") } );
-				userToEdit.setRoles(roles);
-				userToEdit.setAdmin(true);
-			} else {
-				List<Role> roles = Arrays.asList( new Role[] { new Role("ROLE_USER") } );
-				userToEdit.setAdmin(false);
-				userToEdit.setRoles(roles);
-			}
-			
-			userService.update(userToEdit);
-			return userToEdit;
-			
-		} catch( Exception e ) {
-			System.out.println(e);
-		}
-		
-		return null;
-	}
+//	@RequestMapping( value="/{uid}/users/{userid}/isAdmin", method=RequestMethod.PUT )
+//	@ResponseBody
+//	public User editUserRole(	@AuthenticationPrincipal User user ,
+//								@PathVariable String uid,
+//								@PathVariable String userid, 
+//								Model model,
+//								@RequestBody boolean isAdmin ){		
+//		try{
+//			
+//			User userToEdit = userService.findOne(userid);
+//			if( isAdmin ) {
+//				List<Role> roles = Arrays.asList( new Role[] { new Role("ROLE_ADMIN") ,new Role("ROLE_USER") } );
+//				userToEdit.setRoles(roles);
+//				userToEdit.setAdmin(true);
+//			} else {
+//				List<Role> roles = Arrays.asList( new Role[] { new Role("ROLE_USER") } );
+//				userToEdit.setAdmin(false);
+//				userToEdit.setRoles(roles);
+//			}
+//			
+//			userService.update(userToEdit);
+//			return userToEdit;
+//			
+//		} catch( Exception e ) {
+//			System.out.println(e);
+//		}
+//		
+//		return null;
+//	}
 	
 	@RequestMapping( value="/{uid}/users/{userid}/enable", method=RequestMethod.PUT )
 	@ResponseBody

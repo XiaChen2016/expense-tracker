@@ -31,6 +31,10 @@ public class UsersService implements UserDetailsService {
 	@Autowired
 	private PictureService pictureService;
 	
+	public Page<User> getUsers( Pageable pageable ) {
+		return  userRepository.findAll( pageable );
+	}
+	
 	public User loadUserByUsername(String email) throws UsernameNotFoundException {	
 		
 		User user = userRepository.findByEmail(email);
@@ -41,16 +45,11 @@ public class UsersService implements UserDetailsService {
 		return user;
 	}
 	
-	public Page<User> getUsers( Pageable pageable ) {
-		return  userRepository.findAll( pageable );
-	}
-	
 	public Page<User> getUsersByName( String name, Pageable pageable ) {
 		return  userRepository.findByUsernameLike( name, pageable );
 	}
 	
 	public Page<User> getUsersByNameAndEmail( String name, String email, Pageable pageable ) {
-		System.out.println("Search by name or email.");
 		return  userRepository.findByUsernameContainingAndEmailContaining(  name, email, pageable );
 	}
 	
@@ -62,11 +61,11 @@ public class UsersService implements UserDetailsService {
 		return  userRepository.findByIsAdmin( isAdmin, pageable );
 	}
 	
-	public Page<User> searchUsers( String name, String email, String username, String isAdmin, Pageable pageable ) {
-		return  userRepository.find( name, email, username, isAdmin, pageable );
+	public Page<User> searchUsers( String email, String username, String isAdmin, Pageable pageable ) {
+		return  userRepository.find( email, username, isAdmin, pageable );
 	}
 	
-	public User findOne( String uid){
+	public User findOne( String uid ) {
 		return userRepository.findOne( uid );
 	}
 	
@@ -76,7 +75,8 @@ public class UsersService implements UserDetailsService {
 		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 		user.setPassword( passwordEncoder.encode( user.getPassword() ) );
 		
-		/* If there exist user with the same user name or email, then return false */
+		/* If there is a user with the same email in the database,
+		 * the new user cannot be added. */
 		if( userRepository.findByEmail( user.getEmail()) != null )
 			return null;
 		user.setStatus("enabled");

@@ -104,12 +104,11 @@ public class MongoReceiptRepositoryImpl implements UpdateableReceiptRepository {
 	}
 	
 	public void findAndRemove( String pid ) {
-//		System.out.println("Deleting project: " + pid);
 		Query query = new Query();
 		query.addCriteria( Criteria.where("projectId").is( pid ) );
 		mongo.remove( query, Receipt.class );
 	}
-	private Update getUpdate( Receipt x, Receipt y){
+	private Update getUpdate( Receipt x, Receipt y) {
 		Update update = new Update();
 		update.set( "projectId", y.getProjectId() );
 		update.set( "picId", y.getPicId() );

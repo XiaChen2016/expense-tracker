@@ -1,0 +1,442 @@
+package com.tracker.api;
+
+
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.Tag;
+import com.drew.metadata.exif.ExifIFD0Directory;
+import com.drew.metadata.exif.ExifSubIFDDirectory;
+import com.drew.metadata.jpeg.JpegDirectory;
+import com.drew.metadata.png.PngDirectory;
+import com.tracker.domain.pictures.DetailBox;
+import com.tracker.domain.project.Project;
+import com.tracker.domain.receipt.Item;
+import com.tracker.domain.receipt.Receipt;
+import com.tracker.domain.users.User;
+import com.tracker.services.PictureService;
+import com.tracker.services.ProjectsService;
+import com.tracker.services.ReceiptsService;
+import com.tracker.services.VisionService;
+
+import pixeljelly.ops.RotateOp;
+
+@Controller
+@RequestMapping("/user")
+@Secured("ROLE_USER")
+public class UserAPI {
+
+	@Autowired
+	private ReceiptsService receiptService;
+
+	@Autowired
+	private ProjectsService projectService;
+
+	@Autowired
+    private VisionService visionService;
+	
+	@Autowired
+	private PictureService pictureService;
+	
+	@RequestMapping( value="", method=RequestMethod.GET )
+	public String getAdminHome(	@AuthenticationPrincipal User user, Model model ) {
+		System.out.println("Returning user's home page");
+		return "redirect:#/user";
+	}
+	
+	/* User browse all his receipts */
+	@RequestMapping( value="/{uid}/receipts", method=RequestMethod.GET )
+	@ResponseBody
+	public Page<Receipt> getReceipts(	@AuthenticationPrincipal User user ,
+										@PathVariable String uid,
+										@RequestParam( required=false, defaultValue="" ) String place,
+										@RequestParam( required=false, defaultValue="" ) String project,
+										@RequestParam( required=false, defaultValue="" ) String maxTotal,
+										@RequestParam( required=false, defaultValue="" ) String minTotal,
+										@RequestParam( required=false, defaultValue="" ) String maxDate,
+										@RequestParam( required=false, defaultValue="" ) String minDate,
+										@RequestParam( required=false, defaultValue="" ) String category,
+										@RequestParam( required=false, defaultValue="" ) String item,
+										@RequestParam( required=false, defaultValue="0" ) String page,
+										@RequestParam( required=false, defaultValue="10" ) String size,
+										HttpServletResponse response ) throws IOException {
+		if( !uid.equals( user.getId() ) ) {
+			response.sendError(403,"You are not allowed to browse other user's data!");
+		}
+		Pageable pageable = new PageRequest(  Integer.valueOf( page ), Integer.valueOf( size ) );
+		
+		if( place.length() > 0 || project.length() > 0 || category.length() > 0 || item.length() > 0 || maxDate.length() > 0
+				|| minDate.length() > 0 || maxTotal.length() > 0 || minTotal.length() > 0 ) {
+			Page<Receipt> result = receiptService.searchReceipt( uid, place, project, maxTotal, minTotal , maxDate, minDate, category,item, pageable);
+			return result; 
+		}
+		
+		Page< Receipt > result = receiptService.findByOwnerId( user.getId(), pageable );
+		return result;
+	}
+	
+	/* User create a receipt */
+	@RequestMapping( value="/{uid}/receipts", method=RequestMethod.POST )
+	@ResponseBody
+	public Receipt createReceipts( 	@AuthenticationPrincipal User user ,
+									@PathVariable String uid, 
+									@RequestBody Receipt receipt,
+									HttpServletResponse response 
+									) throws ParseException, IOException {
+		if( !uid.equals( user.getId() ) ) {
+			response.sendError(403,"Forbidden.");
+			return null;
+		}
+		receipt.setOwnerId( user.getId() );
+		receipt = receiptService.save( receipt );
+		Project project = projectService.findOne( receipt.getProjectId() );
+		List<Receipt> receipts = project.getReceipts();
+		if( receipts == null ) {
+			receipts = new ArrayList<Receipt>();
+		}
+		receipts.add(receipt);
+		project.setReceipts(receipts);
+		project.setNumOfReceipts( project.getNumOfReceipts() +1 );
+		projectService.update(project);
+		return receipt;
+	}
+	
+	/* At the second step of creating receipts, user would type a list of receipts. */
+	@RequestMapping( value="/{uid}/receipts/{rid}/items", method=RequestMethod.POST )
+	@ResponseBody
+	public Receipt addItems( 	@AuthenticationPrincipal User user ,
+									@PathVariable String uid, 
+									@PathVariable String rid, 
+									@RequestBody List< Item > list_of_items,
+									HttpServletResponse response ) throws ParseException, IOException {
+		if( !uid.equals( user.getId()) ) {
+			response.sendError(403,"You are not allowed to browse other user's data!");
+		}
+
+		Receipt receipt = receiptService.findOne( rid );
+		System.out.println("Add items to reciept: " + receipt.getId() );
+		double total = 0;
+		for( int i=0; i< list_of_items.size(); i++ ){
+			total += list_of_items.get(i).getPrice()* list_of_items.get(i).getQuantity();
+		}
+		receipt.setTotal(total);
+		receipt.setList_of_items( list_of_items );
+		receiptService.update(receipt);
+		return receipt;
+	}
+	
+	/*
+	 * This area is for "share receipt" function.
+	 * */
+	
+	/* User edit a receipt */
+	@RequestMapping( value="/{uid}/receipts/{rid}", method=RequestMethod.PUT )
+	@ResponseBody
+	public Receipt updateReceipts( 	@AuthenticationPrincipal User user ,
+									@PathVariable String uid, 
+									@PathVariable String rid, 
+									@RequestBody Receipt receipt,
+									HttpServletResponse response ) throws ParseException, IOException {
+		if( !uid.equals( user.getId())) {
+			response.sendError(403,"You are not allowed to browse other user's data!");
+		}
+
+		System.out.println("update receipt with ID: " + receipt.getId() );
+		receiptService.update(receipt);
+		return receipt;
+	}
+
+	@RequestMapping( value="/{uid}/receipts/{rid}", method=RequestMethod.GET )
+	@ResponseBody
+	public Receipt findReceiptById( @AuthenticationPrincipal User user ,
+									@PathVariable String uid, 
+									@PathVariable String rid,
+									HttpServletResponse response ) throws ParseException, IOException {
+		if( !uid.equals( user.getId())) {
+			response.sendError(403,"You are not allowed to browse other user's data!");
+		}
+		return receiptService.findOne( rid );
+	}
+	
+	@RequestMapping( value="/{uid}/receipts/{rid}", method=RequestMethod.DELETE )
+	@ResponseBody
+	public void deleteReceiptById( @AuthenticationPrincipal User user ,
+									@PathVariable String uid, 
+									@PathVariable String rid,
+									HttpServletResponse response ) throws ParseException, IOException {
+		if( !uid.equals( user.getId() ) ) {
+			response.sendError(403,"You are not allowed to browse other user's data!");
+		}
+		receiptService.delete( rid );
+		Receipt receipt = receiptService.findOne( rid );
+		Project project = projectService.findOne( receipt.getProjectId() );
+		List<Receipt> receipts = project.getReceipts();
+		receipts.remove(receipt);
+		project.setReceipts(receipts);
+		project.setNumOfReceipts( project.getNumOfReceipts() -1 );
+		projectService.update(project);
+	}
+	
+	@RequestMapping( value="/{uid}/projects/{pid}/receipts", method=RequestMethod.GET )
+	@ResponseBody
+	public Page<Receipt> getAllReceiptsInOneProject( @AuthenticationPrincipal User user ,
+									@PathVariable String uid, 
+									@PathVariable String pid,
+									@RequestParam( required=false, defaultValue="0" ) int page,
+									@RequestParam( required=false, defaultValue="10" ) int size,
+									HttpServletResponse response ) throws ParseException, IOException {
+		if( !uid.equals( user.getId() ) ) {
+			response.sendError(403,"You are not allowed to browse other user's data!");
+		}
+		Pageable pageable = new PageRequest(  Integer.valueOf( page ), Integer.valueOf( size ) );
+		return receiptService.findByProject(pid, pageable);
+	}
+	
+	/* Create a new project */
+	@RequestMapping( value="/{uid}/projects", method=RequestMethod.POST )
+	@ResponseBody
+	public Project saveProject( 	@AuthenticationPrincipal User user ,
+									@PathVariable String uid,
+									@RequestBody Project project,
+									HttpServletResponse response ) throws ParseException, IOException {
+		if( !uid.equals( user.getId())) {
+			response.sendError(403,"You are not allowed to browse other user's data!");
+		}
+			if( projectService.findByOwnerIdAndName(uid, project.getName()) != null) {
+				response.sendError(400,"Project already exists, please use another name.");
+				return null;
+			} else {
+				project.setNumOfReceipts(0);
+				return projectService.save(project);
+			}
+	}
+	
+	/* User browse all his projects */
+	@RequestMapping( value="/{uid}/projects", method=RequestMethod.GET )
+	@ResponseBody
+	public Page<Project> getProjects( 	@AuthenticationPrincipal User user ,
+										@PathVariable String uid,
+										@RequestParam( required=false, defaultValue="0" ) String page,
+										@RequestParam( required=false, defaultValue="10" ) String size,
+										HttpServletResponse response ) throws ParseException, IOException {
+		if( !uid.equals( user.getId())) {
+			response.sendError(403,"You are not allowed to browse other user's data!");
+		}
+		Pageable pageable = new PageRequest(  Integer.valueOf( page ), Integer.valueOf( size ) );
+
+		Page<Project> result = projectService.findByOwnerId( uid, pageable );
+		return result;
+	}
+	
+	/* Get one project */
+	@RequestMapping( value="/{uid}/projects/{pid}", method=RequestMethod.GET )
+	@ResponseBody
+	public Project getProjectById( 	@AuthenticationPrincipal User user ,
+									@PathVariable String uid, 
+									@PathVariable String pid,
+									HttpServletResponse response ) throws ParseException, IOException {
+		if( !uid.equals( user.getId() ) ) {
+			response.sendError(403,"You are not allowed to browse other user's data!");
+		}
+		Project result = projectService.findOne( pid );
+		return result;
+	}
+	
+	/* Edit a project */
+	@RequestMapping( value="/{uid}/projects/{pid}", method=RequestMethod.PUT )
+	@ResponseBody
+	public Project updateProjectById(	@AuthenticationPrincipal User user ,
+										@PathVariable String uid, 
+										@RequestBody Project project,
+										HttpServletResponse response ) throws ParseException, IOException {
+		if( !uid.equals( user.getId() ) ) {
+			response.sendError(403,"You are not allowed to browse other user's data!");
+		}
+		projectService.update( project );
+		return project;
+	}
+	
+	/* Delete a project */
+	@RequestMapping( value="/{uid}/projects/{pid}", method=RequestMethod.DELETE )
+	@ResponseBody
+	public void deleteProjectById( 	@AuthenticationPrincipal User user ,
+									@PathVariable String uid, 
+									@PathVariable String pid,
+									HttpServletResponse response 
+									) throws ParseException, IOException {
+		if( projectService.findOne(pid) == null ) {
+			response.sendError(400,"There is no such project in the database!");
+		}
+		Project project = projectService.findOne(pid);
+		if( !uid.equals( user.getId() ) || project.getOwnerId().equals(uid) ) {
+			response.sendError(403,"You cannot request for other people's data!");
+		}
+		receiptService.deleteReceiptsWithOneProject( pid );
+		projectService.delete( pid );
+	}
+	
+
+	/* Get a picture by receipt's ID. */
+	@RequestMapping( value="/{uid}/receipts/{rid}/pictures", method=RequestMethod.GET )
+	@ResponseBody
+	public ResponseEntity<byte[]>  getOnePicture( 	@PathVariable String rid ,
+													@PathVariable String uid ,
+													HttpServletResponse response) throws Exception {
+		try{
+			String pid = receiptService.findOne(rid).getPicId();
+			String fileName = "../ExpenseTracker/src/main/pictures/" + uid + "/" + pid;
+			Path path = Paths.get(fileName);
+			byte[] data = Files.readAllBytes(path);
+			return ResponseEntity.ok().contentType( visionService.getType( data ) ).body( data );
+		} catch( Exception e ) {
+			System.out.println( e + ": " + e.getStackTrace()[0].getLineNumber() );
+			response.sendError( 400, "There is no picture for the receipt.");
+			return null;
+		}
+	}
+	
+	/* Delete a picture by receipt's ID. */
+	@RequestMapping( value="/{uid}/receipts/{rid}/pictures", method=RequestMethod.DELETE )
+	@ResponseBody
+	public void  deleteOnePicture( 	@PathVariable String rid ,
+									@PathVariable String uid ,
+									HttpServletResponse response )  throws Exception  {
+		try{
+			Receipt receipt = receiptService.findOne(rid); 
+			if( receipt.getPicId() == null ) {
+				response.sendError( 400, "There is no picture for the receipt." );
+			} else {
+				pictureService.delete(uid, receipt.getPicId());
+				receipt.setPicId(null);
+				receiptService.update(receipt);
+			}
+		} catch( Exception e ) {
+			System.out.println( "Catch an error when delete picture " + e + ": " + e.getStackTrace()[0].getLineNumber() );
+			response.sendError( 400, "There is no picture for the receipt.");
+		}
+
+	}
+	
+	/* Upload a picture for a receipt
+	 * 209 means that we think our data is incomplete or not correct. 
+	 * try to find GPS info */
+	@RequestMapping( value="/{uid}/receipts/{rid}/pictures", method=RequestMethod.POST )
+	@ResponseBody
+	public List<Item> pic(	@PathVariable String uid, 
+									@PathVariable String rid,
+									@RequestParam("file") MultipartFile file,
+									HttpServletResponse response ) throws IOException {
+		try {
+			/* Check the type of file */
+			InputStream input = file.getInputStream();
+			try {
+		        /* It's an image (only BMP, GIF, JPG and PNG are recognized). */
+		        ImageIO.read(input).toString();
+		    } catch (Exception e) {
+		        /* It's not an image. */
+		    	response.sendError( 400, "Please upload a picture.");
+		    	return null;
+		    }				
+			
+			byte[] bytes = file.getBytes();
+			Date date = null;
+			
+			try{
+				InputStream is = new ByteArrayInputStream(bytes);
+				Metadata metadata = ImageMetadataReader.readMetadata(is);
+				BufferedImage image =  ImageIO.read( new ByteArrayInputStream( file.getBytes() ) );
+				ExifSubIFDDirectory directory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
+				date = directory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
+				
+				System.out.println("Date from image: "+ date.toString() );
+				/* Get the orientation of picture */
+				ExifIFD0Directory ifdoDirectory = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
+				 for (Tag tag : ifdoDirectory.getTags()) {
+					 if( tag.getTagName().toLowerCase().equals("orientation")) {
+						 System.out.format("[%s] - %s = %s\n",
+						 			ifdoDirectory.getName(), tag.getTagName(), tag.getDescription());
+						 	if(tag.getDescription().toLowerCase().contains("rotate") ) {
+						 		System.out.println("Need rotate.");
+						 		RotateOp r = new RotateOp(0);
+						 		image = r.filter(image, null);
+						 		System.out.println("Rotating image");
+						 		String type = "";
+						 		if( metadata.getDirectoriesOfType( JpegDirectory.class) != null ) {
+						 			type = "JPEG";
+						 		} else if( metadata.getDirectoriesOfType( PngDirectory.class) != null ) {
+						 			type = "PNG";
+						 		} else {
+						 			type = "GIF";
+						 		}
+						 		System.out.println("type: " + type);
+						 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+						 		ImageIO.write( image, type , baos );
+						 		baos.flush();
+						 		bytes = baos.toByteArray();
+						 		baos.close();
+						 	}
+						 	break;
+						 }
+				 }
+			} catch( Exception e ) {
+				System.out.println(e +"at: "+e.getStackTrace()[0].getFileName()+ "." + e.getStackTrace()[0].getMethodName() +"(): " + e.getStackTrace()[0].getLineNumber() + " Can't read date from image upload.\n");
+			}
+			
+			List<DetailBox> detailUnits = visionService.detect1( bytes );
+			visionService.savePictureToDBAndServer( uid, rid, detailUnits, bytes );
+			List <Item> result = visionService.getItemsFromPicture( detailUnits, date );
+			
+//			System.out.println( "save picture as: " + pid );
+			if( visionService.getLocation().length() > 0 ){
+				System.out.println("Found name of merchandise: " +visionService.getLocation());
+			}
+			if( visionService.getTotal() > 0 ) {
+				System.out.println("Found total: " + visionService.getTotal());
+			}
+			if( visionService.getTimeOnReceipt() > 0 ) {
+				System.out.println("Found time on the receipt: " + visionService.getTimeOnReceipt() );
+			}
+			response.setStatus( visionService.getStatus() );
+			return result;
+
+		} catch (Exception e) {
+			System.out.println( e + ": " + e.getStackTrace()[0].getLineNumber() );
+			response.sendError( 400, "Failed to upload picture, check if your picture is smaller than 4MB, and make sure there is text in it." );
+			return null;
+		}
+		
+	}
+
+}

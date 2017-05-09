@@ -11,34 +11,57 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 
+import com.tracker.domain.receipt.Receipt;
 import com.tracker.domain.users.User;
 
 public class MongoUserRepositoryImpl implements UpdateableUserRepository {
 	@Autowired
 	private MongoOperations mongo;
 	
-	public Page<User> find( String name,
-							String email, 
+	public Page<User> find( String email, 
 							String username, 
 							String isAdmin, 
 							Pageable pageable) {
 		Query query = new Query();
-		if( name.length() > 0 ) {
-			query.addCriteria( Criteria.where("name").regex( name ));
-		}
 		if( email.length() > 0 ) {
-			query.addCriteria( Criteria.where("email").regex( email ));
+			query.addCriteria( Criteria.where("email").regex( email, "i" ));
 		}
 		if( username.length() > 0 ) {
-			query.addCriteria( Criteria.where("username").regex( username ));
+			query.addCriteria( Criteria.where("username").regex( username, "i" ));
 		}
 		if( isAdmin.length() > 0 ) {
 			query.addCriteria( Criteria.where("isAdmin").is( Boolean.valueOf(isAdmin) ));
 		}
 		List<User> result = mongo.find( query, User.class );
-		Page<User> page = new PageImpl<User> ( result, pageable, result.size() );
+		List<User> subListOfResult = subList( result, pageable.getOffset(), pageable.getPageSize() );
+		Page<User> page = new PageImpl<User>( subListOfResult, pageable, result.size() );
+	
 		return page;
 	}
+	
+	private List<User> subList(List<User> list, int offset, int limit) {
+	    if (offset<0) throw new IllegalArgumentException("Offset must be >=0 but was "+offset+"!");
+	    if (limit<-1) throw new IllegalArgumentException("Limit must be >=-1 but was "+limit+"!");
+
+	    if (offset>0) {
+	        if (offset >= list.size()) {
+	            return list.subList(0, 0); //return empty.
+	        }
+	        if (limit >-1) {
+	            //apply offset and limit
+	            return list.subList(offset, Math.min(offset+limit, list.size()));
+	        } else {
+	            //apply just offset
+	            return list.subList(offset, list.size());
+	        }
+	    } else if (limit >-1) {
+	        //apply just limit
+	        return list.subList(0, Math.min(limit, list.size()));
+	    } else {
+	        return list.subList(0, list.size());
+	    }
+	}
+	
 	private Update getUpdate(User x, User y) {
 		Update update = new Update();
 		update.set( "password", y.getPassword() );

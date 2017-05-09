@@ -15,9 +15,9 @@ public interface MongoUserRepository extends UpdateableUserRepository,
 	public Page<User> findByUsernameLike( String username, Pageable pageable );
 	public Page<User> findByEmailLike( String email, Pageable pageable );
 	public Page<User> findByIsAdmin( Boolean isAdmin, Pageable pageable );
-	public Page<User> findByUsernameContainingAndEmailContaining( String username, String email, Pageable pageable );
+	public Page<User> findByUsernameContainingAndEmailContaining( 
+										String username, String email, Pageable pageable );
 	public Page<User> find(
-			@Param("name") String name,
 			@Param("email") String email,
 			@Param("username") String username, 
 			@Param("isAdmin") String isAdmin,

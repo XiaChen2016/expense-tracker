@@ -1,0 +1,57 @@
+package com.tracker.repositories.users;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
+
+import com.tracker.domain.users.User;
+
+public class MongoUserRepositoryImpl implements UpdateableUserRepository {
+	@Autowired
+	private MongoOperations mongo;
+	
+	public Page<User> find( String email, 
+							String username, 
+							String isAdmin, 
+							Pageable pageable) {
+		Query query = new Query();
+		if( email.length() > 0 ) {
+			query.addCriteria( Criteria.where("email").regex( email, "i" ));
+		}
+		if( username.length() > 0 ) {
+			query.addCriteria( Criteria.where("username").regex( username, "i" ));
+		}
+		if( isAdmin.length() > 0 ) {
+			query.addCriteria( Criteria.where("isAdmin").is( Boolean.valueOf(isAdmin) ));
+		}
+		List<User> result = mongo.find( query, User.class );
+		Page<User> page = new PageImpl<User> ( result, pageable, result.size() );
+		return page;
+	}
+	private Update getUpdate(User x, User y) {
+		Update update = new Update();
+		update.set( "password", y.getPassword() );
+		update.set( "name", y.getUsername() );
+		update.set( "status", y.getStatus() );
+		update.set( "isAdmin", y.isAdmin() );
+		update.set( "phone", y.getPhone() );
+		update.set( "roles", y.getRoles() );
+		return update;
+	}
+	
+	@Override
+	public void update(User user) {
+		System.out.println("Hello from MongoUserRepositoryImpl : update, status: "+ user.getStatus());
+		Query query = new Query();
+		query.addCriteria( Criteria.where("id").is(user.getId()) );
+		User old = mongo.findOne(query,  User.class);		
+		mongo.updateFirst(query, getUpdate(old, user), User.class);
+	}
+}
