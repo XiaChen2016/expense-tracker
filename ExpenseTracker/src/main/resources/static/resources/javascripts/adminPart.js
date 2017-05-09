@@ -52,7 +52,7 @@ tracker.factory('Receipts', function($resource) {
 } );
 
 tracker.factory('Users', function($resource) {
-	return $resource('/admin/:aid/users/:uid/:active',{ }, { 'update' : { method : 'PUT'}});
+	return $resource('/admin/:aid/users/:uid/:active/:isAdmin',{ }, { 'update' : { method : 'PUT'}});
 } );
 
 tracker.factory('home', function($resource) {
@@ -159,7 +159,7 @@ tracker.controller('adminHome.Controller', ['$scope', '$resource','userService',
 	$scope.setPage = function()
 	{
 	var page = document.getElementById("targetPage").value - 1;
-	if(Number.isInteger(page)&& page<= $scope.totalPage && page>=0)
+	if(Number.isInteger(page)&& (page < $scope.totalPage) && page>=0)
 	{
 	$scope.currentPage = page;
 	pagingService.setCurrentPage(page);
@@ -183,7 +183,7 @@ tracker.controller('adminHome.Controller', ['$scope', '$resource','userService',
 	$scope.updateRole = function(id,role){
 		if(role)var isAdmin = true;
 		else var isAdmin = false;
-		Users.update({aid : $scope.user.id, uid : id, isAdmin : (""+isAdmin)},null,null);
+		Users.update({aid : $scope.user.id, uid : id,isAdmin:"isAdmin"},{isAdmin},null);
 	}
 //	-----------------------active status---------------------------------
 
@@ -305,6 +305,7 @@ tracker.controller('editUser.Controller', ['$scope', 'userService','Users','home
 		};
 	
 	$scope.confirmEditUser = function(){
+
 		if($scope.newUserType)
 			var isAdmin = true;
 		else
@@ -314,11 +315,9 @@ tracker.controller('editUser.Controller', ['$scope', 'userService','Users','home
 			$("#errorMessage").fadeIn();
 		}else{
 			var updatedUser = {
-				id:editUser.id,
-				username: editUser.username,
-				name: $scope.newName,
+				// id:$scope.user.id,
+				username: $scope.newUserName,
 				newPhoneNumber : $scope.newPhoneNumber,
-				email: editUser.email,
 				isAdmin : isAdmin
 				}
 			Users.save({aid:$scope.user.id},updatedUser,function(){window.location.href = '/#/admin';});
