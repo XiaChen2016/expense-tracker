@@ -104,35 +104,35 @@ public class AdminAPI {
 		}
 	}
 	
-//	@RequestMapping( value="/{uid}/users/{userid}/isAdmin", method=RequestMethod.PUT )
-//	@ResponseBody
-//	public User editUserRole(	@AuthenticationPrincipal User user ,
-//								@PathVariable String uid,
-//								@PathVariable String userid, 
-//								Model model,
-//								@RequestBody boolean isAdmin ){		
-//		try{
-//			
-//			User userToEdit = userService.findOne(userid);
-//			if( isAdmin ) {
-//				List<Role> roles = Arrays.asList( new Role[] { new Role("ROLE_ADMIN") ,new Role("ROLE_USER") } );
-//				userToEdit.setRoles(roles);
-//				userToEdit.setAdmin(true);
-//			} else {
-//				List<Role> roles = Arrays.asList( new Role[] { new Role("ROLE_USER") } );
-//				userToEdit.setAdmin(false);
-//				userToEdit.setRoles(roles);
-//			}
-//			
-//			userService.update(userToEdit);
-//			return userToEdit;
-//			
-//		} catch( Exception e ) {
-//			System.out.println(e);
-//		}
-//		
-//		return null;
-//	}
+	@RequestMapping( value="/{uid}/users/{userid}/isAdmin", method=RequestMethod.PUT )
+	@ResponseBody
+	public User editUserRole(	@AuthenticationPrincipal User user ,
+								@PathVariable String uid,
+								@PathVariable String userid, 
+								Model model,
+								@RequestBody boolean isAdmin ){		
+		try{
+			
+			User userToEdit = userService.findOne(userid);
+			if( isAdmin ) {
+				List<Role> roles = Arrays.asList( new Role[] { new Role("ROLE_ADMIN") ,new Role("ROLE_USER") } );
+				userToEdit.setRoles(roles);
+				userToEdit.setAdmin(true);
+			} else {
+				List<Role> roles = Arrays.asList( new Role[] { new Role("ROLE_USER") } );
+				userToEdit.setAdmin(false);
+				userToEdit.setRoles(roles);
+			}
+			
+			userService.update(userToEdit);
+			return userToEdit;
+			
+		} catch( Exception e ) {
+			System.out.println(e);
+		}
+		
+		return null;
+	}
 	
 	@RequestMapping( value="/{uid}/users/{userid}/enable", method=RequestMethod.PUT )
 	@ResponseBody

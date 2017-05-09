@@ -9,9 +9,9 @@
             <div class = "form-group">
               <button type="submit" class="btn btn-link" ng-click="jumpToCreateUser()">Create user</button>
             </div>
-            <div class = "form-group">
-              <button type="submit" class="btn btn-link" ng-click="Receipts()">Receipts</button>
-            </div>
+            <!--<div class = "form-group">
+              <button type="submit" class="btn btn-link" ng-click="jumpToReceipts()">Receipts</button>
+            </div>-->
   </form>
 </div>
 
@@ -20,10 +20,6 @@
     	<div class="form-group">
     		<label class="sr-only">Username</label>
     		<input class="form-control" id="exampleInputUsername" placeholder="Username" ng-model="search.username">
-  		</div>
-  		<div class="form-group">
-    		<label class="sr-only">Display Name</label>
-    		<input class="form-control" id="exampleInputName" placeholder="Display Name" ng-model="search.name">
   		</div>
 		<div class="form-group">
     		<label class="sr-only">Email address</label>
@@ -49,7 +45,6 @@
       <thead>
         <tr>
           <th>Username</th>
-          <th>Display Name</th>
           <th>Email</th>
           <th>Phone Number</th>
           <th>Admin</th>
@@ -60,7 +55,6 @@
       <tbody>
    	  <tr ng-repeat=" user in userList">
    	      <td><sub><b>{{user.username}}</b></sub></td>
-   	      <td><sub>{{user.name}}</sub></td>
    	      <td><sub>{{user.email}}</sub></td>
    	      <td><sub ng-repeat="tel in user.phone">{{tel}}</sub></td>
    	      <td><h6> <span ><input type="checkbox" ng-model="user.admin" ng-click="updateRole(user.id, user.admin)"></span> </h6></td>

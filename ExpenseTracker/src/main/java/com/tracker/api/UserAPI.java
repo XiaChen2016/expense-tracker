@@ -318,10 +318,12 @@ public class UserAPI {
 									) throws ParseException, IOException {
 		if( projectService.findOne(pid) == null ) {
 			response.sendError(400,"There is no such project in the database!");
+			return;
 		}
 		Project project = projectService.findOne(pid);
-		if( !uid.equals( user.getId() ) || project.getOwnerId().equals(uid) ) {
+		if( !uid.equals( user.getId() ) || !project.getOwnerId().equals(uid) ) {
 			response.sendError(403,"You cannot request for other people's data!");
+			return;
 		}
 		receiptService.deleteReceiptsWithOneProject( pid );
 		projectService.delete( pid );

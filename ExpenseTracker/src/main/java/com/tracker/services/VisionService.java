@@ -263,7 +263,7 @@ public List<DetailBox> detect1( byte[] data ) throws Exception {
 					        		checkTotal = false;
 						        	if( Float.valueOf( priceFound ) != total ) {
 						        		System.out.println("****************Wrong total");
-						        		setStatus(205);
+						        		setStatus(209);
 						        	} else{
 						        		setTotal(total);
 						        	}
@@ -277,9 +277,26 @@ public List<DetailBox> detect1( byte[] data ) throws Exception {
 						name += temp + " ";
 					}
 				}
-				System.out.println("name of item "+i+": " +name);
-				item.setName(name);
-				list_of_items.add(item);
+				System.out.println("name of item "+i+": " + name +" "
+						+ ( (!name.toLowerCase().contains("tender") && !name.toLowerCase().contains("total")
+								&& !name.toLowerCase().contains("debit")
+								&& !name.toLowerCase().contains("visa")
+								&& !name.toLowerCase().contains("credit")
+								&& !name.toLowerCase().contains("change")
+								&& !name.toLowerCase().contains("balance")
+								&& !name.toLowerCase().contains("change") ) && checkTotal ) );
+				if( (!name.toLowerCase().contains("tender")
+						&& !name.toLowerCase().contains("total")
+						&& !name.toLowerCase().contains("debit")
+						&& !name.toLowerCase().contains("visa")
+						&& !name.toLowerCase().contains("credit")
+						&& !name.toLowerCase().contains("change")
+						&& !name.toLowerCase().contains("balance")
+						&& !name.toLowerCase().contains("change") )
+						&& checkTotal ) {
+					item.setName(name);
+					list_of_items.add(item);
+				}
 			}
 
 			
