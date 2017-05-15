@@ -49,7 +49,6 @@ app.config(['$routeProvider',
         templateUrl: 'resources/views/createReceipt.html',
         controller: 'createReceipt.Controller'
       }).
-
       otherwise({
         redirectTo: '/'
       });

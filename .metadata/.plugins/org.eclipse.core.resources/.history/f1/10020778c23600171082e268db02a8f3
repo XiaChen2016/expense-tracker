@@ -1,0 +1,103 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
+
+
+<div  class="modal-lg" role="dialog">
+    <div class="modal-content">
+    	<div class="modal-header">
+	        <h4 class="modal-title">Receipt Detail</h4>
+    	</div>
+
+    	<div class="modal-body">
+	      	<table class="profileTable" style="border-collapse:separate; border-spacing:0px 10px;">
+				<tr>
+				<td colspan="2">
+				<div ng-if="imageArea">
+				<div class="form-inline well well-sm form">
+    				<form class="form" ng-if = "imageSelectArea">
+      					<div class="form-group">
+        					<label for="photoFile">Image File</label>
+        					<input id="photoFile" type="file" placeholder="image file">
+      					</div>
+					</form>
+					<div ng-if = "imageShowArea" class = "tile">
+          					<img ng-src="/user/{{receipt.ownerId}}/receipts/{{receipt.id}}/pictures" alt="receipt pictures" class = "pictureBody">
+        			</div>
+  				</div>
+				</div>
+				</td>
+				</tr>
+				<tr ng-if = "basicProfile">
+		      		<td>Time</td>
+		      		<td><input id = "time" type="datetime-local" class="form-control" ng-model="basicFile.receiptTime" ></td>
+		      	</tr>
+				<tr ng-if = "basicProfile">
+		      		<td>Location</td>
+		      		<td><input id = "location"type="text" class="form-control" ng-model="basicFile.receiptLocation" ></td>
+		      	</tr>
+            	<tr ng-if = "basicProfile">
+		      		<td>Project</td>
+		      		<td><select id = "selectProject" class = "form-control" ng-model = "basicFile.project" ng-options = "project as project.name for project in projectList track by project.id">
+          				</select></td>
+		      	</tr>
+				<tr ng-if = "basicProfile">
+		      		<td><p style="margin-top:-10px;">Tags &nbsp;</p></td>
+			  		<td><tags-input id = "finishedTags" ng-model="basicFile.tags"></tags-input></td>
+		      	</tr>
+				<tr ng-if = "basicProfile">
+					<td><p style="margin-top:-10px;">Note &nbsp;</p></td>
+					<td><input id = "note" type="text" class="form-control" ng-model="basicFile.receiptNote" ></td>
+		      	</tr>
+            <tr ng-if="itemArea">
+		      	<td><p style="margin-top:-10px;">Items</p></td>
+					<td>
+					<h5 style = "word-spacing: 140px;">Name Quantity Price</h5>
+              			<div class="form-inline" ng-repeat = "item in items track by $index" style="margin-top:10px;">
+    	          			<div class="form-group">
+                    			<input class="form-control" ng-model="item.name">
+  		          			</div>
+  		          			<div class="form-group">
+    		            		<input  class="form-control" ng-model="item.quantity">
+                			</div>
+		            		<div class="form-group">
+    		            		<input   class="form-control" ng-model="item.price">
+                			</div>
+                			<div class="form-group">
+  		          				<button type="submit" class="btn btn-danger" ng-click="deleteItem($index)">x</button>
+                			</div>
+	            		</div>
+	            		
+	            		<div class="form-inline" style="margin-top:10px;">
+    	          			<div class="form-group">
+                    			<input class="form-control" ng-model="newItem.name">
+  		          			</div>
+  		          			<div class="form-group">
+    		            		<input  class="form-control" ng-model="newItem.quantity">
+                			</div>
+		            		<div class="form-group">
+    		            		<input   class="form-control" ng-model="newItem.price">
+                			</div>
+                			<div class="form-group">
+								<button type="submit" class="btn btn-info" ng-if="newItem.name && newItem.quantity && newItem.price" ng-click="addItem()">+</button>
+                			</div>
+	            		</div>
+              		</td>
+		      	</tr>				
+	      	</table>
+    	</div>
+		<div class="modal-footer">
+			<div ng-if="imageButtonArea">
+				<button type="button" class="btn btn-default" ng-click="noImage()">No Image</button>
+				<button type="button" class="btn btn-primary" ng-click="upload()">Upload <i class="fa fa-spinner fa-spin" style="font-size:24px" ng-if = "loadingPic"></i></button>
+			</div>
+<!-- 			<div ng-if="createArea">
+				<button type="button" class="btn btn-default" ng-click="cancel()">Cancel</button>
+				<button type="button" class="btn btn-primary" ng-click="createReceipt()">Create</button> 
+			</div> -->
+			<div ng-if="confirmArea">
+        		<button type="button" class="btn btn-default" ng-click="cancel()">Cancel</button>
+        		<button type="button" class="btn btn-primary" ng-click="confirmEditReceipt()">Confirm</button>
+			</div>
+    	</div>
+  </div>
+</div>

@@ -234,6 +234,7 @@ tracker.controller('userHome.Controller', ['$scope', '$resource','userService','
 		} else {
 			alert('Please type in right number', 'ERROR');
 		}
+		$("#targetPage").val('');
 	}
 
 	$scope.setSize = function(){
@@ -257,6 +258,11 @@ tracker.controller('userHome.Controller', ['$scope', '$resource','userService','
 		window.location.href = "/#/project";
 	}
 	
+	$scope.jumpToAdmin = function (user){
+		userService.setUser(user);
+		window.location.href = '/#/admin';
+	}
+	
 	$scope.editUser = function(selectedUser){
 		userService.setEditUser(selectedUser);
 		window.location.href = '/#/editUser';
@@ -264,7 +270,7 @@ tracker.controller('userHome.Controller', ['$scope', '$resource','userService','
 
 	$scope.deleteReceipt = function(receipt){
 		Receipts.delete({uid:receipt.ownerId,rid:receipt.id},function(){
-			window.location.href = '/#/user';
+			location.reload();
 		})
 	}
 } ] );
@@ -272,6 +278,7 @@ tracker.controller('userHome.Controller', ['$scope', '$resource','userService','
 
 tracker.controller('editReceipt.Controller', ['$scope', 'userService','receiptService','projectService','Receipts', function( $scope, userService ,receiptService,projectService,Receipts) {
 	$scope.receipt = receiptService.getEditReceipt();
+	console.log($scope.receipt);
 	var getCurrentUser = function(){
 		console.log("name = " +userService.getUser().username )
 		if(userService.getUser().username){
@@ -286,23 +293,12 @@ tracker.controller('editReceipt.Controller', ['$scope', 'userService','receiptSe
 	}
 	getCurrentUser();
 	var createNewItem = function() { return {name :'', quantity : '', price : ''}; };
-	// var receipt = receiptService.getEditReceipt();
-	// $scope.receiptObejct = receipt;
-	// console.log(receipt);
-	// getPictures(receipt);
-	// $scope.receiptID = receipt.id;
-	// var date = new Date(receipt.time);
-	// $scope.receiptTime = new Date(receipt.time);
-	// $scope.receiptLocation = receipt.place;
 	$scope.receipt.time = new Date( $scope.receipt.time );
 
 	$scope.projectList = projectService.getProjectList();
 	var p = {id : $scope.receipt.projectId,
 			name : projectService.getCurrentProjectInName($scope.receipt.projectId)};
 	$scope.receiptProject = p;
-
-	console.log($scope.receiptProject);
-
 	$scope.receiptNote = $scope.receipt.note;
 	var rawTags = [];
 	if($scope.receipt.list_of_items) {
@@ -327,7 +323,7 @@ tracker.controller('editReceipt.Controller', ['$scope', 'userService','receiptSe
 	$scope.addItem = function( ) {
 		$scope.items.push( $scope.newItem );
 		$scope.newItem = createNewItem();
-		$scope.receiptWatch = watchChange();
+		$scope.receiptWatch = true;
 	};
 
 	$scope.updateItem = function(item,index) {
@@ -338,16 +334,16 @@ tracker.controller('editReceipt.Controller', ['$scope', 'userService','receiptSe
 				$('#item-'+x).hide();
 			}
 		}
-		$scope.receiptWatch = watchChange();
+		$scope.receiptWatch = true;
 	};
 
 	$scope.showUpdate = function(){
-		$scope.receiptWatch = watchChange();
+		$scope.receiptWatch = true;
 	}
 
 	$scope.deleteItem = function(index) {
 		$scope.items = $scope.items.filter( (item,i) => i != index );
-		$scope.receiptWatch = watchChange();
+		$scope.receiptWatch =true;
 	};
 
 	Number.prototype.padLeft = function(base,chr){
@@ -357,49 +353,74 @@ tracker.controller('editReceipt.Controller', ['$scope', 'userService','receiptSe
 
 	$scope.confirmEditReceipt = function(){
 		var d = $scope.receipt.time;
-		var dformat = [ (d.getMonth()+1).padLeft(),
-		                d.getDate().padLeft(),
-		                d.getFullYear()].join('-')+
-		                ' ' +
-		                [ d.getHours().padLeft(),
-		                  d.getMinutes().padLeft(),
-		                  d.getSeconds().padLeft()].join(':');
-		var  date = new Date(dformat);
-		var timestamp=Math.round(date.getTime());
+		if(typeof(d) == 'number'){
+			var timestamp=d;
+		}else{
+			var dformat = [ (d.getMonth()+1).padLeft(),
+			                d.getDate().padLeft(),
+			                d.getFullYear()].join('-')+
+			                ' ' +
+			                [ d.getHours().padLeft(),
+			                  d.getMinutes().padLeft(),
+			                  d.getSeconds().padLeft()].join(':');
+			var  date = new Date(dformat);
+			var timestamp=Math.round(date.getTime());
+		}
 		var total = 0;
 		var x;
 		for(x in $scope.items){
-			total += $scope.items[x].quantity * $scope.items[x].price;
+			total += $scope.items[x].price;
 		}
+		total = (Math.round(total * 100) / 100);
 		var allTag = [];
 		for(var y in $scope.tags){
 			allTag.push($scope.tags[y].text);
 		}
-		var data =  {
-				id: $scope.receipt.id,
-				ownerId:$scope.user.id,
-				time:timestamp,
-				place: $scope.receipt.place,
-				project_id: $scope.receiptProject.id,
-				note : $scope.receiptNote,
-				category: allTag,
-				list_of_items : $scope.items,
-				total : total
-			};
-		Receipts.update({uid:$scope.user.id,rid:$scope.receipt.id},data,function(){window.location.href = '/#/user';});
-	}
+		if(!$scope.receiptProject.id){
+			alert("Please choose a project for this receipt");
+		} else {
+			var data =  {
+					id: $scope.receipt.id,
+					ownerId:$scope.user.id,
+					time:timestamp,
+					place: $scope.receipt.place,
+					picId:$scope.receipt.picId,
+					projectId: $scope.receiptProject.id,
+					note : $scope.receiptNote,
+					category: allTag,
+					list_of_items : $scope.items,
+					total : total
+				};
+			Receipts.update({uid:$scope.user.id,rid:$scope.receipt.id},data,function(){window.location.href = '/#/user';});
+		}
+		}
 
 	$scope.cancel = function(){
 		window.location.href = '/#/user';
 	}
 
 	var processReturnData = function(result){
-		if(!$scope.keepOldItems){
-			$scope.items = result;
-		}
-	   $scope.itemArea =true;
-	   $scope.confirmArea = true;
+//		$('#picModal').modal('hide');
+//		$scope.receipt.picId = undefined;
+//		alert("update success");
+//		if(!$scope.keepOldItems){
+//			$scope.items = result.list_of_items;
+//			$scope.itemArea =true;
+//			$scope.confirmArea = true;
+//			$scope.receipt = {};
+//			$scope.receipt.time = new Date( result.time );
+//			$scope.tags = undefined;
+//			$scope.receiptNote = undefined;
+//			$scope.projectList = projectService.getProjectList();
+//			$scope.receipt.place = result.place;
+			$scope.receipt = result;
+//			$('#picModal').modal('hide');
+			$scope.receiptWatch = true;
+//		}
+//	   $scope.itemArea =true;
+//	   $scope.confirmArea = true;
    }
+	
 
 	$scope.upload = function() {
       var formData = new FormData();
@@ -407,12 +428,13 @@ tracker.controller('editReceipt.Controller', ['$scope', 'userService','receiptSe
 			return;
 	  	}
       formData.append("file", $('#photoFile')[0].files[0]);
-	  console.log($scope.project);
       $.ajax( {
-		 url : '/user/' + $scope.user.id +'/receipts/'+receiptService.getEditReceipt().id+'/pictures',
-         type : 'POST',
+    	  url : '/user/' + $scope.user.id +'/receipts/'+$scope.receipt.id+'/pictures',
+      
+//		 url : '/user/' + $scope.user.id +'/receipts/'+receiptService.getEditReceipt().id+'/pictures',
+         type : 'PUT',
          data : formData,
-		 async: false,
+         async: false,
          processData : false,
          contentType : false,
          success : processReturnData
@@ -436,7 +458,6 @@ tracker.controller('editReceipt.Controller', ['$scope', 'userService','receiptSe
    $scope.deletePctures = function(receiptID) {
       Receipts.delete({uid:$scope.user.id,rid:receiptID , pictures : "pictures"}, function(){
 		  $('#picModal').modal('hide');
-		//   getReceipt(receiptID);
 		$scope.receipt.picId = undefined;
 	  })
    }
@@ -470,18 +491,9 @@ tracker.controller('createReceipt.Controller', ['$scope', 'userService','project
 		}
 	}
 	getCurrentUser();
-
-	$scope.projectList = projectService.getProjectList();
-	console.log($scope.projectList);
-
-	var date = new Date();
-	$scope.receiptTime = date;
-	$scope.receiptLocation = "";
-	$scope.receiptCategory = "";
-	$scope.receiptNote = "";
-	$scope.items = [];
-	$scope.tags = [];
-	$scope.createArea = true;
+	$scope.imageArea = true;
+	$scope.imageButtonArea = true;
+	$scope.imageSelectArea = true;
 
 	function isNormalInteger(str) {
     	return /^\+?(0|[1-9]\d*)$/.test(str);
@@ -489,11 +501,9 @@ tracker.controller('createReceipt.Controller', ['$scope', 'userService','project
 
 	var checkPrice = function(num){
 		if(!isNaN(num) && num.toString().indexOf('.') != -1){
-			console.log("NaN");
 			return true;
 		}
 		if(isNormalInteger(num)){
-			console.log("int");
 			return true;
 		}
 		return false;
@@ -523,50 +533,52 @@ tracker.controller('createReceipt.Controller', ['$scope', 'userService','project
 		var  len = (String(base || 10).length - String(this).length)+1;
 		return len > 0? new Array(len).join(chr || '0')+this : this;
 	}
-
-	$scope.createReceipt = function(){
-		$scope.createArea = false;
-		$scope.imageArea = true;
-		$scope.imageButtonArea = true;
-		$("#time").prop('disabled', true);
-		$("#location").prop('disabled', true);
-		$("#selectProject").prop('disabled', true);
-		$("#finishedTags").prop('disabled', true);
-		$("#note").prop('disabled', true);
-
-		var d = $scope.receiptTime;
-		var dformat = [ (d.getMonth()+1).padLeft(),
-		                d.getDate().padLeft(),
-		                d.getFullYear()].join('-')+
-		                ' ' +
-		                [ d.getHours().padLeft(),
-		                  d.getMinutes().padLeft(),
-		                  d.getSeconds().padLeft()].join(':');
-		var  date = new Date(dformat);
-		var timestamp=Math.round(date.getTime());
-		var total = 0;
-		var x;
-		for(x in $scope.items){
-			total += $scope.items[x].quantity * $scope.items[x].price;
-		}
-		var allTag = [];
-		for(var y in $scope.tags){
-			allTag.push($scope.tags[y].text);
-		}
-		var data =  {
-				time:timestamp,
-				place: $scope.receiptLocation,
-				projectId: $scope.project.id,
-				note : $scope.receiptNote,
-				category: allTag
-			};
-		Receipts.save({uid:$scope.user.id},data,function(result){
-		receiptService.setEditReceipt(result);
-		$scope.receipt = result;
-		});
-	}
+//
+//	$scope.createReceipt = function(){
+//		$scope.createArea = false;
+//		$scope.imageArea = true;
+////		$scope.imageSelectArea = true;
+//		$scope.imageButtonArea = true;
+//		$scope.basicProfile = false;
+//		$("#time").prop('disabled', true);
+//		$("#location").prop('disabled', true);
+//		$("#selectProject").prop('disabled', true);
+//		$("#finishedTags").prop('disabled', true);
+//		$("#note").prop('disabled', true);
+//
+//		var d = $scope.receiptTime;
+//		var dformat = [ (d.getMonth()+1).padLeft(),
+//		                d.getDate().padLeft(),
+//		                d.getFullYear()].join('-')+
+//		                ' ' +
+//		                [ d.getHours().padLeft(),
+//		                  d.getMinutes().padLeft(),
+//		                  d.getSeconds().padLeft()].join(':');
+//		var  date = new Date(dformat);
+//		var timestamp=Math.round(date.getTime());
+//		var total = 0;
+//		var x;
+//		for(x in $scope.items){
+//			total += $scope.items[x].quantity * $scope.items[x].price;
+//		}
+//		var allTag = [];
+//		for(var y in $scope.tags){
+//			allTag.push($scope.tags[y].text);
+//		}
+//		var data =  {
+//				time:timestamp,
+//				place: $scope.receiptLocation,
+//				projectId: $scope.project.id,
+//				note : $scope.receiptNote,
+//				category: allTag
+//			};
+//		Receipts.save({uid:$scope.user.id},data,function(result){
+//		receiptService.setEditReceipt(result);
+//		$scope.receipt = result;
+//		});
+//	}
  
-   $scope.upload = function() {
+   $scope.upload = function() {	   
       var formData = new FormData();
       if(!$('#photoFile').val()){
 			return;
@@ -574,7 +586,7 @@ tracker.controller('createReceipt.Controller', ['$scope', 'userService','project
       formData.append("file", $('#photoFile')[0].files[0]);
 	  console.log($scope.project);
       $.ajax( {
-		 url : '/user/' + $scope.user.id +'/receipts/'+receiptService.getEditReceipt().id+'/pictures',
+		 url : '/user/' + $scope.user.id +'/pictures',
          type : 'POST',
          data : formData,
 		 async: false,
@@ -584,13 +596,24 @@ tracker.controller('createReceipt.Controller', ['$scope', 'userService','project
       } );
       $('#photoFile').val('');
 	  $scope.imageButtonArea = false;
+	  $scope.basicProfile = true;
 	  $scope.imageShowArea = true;
+	  $scope.imageSelectArea = false;
    }
 
    var processReturnData = function(result){
-	   $scope.items = result;
+//	   $scope.loadingPic = false;
+	   $scope.items = result.list_of_items;
 	   $scope.itemArea =true;
 	   $scope.confirmArea = true;
+	   $scope.basicFile = {};
+	   $scope.basicFile.receiptTime = new Date( result.time );
+	   console.log( typeof result.time);
+		$scope.basicFile.receiptCategory = undefined;
+		$scope.basicFile.receiptNote = undefined;
+		$scope.projectList = projectService.getProjectList();
+		$scope.basicFile.receiptLocation = result.place;
+		$scope.receipt = result;
    }
 
    $scope.$on('$locationChangeStart', function( event ) {
@@ -605,14 +628,66 @@ tracker.controller('createReceipt.Controller', ['$scope', 'userService','project
 	};
 
 	$scope.noImage = function(){
+		$scope.imageSelectArea = false;
 		$scope.itemArea = true;
 		$scope.confirmArea = true;
 		$scope.imageButtonArea = false;
+		$scope.basicProfile = true;
+		$scope.projectList = projectService.getProjectList();
+		var date = new Date();
+		$scope.basicFile = {};
+		$scope.basicFile.receiptTime = date;
+		$scope.basicFile.receiptLocation = undefined;
+		$scope.basicFile.receiptCategory = undefined;
+		$scope.basicFile.receiptNote = undefined;
+		$scope.items = [];
+		$scope.basicFile.tags = [];
+		
 	};
 
 	$scope.confirmEditReceipt = function(){
-		var data = $scope.items;
-		Receipts.save({uid:$scope.user.id,rid:receiptService.getEditReceipt().id,items : "items"},data,function(){window.location.href = '/#/user';});
+		var d = $scope.basicFile.receiptTime;
+		var dformat = [ (d.getMonth()+1).padLeft(),
+		                d.getDate().padLeft(),
+		                d.getFullYear()].join('-')+
+		                ' ' +
+		                [ d.getHours().padLeft(),
+		                  d.getMinutes().padLeft(),
+		                  d.getSeconds().padLeft()].join(':');
+		var  date = new Date(dformat);
+		var timestamp=Math.round(date.getTime());
+		var total = 0;
+		var x;
+		for(x in $scope.items){
+			total += $scope.items[x].price;
+		}
+		total = (Math.round(total * 100) / 100);
+		var allTag = [];
+		for(var y in $scope.basicFile.tags){
+			allTag.push($scope.basicFile.tags[y].text);
+		}
+		if(!$scope.basicFile.project){
+			alert("Please choose a project for this receipt");
+		}
+		var data =  {
+				ownerId:$scope.user.id,
+				time:timestamp,
+				place: $scope.basicFile.receiptLocation,
+				projectId: $scope.basicFile.project.id,
+				note : $scope.basicFile.receiptNote,
+				picId : $scope.receipt.picId,
+				category: allTag,
+				list_of_items : $scope.items,
+				total : total
+			};
+		if($scope.basicFile.project.id){
+			if($scope.receipt){
+				data.id = $scope.receipt.id;
+				Receipts.update({uid:$scope.user.id,rid:$scope.receipt.id},data,function(){window.location.href = '/#/user';});
+			}else{
+				Receipts.save({uid:$scope.user.id},data,function(){window.location.href = '/#/user';});
+			}
+		}
 	}
 
 } ] );
@@ -708,6 +783,7 @@ $scope.prevPage = function(){
 		Projects.get({uid : $scope.user.id, page : pagingService.getCurrentPage(), size : pagingService.getSize()} ,updateProjectList );			} else {
 			alert('Please type in right number', 'ERROR');
 		}
+		$("#targetPage").val('');
 	}
 
 	$scope.setSize = function(){

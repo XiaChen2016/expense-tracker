@@ -168,6 +168,7 @@ tracker.controller('adminHome.Controller', ['$scope', '$resource','userService',
 	else{
 	alert('Please type in right number', 'ERROR');
 	}
+	$("#targetPage").val('');
 	}
 
 	$scope.setSize = function(){
@@ -183,7 +184,12 @@ tracker.controller('adminHome.Controller', ['$scope', '$resource','userService',
 	$scope.updateRole = function(id,role){
 		if(role)var isAdmin = true;
 		else var isAdmin = false;
-		Users.update({aid : $scope.user.id, uid : id,isAdmin:"isAdmin"},{isAdmin},null);
+		Users.update({aid : $scope.user.id, uid : id,isAdmin:"isAdmin"},isAdmin,function(){
+			if(id == $scope.user.id){
+				$.ajax('/logout',{type : 'POST'});
+				window.location.href = '/#/';
+			}
+		});
 	}
 //	-----------------------active status---------------------------------
 
@@ -199,6 +205,11 @@ tracker.controller('adminHome.Controller', ['$scope', '$resource','userService',
 	$scope.editUser = function(selectedUser){
 		userService.setEditUser(selectedUser);
 		window.location.href = '/#/editUser';
+	}
+	
+	$scope.jumpToReceipt = function(user){
+		userService.setUser(user);
+		window.location.href = '/#/user';
 	}
 } ] );
 

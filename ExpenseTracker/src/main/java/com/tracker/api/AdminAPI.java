@@ -110,11 +110,12 @@ public class AdminAPI {
 								@PathVariable String uid,
 								@PathVariable String userid, 
 								Model model,
-								@RequestBody boolean isAdmin ){		
+								@RequestBody String isAdmin ){		
 		try{
 			
 			User userToEdit = userService.findOne(userid);
-			if( isAdmin ) {
+			System.out.println( "isAdmin: "+ isAdmin);
+			if( isAdmin.equals("true") ) {
 				List<Role> roles = Arrays.asList( new Role[] { new Role("ROLE_ADMIN") ,new Role("ROLE_USER") } );
 				userToEdit.setRoles(roles);
 				userToEdit.setAdmin(true);

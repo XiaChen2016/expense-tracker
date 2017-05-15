@@ -206,7 +206,7 @@ public class UserAPI {
 		}
 		Receipt receipt = receiptService.findOne( rid );
 		receiptService.delete( rid );
-		System.out.println("project id: " +receipt.getProjectId() );
+		System.out.println("project id: " + receipt.getProjectId() );
 		Project project = projectService.findOne( receipt.getProjectId() );
 		List<Receipt> receipts = project.getReceipts();
 		receipts.remove(receipt);
@@ -348,6 +348,23 @@ public class UserAPI {
 			return null;
 		}
 	}
+	@RequestMapping( value="/{uid}/receipts/{rid}/pictures/{pid}", method=RequestMethod.GET )
+	@ResponseBody
+	public ResponseEntity<byte[]>  getOnePictureByItsID( 	@PathVariable String rid ,
+													@PathVariable String uid ,
+													HttpServletResponse response) throws Exception {
+		try{
+			String pid = receiptService.findOne(rid).getPicId();
+			String fileName = "../ExpenseTracker/src/main/pictures/" + uid + "/" + pid;
+			Path path = Paths.get(fileName);
+			byte[] data = Files.readAllBytes(path);
+			return ResponseEntity.ok().contentType( visionService.getType( data ) ).body( data );
+		} catch( Exception e ) {
+			System.out.println( e + ": " + e.getStackTrace()[0].getLineNumber() );
+			response.sendError( 400, "There is no picture for the receipt.");
+			return null;
+		}
+	}
 	
 	/* Delete a picture by receipt's ID. */
 	@RequestMapping( value="/{uid}/receipts/{rid}/pictures", method=RequestMethod.DELETE )
@@ -371,12 +388,135 @@ public class UserAPI {
 
 	}
 	
+	@RequestMapping( value="/{uid}/receipts/{rid}/pictures", method=RequestMethod.PUT )
+	@ResponseBody
+	public Receipt  updatePicture( 	@PathVariable String rid ,
+									@PathVariable String uid ,
+									@RequestParam("file") MultipartFile file,
+									HttpServletResponse response )  throws Exception  {
+		try {
+			/* Check the type of file */
+			InputStream input = file.getInputStream();
+			try {
+			/* It's an image (only BMP, GIF, JPG and PNG are recognized). */
+			ImageIO.read(input).toString();
+			} catch (Exception e) {
+			/* It's not an image. */
+			response.sendError( 400, "Please upload a picture.");
+			return null;
+			}				
+			
+			byte[] bytes = file.getBytes();
+			Receipt receipt = receiptService.findOne(rid);
+			String pid = visionService.savePictureToDBAndServer( uid, receipt.getId(), null, bytes );
+			if( receipt.getPicId() == null ){
+				receipt.setPicId(pid);
+			} else{
+				pictureService.delete(uid, receipt.getPicId());
+				receipt.setPicId(pid);
+			}
+			receiptService.update(receipt);
+			return receipt;
+		} catch( Exception e ) {
+			System.out.println( "Catch an error when delete picture " + e + ": " + e.getStackTrace()[0].getLineNumber() );
+			response.sendError( 400, "There is no picture for the receipt.");
+			return null;
+		}
+
+	}
+	
+	@RequestMapping( value="/{uid}/pictures", method=RequestMethod.POST )
+	@ResponseBody
+	public Receipt postPictureAndCreateAReceipt(	@PathVariable String uid, 
+													@RequestParam("file") MultipartFile file,
+													HttpServletResponse response ) throws IOException {
+		try {
+		/* Check the type of file */
+		InputStream input = file.getInputStream();
+		try {
+		/* It's an image (only BMP, GIF, JPG and PNG are recognized). */
+		ImageIO.read(input).toString();
+		} catch (Exception e) {
+		/* It's not an image. */
+		response.sendError( 400, "Please upload a picture.");
+		return null;
+		}				
+		
+		byte[] bytes = file.getBytes();
+		Date date = null;
+		
+		try{
+		InputStream is = new ByteArrayInputStream(bytes);
+		Metadata metadata = ImageMetadataReader.readMetadata(is);
+		BufferedImage image =  ImageIO.read( new ByteArrayInputStream( file.getBytes() ) );
+		ExifSubIFDDirectory directory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
+		date = directory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
+		
+		System.out.println("Date from image: "+ date.toString() );
+		/* Get the orientation of picture */
+		ExifIFD0Directory ifdoDirectory = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
+		for ( Tag tag : ifdoDirectory.getTags() ) {
+		if( tag.getTagName().toLowerCase().equals("orientation") ) {
+		 	if( tag.getDescription().toLowerCase().contains("rotate") ) {
+		 		RotateOp r = new RotateOp(0);
+		 		image = r.filter(image, null);
+		 		String type = "";
+		 		if( metadata.getDirectoriesOfType( JpegDirectory.class) != null ) {
+		 			type = "JPEG";
+		 		} else if( metadata.getDirectoriesOfType( PngDirectory.class) != null ) {
+		 			type = "PNG";
+		 		} else {
+		 			type = "GIF";
+		 		}
+		 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		 		ImageIO.write( image, type , baos );
+		 		baos.flush();
+		 		bytes = baos.toByteArray();
+		 		baos.close();
+		 	}
+		 	break;
+		 }
+		}
+		} catch( Exception e ) {
+		System.out.println(e +"at: "+e.getStackTrace()[0].getFileName()+ "." + e.getStackTrace()[0].getMethodName() +"(): " + e.getStackTrace()[0].getLineNumber() + " Can't read date from image upload.\n");
+		}
+	
+		List<DetailBox> detailUnits = visionService.detect1( bytes );
+		List <Item> list_of_items = visionService.getItemsFromPicture( detailUnits, date );
+		
+		Receipt result = new Receipt();
+
+		if( visionService.getLocation().length() > 0 ){
+			result.setPlace(visionService.getLocation());
+		}
+		if( visionService.getTotal() > 0 ) {
+			result.setTotal( visionService.getTotal() );
+		}
+		if( visionService.getTimeOnReceipt() > 0 ) {
+			result.setTime( visionService.getTimeOnReceipt() );
+		}
+
+		result.setOwnerId(uid);
+		result.setList_of_items(list_of_items);
+		result = receiptService.save(result);
+		String pid = visionService.savePictureToDBAndServer( uid, result.getId(), detailUnits, bytes );
+		result.setPicId(pid);
+		receiptService.update(result);
+		response.setStatus( visionService.getStatus() );
+		return result;
+
+	} catch (Exception e) {
+		System.out.println( e + ": " + e.getStackTrace()[0].getLineNumber() );
+		response.sendError( 400, "Failed to upload picture, check if your picture is smaller than 4MB, and make sure there is text in it." );
+		return null;
+		}
+	}
 	/* Upload a picture for a receipt
 	 * 209 means that we think our data is incomplete or not correct. 
 	 * try to find GPS info */
 	@RequestMapping( value="/{uid}/receipts/{rid}/pictures", method=RequestMethod.POST )
 	@ResponseBody
-	public Receipt postPicture(	@PathVariable String uid, 
+	public List<Item> postPicture(	@PathVariable String uid, 
 									@PathVariable String rid,
 									@RequestParam("file") MultipartFile file,
 									HttpServletResponse response ) throws IOException {
@@ -435,19 +575,8 @@ public class UserAPI {
 			visionService.savePictureToDBAndServer( uid, rid, detailUnits, bytes );
 			List <Item> list_of_items = visionService.getItemsFromPicture( detailUnits, date );
 			
-			Receipt result = new Receipt();
-			result.setList_of_items(list_of_items);
-			if( visionService.getLocation().length() > 0 ){
-				result.setPlace(visionService.getLocation());
-			}
-			if( visionService.getTotal() > 0 ) {
-				result.setTotal( visionService.getTotal() );
-			}
-			if( visionService.getTimeOnReceipt() > 0 ) {
-				result.setTime( visionService.getTimeOnReceipt() );
-			}
 			response.setStatus( visionService.getStatus() );
-			return result;
+			return list_of_items;
 
 		} catch (Exception e) {
 			System.out.println( e + ": " + e.getStackTrace()[0].getLineNumber() );

@@ -220,4 +220,13 @@ form.forgot_password{
 	color: #222;
 }
 
+img.pictureBody{
+    max-width:600px;
+    max-height:500px;
+}
+
+#imageShow{
+	text-align:center;
+}
+
 

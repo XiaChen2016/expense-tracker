@@ -9,26 +9,26 @@
 	      	<table class="profileTable" style="border-collapse:separate; border-spacing:0px 10px;">
 		      	<tr>
 		      		<td>Time</td>
-		      		<td><input type="datetime-local" class="form-control" ng-model="receipt.time" ></td>
+		      		<td><input type="datetime-local" class="form-control" ng-model="receipt.time" ng-change = "showUpdate()"></td>
 		      	</tr>
 
             <tr>
 		      		<td>Location</td>
-		      		<td><input type="text" class="form-control" ng-model="receipt.place" ></td>
+		      		<td><input type="text" class="form-control" ng-model="receipt.place" ng-change = "showUpdate()" ></td>
 		      	</tr>
             <tr>
 		      		<td>Project</td>
-		      		<td><select class = "form-control" ng-model = "receiptProject" ng-options = "receiptProject as receiptProject.name for receiptProject in projectList track by receiptProject.id">
+		      		<td><select ng-change = "showUpdate()" class = "form-control" ng-model = "receiptProject" ng-options = "receiptProject as receiptProject.name for receiptProject in projectList track by receiptProject.id">
           				</select></td>
 		      	</tr>
 			<tr>
 		      		<td><p style="margin-top:-10px;">Tags &nbsp;</p></td>
-			  		<td><tags-input ng-model="tags"></tags-input></td>
+			  		<td><tags-input ng-model="tags" ng-change = "showUpdate()"></tags-input></td>
 
 		      	</tr>
             	<tr>
 		      		<td><p style="margin-top:-10px;">Note &nbsp;</p></td>
-					<td><input type="text" class="form-control" ng-model="receiptNote" ></td>
+					<td><input type="text" class="form-control" ng-model="receiptNote" ng-change = "showUpdate()"></td>
 		      	</tr>
 			<tr>
 				<td colspan="2">
@@ -59,7 +59,7 @@
   						</div>
 						<label ng-if = "receipt.picId == null">No image attached</label>
 						<div ng-if = "receipt.picId" class = "tile">
-          					<img id = "pictureBody" ng-src="/user/{{receipt.ownerId}}/receipts/{{receipt.id}}/pictures" alt="receipt pictures">
+          					<img id = "myPic" class = "pictureBody" ng-src="/user/{{receipt.ownerId}}/receipts/{{receipt.id}}/pictures/{{receipt.picId}}" alt="receipt pictures">
         				</div>
         				<div class="modal-footer">
 							<button type="button" class="btn btn-danger" data-dismiss="modal" data-ng-click="deletePctures(receipt.id)" ng-if = "receipt.picId">Delete</button>

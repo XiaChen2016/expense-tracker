@@ -22,4 +22,4 @@ public interface MongoUserRepository extends UpdateableUserRepository,
 			@Param("username") String username, 
 			@Param("isAdmin") String isAdmin,
 			Pageable pageable );
-	}
+}

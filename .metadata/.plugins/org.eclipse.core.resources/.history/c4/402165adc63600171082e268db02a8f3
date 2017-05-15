@@ -1,0 +1,93 @@
+<div class = "well well-sm">
+  <form class = "form-inline">
+            <div class = "form-group pull-right">
+              <button type="submit" class="btn btn-default" ng-click="editUser(user)"><span class="glyphicon glyphicon-user"></span>{{user.username}}</button>
+              <button type="submit" class="btn btn-default" ng-click="logout()"><span class="glyphicon glyphicon-log-out"></span>logout</button>
+            </div>
+
+
+            <div class = "form-group">
+              <button type="submit" class="btn btn-link" ng-click="jumpToCreateUser()">Create user</button>
+            </div>
+            <!--<div class = "form-group">
+              <button type="submit" class="btn btn-link" ng-click="jumpToReceipts()">Receipts</button>
+            </div>-->
+  </form>
+</div>
+
+</div>
+    <form class="form-inline well well-sm">
+    	<div class="form-group">
+    		<label class="sr-only">Username</label>
+    		<input class="form-control" id="exampleInputUsername" placeholder="Username" ng-model="search.username">
+  		</div>
+		<div class="form-group">
+    		<label class="sr-only">Email address</label>
+    		<input class="form-control" id="exampleInputEmail" placeholder="Email" ng-model="search.email">
+  		</div>
+  		<div class="checkbox">
+    		<label>
+      		<input type="checkbox" ng-model = "search.admin"> Admin
+    		</label>
+  		</div>
+  		<button type="submit" class="btn btn-default pull-right" ng-click="searchUsers()">Search</button>
+	</form>
+
+
+        <div class="pull right">
+          <a>Per page</a>
+          <select ng-change = "setSize()" ng-model = "userPerPage" ng-options = "size for size in sizeList">
+          </select>
+        </div>
+
+   	<table class="table table-striped table-condensed table-hover">
+      
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Phone Number</th>
+          <th>Admin</th>
+          <th>Active Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+   	  <tr ng-repeat=" user in userList">
+   	      <td><sub><b>{{user.username}}</b></sub></td>
+   	      <td><sub>{{user.email}}</sub></td>
+   	      <td><sub ng-repeat="tel in user.phone">{{tel}}</sub></td>
+   	      <td><h6> <span ><input type="checkbox" ng-model="user.admin" ng-click="updateRole(user.id, user.admin)"></span> </h6></td>
+          <td><h6> <span ><input type="checkbox" ng-model="user.status"ng-true-value="'enabled'" ng-false-value="'disabled'" ng-click="activeUser(user.id, user.status)"></span> </h6></td>
+          <td><button class = "btn btn-info btn-sm"ng-click = "editUser(user)">Edit</button><td>
+    </tbody>
+    <tfoot>
+      <td colspan = "10">
+      <div class="pull-right">
+
+
+          <button class = "btn btn-primary btn-sm" ng-disabled = "responseContent.first" ng-class="{disabled: currentPage == 0}" ng-click="prevPage()">« Prev</button>
+
+
+          <a>{{currentPage + 1}}/{{totalPage}}</a>
+
+
+                    <div class="col-xs-5">
+				              <div class="input-group">
+					                   <span class="input-group-btn">
+						                         <button class="btn btn-primary" type="button" ng-click = "setPage()">
+							                                Go to
+						                        </button>
+					                  </span>
+					                  <input type="text" class="form-control" id = "targetPage">
+				              </div><!-- /input-group -->
+			        </div>
+
+           <button class = "btn btn-primary btn-sm" ng-disabled = "responseContent.last" ng-class="{disabled: currentPage == totalPage-1}"ng-click="nextPage()">Next »</button>
+
+
+      </div>
+      </td>
+    </tfoot>
+
+    </table>

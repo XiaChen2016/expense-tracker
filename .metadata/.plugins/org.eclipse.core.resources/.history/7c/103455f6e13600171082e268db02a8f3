@@ -1,0 +1,119 @@
+
+<div  class="modal-lg" role="dialog">
+    <div class="modal-content">
+    	<div class="modal-header">
+	        <h4 class="modal-title">Receipt Detail</h4>
+    	</div>
+
+    	<div class="modal-body">
+	      	<table class="profileTable" style="border-collapse:separate; border-spacing:0px 10px;">
+		      	<tr>
+		      		<td>Time</td>
+		      		<td><input type="datetime-local" class="form-control" ng-model="receipt.time" ></td>
+		      	</tr>
+
+            <tr>
+		      		<td>Location</td>
+		      		<td><input type="text" class="form-control" ng-model="receipt.place" ></td>
+		      	</tr>
+            <tr>
+		      		<td>Project</td>
+		      		<td><select class = "form-control" ng-model = "receiptProject" ng-options = "receiptProject as receiptProject.name for receiptProject in projectList track by receiptProject.id">
+          				</select></td>
+		      	</tr>
+			<tr>
+		      		<td><p style="margin-top:-10px;">Tags &nbsp;</p></td>
+			  		<td><tags-input ng-model="tags"></tags-input></td>
+
+		      	</tr>
+            	<tr>
+		      		<td><p style="margin-top:-10px;">Note &nbsp;</p></td>
+					<td><input type="text" class="form-control" ng-model="receiptNote" ></td>
+		      	</tr>
+			<tr>
+				<td colspan="2">
+					<button type="button" class="btn btn-info" data-toggle="modal" data-target="#picModal">Receipt Picture</button>
+				</td>
+			</tr>
+			<div class="modal fade" id="picModal" role="dialog">
+    			<div class="modal-dialog">
+      				<!-- Modal content-->
+      				<div class="modal-content">
+        				<div class="modal-header">
+          					<button type="button" class="close" data-dismiss="modal">&times;</button>
+          					<h4 class="modal-title">Receipt Picture</h4>
+       		 			</div>
+        				<div class="modal-body">
+							<div class="form-inline well well-sm form">
+								<label for="photoFile">Image File</label>
+    							<form class="form">
+      								<div class="form-group">
+        								<input id="photoFile" type="file" placeholder="image file">
+      								</div>
+									<div class="form-group">
+										<div class="checkbox">
+      										<label>Keep Old Items <input type="checkbox" ng-model="keepOldItems"></label>
+    									</div>
+									</div>
+    							</form>
+  						</div>
+						<label ng-if = "receipt.picId == null">No image attached</label>
+						<div ng-if = "receipt.picId" class = "tile">
+          					<img class = "pictureBody" ng-src="/user/{{receipt.ownerId}}/receipts/{{receipt.id}}/pictures" alt="receipt pictures">
+        				</div>
+        				<div class="modal-footer">
+							<button type="button" class="btn btn-danger" data-dismiss="modal" data-ng-click="deletePctures(receipt.id)" ng-if = "receipt.picId">Delete</button>
+          					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+							<button type="button" class="btn btn-primary" ng-click="upload()">Update</button>
+        				</div>
+      				</div>
+      
+    			</div>
+  			</div>
+			</div>
+            <tr>
+		      		<td><p style="margin-top:-10px;">Items</p></td>
+					<td>
+					<h5 style = "word-spacing: 140px;">Name Quantity Price</h5>
+              			<div class="form-inline" ng-repeat = "item in items track by $index" style="margin-top:10px;">
+    	          			<div class="form-group">
+                    			<input class="form-control" ng-model="item.name" ng-change = "showUpdate($index)">
+  		          			</div>
+  		          			<div class="form-group">
+    		            		<input  class="form-control" ng-model="item.quantity" ng-change = "showUpdate($index)">
+                			</div>
+		            		<div class="form-group">
+    		            		<input   class="form-control" ng-model="item.price" ng-change = "showUpdate($index)">
+                			</div>
+                			<div class="form-group">
+  		          				<button type="submit" class="btn btn-danger" ng-click="deleteItem($index)">x</button>
+                			</div>
+	            		</div>
+	            		
+	            		<div class="form-inline" style="margin-top:10px;">
+    	          			<div class="form-group">
+                    			<input class="form-control" ng-model="newItem.name">
+  		          			</div>
+  		          			<div class="form-group">
+    		            		<input  class="form-control" ng-model="newItem.quantity">
+                			</div>
+		            		<div class="form-group">
+    		            		<input   class="form-control" ng-model="newItem.price">
+                			</div>
+                			<div class="form-group">
+								<button type="submit" class="btn btn-info" ng-if="newItem.name && newItem.quantity && newItem.price" ng-click="addItem()">+</button>
+                			</div>
+	            		</div>
+              		</td>
+
+		    </tr>
+	      	</table>
+
+
+    	</div>
+	<div class="modal-footer">
+        <button type="button" class="btn btn-default" ng-click="cancel()">Cancel</button>
+        <button type="button" class="btn btn-primary" ng-click="confirmEditReceipt()" ng-if="receiptWatch">Confirm</button>
+    </div>
+  </div>
+</div>

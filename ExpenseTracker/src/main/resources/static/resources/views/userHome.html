@@ -10,6 +10,7 @@
             </div>
             <div class = "form-group">
               <button type="submit" class="btn btn-link" ng-click="jumpToProjects()">Projects</button>
+              <button type="submit" class="btn btn-link" ng-click="jumpToAdmin(user)" ng-if = "user.admin">Users</button>
             </div>
   </form>
 </div>
@@ -67,7 +68,7 @@
 <th>Location</th>
 <th>Project</th>
 <th>Tags</th>
-<th>Total Account</th>
+<th>Total Amount</th>
 </tr>
 </thead>
 <tbody>

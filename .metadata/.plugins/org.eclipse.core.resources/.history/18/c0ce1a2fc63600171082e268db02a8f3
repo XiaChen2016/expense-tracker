@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html ng-app="App">
+
+  <head>
+    <title>Expense Tracker</title>
+    <link rel="stylesheet" href="resources/stylesheets/style.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+ 	<link href="http://netdna.bootstrapcdn.com/font-awesome/2.0/css/font-awesome.css" rel = "stylesheet">
+ 	<script src="https://code.jquery.com/jquery-2.2.0.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular-route.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular-resource.js"></script>
+    <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="http://mbenford.github.io/ngTagsInput/js/ng-tags-input.min.js"></script>
+    <link rel="stylesheet" href="http://mbenford.github.io/ngTagsInput/css/ng-tags-input.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<script type="text/javascript" src="http://fgnass.github.io/spin.js/spin.min.js"></script> 
+  	<script type="text/javascript" src="resources/javascripts/angular-spinner.min.js"></script> 
+  	<script type="text/javascript" src="resources/javascripts/angular-loading-spinner.js"></script> 
+	
+    <script src="resources/javascripts/adminPart.js"></script>
+    <script src="resources/javascripts/userPart.js"></script>
+    <script src="resources/javascripts/app.js"></script>
+    <style> body { margin: 3em; }</style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div ng-view></div>
+    </div>
+  </body>
+</html>

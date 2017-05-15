@@ -56,7 +56,7 @@ public class VisionService {
 	private Vision vision;
 	private int status;
 	private Long timeOnReceipt;
-	private float total;
+	private double total;
 	private String location;
 	
 	public String getLocation() {
@@ -67,11 +67,11 @@ public class VisionService {
 		this.location = location;
 	}
 
-	public float getTotal() {
+	public double getTotal() {
 		return total;
 	}
 
-	public void setTotal(float total) {
+	public void setTotal(double total) {
 		this.total = total;
 	}
 
@@ -154,6 +154,7 @@ public List<DetailBox> detect1( byte[] data ) throws Exception {
 	BatchAnnotateImagesResponse batchResponse = annotate.execute();
 	for (AnnotateImageResponse response : batchResponse.getResponses()) {
 		for (EntityAnnotation text : response.getTextAnnotations()) {
+			try {
 			DetailBox unit = new DetailBox();
 			 unit.setDescription( text.getDescription() );
 			 int[][] vertices = new int[4][2];
@@ -164,6 +165,7 @@ public List<DetailBox> detect1( byte[] data ) throws Exception {
 			 }
 			 unit.setVertices(vertices);
 			 result.add(unit);
+			} catch(Exception e) { /* could be a bounding poly that has other than 4 vertices */ }
 		}
 	}
 	return result;
@@ -277,6 +279,14 @@ public List<DetailBox> detect1( byte[] data ) throws Exception {
 						name += temp + " ";
 					}
 				}
+				if(name.matches("[0-9] x .*") ){
+					item.setQuantity( Integer.valueOf(name.substring(0,1)));
+					name = name.substring(4);
+				} else if( name.matches("[0-9] .*") ){
+					item.setQuantity( Integer.valueOf( name.substring(0,1) ));
+					name = name.substring(2);
+				}
+				
 				System.out.println("name of item "+i+": " + name +" "
 						+ ( (!name.toLowerCase().contains("tender") && !name.toLowerCase().contains("total")
 								&& !name.toLowerCase().contains("debit")
@@ -285,6 +295,9 @@ public List<DetailBox> detect1( byte[] data ) throws Exception {
 								&& !name.toLowerCase().contains("change")
 								&& !name.toLowerCase().contains("balance")
 								&& !name.toLowerCase().contains("change") ) && checkTotal ) );
+				if(name.toLowerCase().contains("tip")){
+					checkTotal = true;
+				}
 				if( (!name.toLowerCase().contains("tender")
 						&& !name.toLowerCase().contains("total")
 						&& !name.toLowerCase().contains("debit")
@@ -325,6 +338,7 @@ public List<DetailBox> detect1( byte[] data ) throws Exception {
 			}
 			return list_of_items;
 		} catch( Exception e ) {
+			e.printStackTrace();
 			System.out.println( "Error occurs in getItemsFromPicture(): " + e + ": line " + e.getStackTrace()[0].getLineNumber()  );
 			List<Item> items = new ArrayList<Item>();
 			Item i = new Item();
@@ -360,6 +374,7 @@ public List<DetailBox> detect1( byte[] data ) throws Exception {
 											+"|(?<20>(aug))|(?<21>(sep))|(?<22>(oct))|(?<23>(nov))|(?<24>(dec))"
 											+ ")-[0-9]{2,4})"
 										,Pattern.CASE_INSENSITIVE);
+			Pattern date3 = Pattern.compile("[0-9]{4}-[0-9]{2}-[0-9]{2}");
 			String result = "";
 			String sum = "";
 			
@@ -368,7 +383,20 @@ public List<DetailBox> detect1( byte[] data ) throws Exception {
 			}
 			Matcher matcherDate1 = date1.matcher(sum);
 			Matcher matcherDate2 = date2.matcher(sum);
-			if( matcherDate1.find() ) {
+			Matcher matcherDate3 = date3.matcher(sum);
+			if( matcherDate3.find() ) {
+				System.out.println("consider date: " + sum);
+				int[] nums = new int[3];
+				int j = 0;
+				Matcher matcherNum = number.matcher( matcherDate3.group(0) );
+				while( matcherNum.find()) { 
+					nums[j++] = Integer.valueOf( matcherNum.group(0) );
+				}
+				
+				result =  String.format( "%02d", Integer.valueOf(nums[1])) +"-" + String.format( "%02d", Integer.valueOf(nums[2])) + "-"  + nums[0];
+				System.out.println( "Date---->" + result );
+				return result;
+			} else if( matcherDate1.find() ) {
 				int month, day;
 //				System.out.println("Consider \""+sum+"\" contains date with format __-__-yyyy.");
 
@@ -443,6 +471,7 @@ public List<DetailBox> detect1( byte[] data ) throws Exception {
 			} else
 				return "";
 		} catch( Exception e ) {
+			e.printStackTrace();
 			System.out.println("Exception occurs when extracting date from receipt: \n\t" + e +" at line"+ e.getStackTrace()[0].getLineNumber()  );
 			return "";
 		}
